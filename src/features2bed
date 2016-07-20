@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Convert uniprot features to BED format"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='features2bed')
+    parser.add_argument('features', action='store',
+                        help='Uniprot features table')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    for l in open(options.features):
+        uniprot, categ, start, stop = l.rstrip().split('\t')[:4]
+        if (categ == 'CROSSLNK' or categ == 'DISULFID') and (start != stop):
+            print('\t'.join((uniprot,
+                             start,
+                             start,
+                             categ)))
+            print('\t'.join((uniprot,
+                             stop,
+                             stop,
+                             categ)))
+        else:
+            print('\t'.join((uniprot,
+                             start,
+                             stop,
+                             categ)))

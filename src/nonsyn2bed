@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Convert nonsyn table to BED format"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='nonsyn2bed')
+    parser.add_argument('nonsyn', action='store',
+                        help='Non-syn. table')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    for l in open(options.nonsyn):
+        mut, uniprot = l.rstrip().split('\t')
+        pos = int(mut[1:-1])
+        print('\t'.join((uniprot,
+                         str(pos),
+                         str(pos),
+                         '%s -> %s' % (mut[0], mut[-1]))))

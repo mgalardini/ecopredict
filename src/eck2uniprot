@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get the conversion between ECK gene names and Uniprot IDs"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'eck2uniprot')
+    parser.add_argument('genbank', action='store',
+                        help='GenBank file')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    from Bio import SeqIO
+
+    options = get_options()
+
+    for s in SeqIO.parse(options.genbank, 'genbank'):
+        for f in s.features:
+            if 'db_xref' not in f.qualifiers or 'gene_synonym' not in f.qualifiers:
+                continue
+            try:
+                eck = [x.strip() for x in f.qualifiers['gene_synonym'][0].split(';')
+                                 if x.strip().startswith('ECK')][0]
+            except IndexError:
+                continue
+            try:
+                uniprot = [x.replace('UniProtKB/Swiss-Prot:', '') for x in f.qualifiers['db_xref']
+                                       if x.startswith('UniProtKB/Swiss-Prot:')][0]
+            except IndexError:
+                continue
+            print('%s\t%s'%(eck, uniprot))

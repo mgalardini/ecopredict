@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get all the mutation data from a Uniprot ID list"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'uniprot_mutations')
+    parser.add_argument('uniprot', action='store',
+                        help='Uniprot IDs file')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import sys
+    import os
+    import requests
+    import StringIO
+    from Bio import SwissProt
+
+    options = get_options()
+
+    # Spit out the header
+    print('\t'.join(['#uniprot', 'wtpos', 
+                     'mutpos', 'effect',
+                     '?']))
+
+    for l in open(options.uniprot):
+        uniprot = l.strip()
+        r = requests.get('http://www.uniprot.org/uniprot/%s.txt'%uniprot)
+        if r.status_code != 200:
+            if r.status_code not in [300, 404, 410]:
+                raise RuntimeError('Could not fetch entry %s (error %d)'%(
+                    uniprot, r.status_code))
+            else:
+                sys.stderr.write('Skipping entry %s (error %d)'%(
+                    uniprot, r.status_code))
+                sys.stderr.write('\n')
+                continue
+
+        o = StringIO.StringIO()
+        o.write(r.text)
+        o.flush()
+        o.seek(0)
+        f = SwissProt.read(o)
+
+        for t in f.features:
+            if t[0] != 'MUTAGEN':
+                continue
+            print('\t'.join( (uniprot, str(t[1]), str(t[2]), t[3], t[4]) ))
+
