@@ -170,9 +170,9 @@ $(GIFILE): $(GENOME)
 #######################
 
 $(ESSENTIAL): $(CONVERSION)
-	curl http://ogeedb.embl.de/downloads/83333_dataset353.txt.gz > $(MUTATION)/83333_dataset353.txt.gz && \
-	gunzip -f $(MUTATION)/83333_dataset353.txt.gz && \
-	$(SRCDIR)/essential2uniprot $(MUTATION)/83333_dataset353.txt $(CONVERSION) > $@
+	wget -O $(MUTATION)/PECData.dat "http://shigen.nig.ac.jp/ecoli/pec/download/files/PECData.dat" && \
+	awk -F'\t' '{if ($$10 == 1) print $$4"\t"$$10}' $(MUTATION)/PECData.dat | awk -F',' '{print $$1}' | sort | uniq > $(MUTATION)/PECData.txt && \
+	$(SRCDIR)/essential2uniprot $(MUTATION)/PECData.txt $(CONVERSION) > $@
 
 $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 	-rm $(ALLESSENTIALMUTS)
@@ -185,7 +185,7 @@ $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 features: $(FEATURES)
 mutations: $(MUTATIONS)
 annmutations: $(TOLMUTATIONS)
-test: $(UNIPROTSIZES) $(ALLFEATURES) $(ALLOTHERS) $(OBSFEATURES) $(OBSOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLACCESSIBILITY) $(OBSFOLDXBED) $(ALLFOLDXBED)
+test: $(ALLESSENTIALMUTS) $(UNIPROTSIZES) $(ALLFEATURES) $(ALLOTHERS) $(OBSFEATURES) $(OBSOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLACCESSIBILITY) $(OBSFOLDXBED) $(ALLFOLDXBED)
 
 all: features mutations annmutations
 

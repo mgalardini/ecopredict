@@ -26,14 +26,11 @@ def get_options():
     return parser.parse_args()
 
 if __name__ == "__main__":
-    import pandas as pd
-
     options = get_options()
 
     # avoid essential genes
-    e = pd.read_table(options.essential)
-    e.set_index('locus', inplace=True)
-    essential = set(e[e.essential == 'Y'].index)
+    essential = {x.rstrip()
+                 for x in open(options.essential)}
     l2u = {x.rstrip().split()[0]: x.rstrip().split()[1]
            for x in open(options.conversion)}
     essential = {l2u.get(x, x) for x in essential}
