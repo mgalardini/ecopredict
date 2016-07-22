@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run constraint analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_constraints')
+    parser.add_argument('essential', action='store',
+                        help='essential genes file')
+    parser.add_argument('sizes', action='store',
+                        help='uniprot sizes')
+    parser.add_argument('features', action='store',
+                        help='Features BED file')
+    parser.add_argument('obsfeatures', action='store',
+                        help='Observed features BED file')
+    parser.add_argument('obsothers', action='store',
+                        help='Observed others BED file')
+
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=100,
+                        help='Bootstraps [Default: 100]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def density(observed, bases):
+    return len(observed)/float(len(bases))
+
+if __name__ == "__main__":
+    import random
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    essential = [x.rstrip()
+                 for x in open(options.essential)]
+    sizes = {x.rstrip().split('\t')[0]: int(x.rstrip().split('\t')[1])
+             for x in open(options.sizes)}
+
+    features = {}
+    for l in open(options.features):
+        uniprot, start, stop, categ = l.rstrip().split('\t')
+        features[uniprot] = features.get(uniprot, set())
+        for i in range(int(start), int(stop)+1):
+            features[uniprot].add(i)
+
+    others = {}
+    for k, v in sizes.items():
+        if k not in features:
+            continue
+        others[k] = set()
+        for i in set(range(1, v+1)).difference(features[k]):
+            others[k].add(i)
+
+    mut_features = {}
+    for l in open(options.obsfeatures):
+        uniprot, start, stop, mut = l.rstrip().split('\t')
+        mut_features[uniprot] = mut_features.get(uniprot, [])
+        mut_features[uniprot].append(int(start))
+    mut_others = {}
+    for l in open(options.obsothers):
+        uniprot, start, stop, mut = l.rstrip().split('\t')
+        mut_others[uniprot] = mut_others.get(uniprot, [])
+        mut_others[uniprot].append(int(start))
+
+    for k in set(features
+                ).intersection(others
+                ).intersection(mut_features
+                ).intersection(mut_others
+                ).difference(essential):
+        if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+            continue
+        print('\t'.join(('real', '',
+                         str(np.log2(density(mut_features[k],
+                             features[k])/density(mut_others[k],
+                                                  others[k]))))))
+
+    for i in range(options.bootstraps):
+        r_features = {}
+        r_others = {}
+        for k in set(features
+                    ).intersection(others
+                    ).intersection(mut_features
+                    ).intersection(mut_others
+                    ).difference(essential):
+            if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+                continue
+            r_features[k] = []
+            r_others[k] = []
+            positions = list(set(mut_features[k]).union(mut_others[k]))
+            random.shuffle(positions)
+            for p in positions[:len(set(mut_features[k]))]:
+                if p in mut_features[k]:
+                    for j in range(mut_features[k].count(p)):
+                        r_features[k].append(p)
+                else:
+                    for j in range(mut_others[k].count(p)):
+                        r_features[k].append(p)
+            for p in positions[len(set(mut_features[k])):]:
+                if p in mut_features[k]:
+                    for j in range(mut_features[k].count(p)):
+                        r_others[k].append(p)
+                else:
+                    for j in range(mut_others[k].count(p)):
+                        r_others[k].append(p)
+        for k in set(features
+                    ).intersection(others
+                    ).intersection(mut_features
+                    ).intersection(mut_others
+                    ).difference(essential):
+            if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+                continue
+            print('\t'.join(('random', str(i),
+                             str(np.log2(density(r_features[k],
+                                         features[k])/density(r_others[k],
+                                                              others[k]))))))

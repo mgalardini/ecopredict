@@ -11,6 +11,7 @@ SUBMIT = eval
 SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
 MUTATION = $(CURDIR)/mutations
+PLOTDATA = $(CURDIR)/plotdata
 
 ############
 ## Files ##
@@ -72,6 +73,8 @@ DELMUTATIONS = $(MUTATION)/deleterious.txt
 # TODO: add rule to generate this from observed SIFT data
 TOLSIFT = $(INPUT)/tolerated.sift.txt
 DELSIFT = $(INPUT)/deleterious.sift.txt
+
+FEATURESDATA = $(PLOTDATA)/features.tsv
 
 ##############################
 ## Non-synonymous mutations ##
@@ -178,15 +181,19 @@ $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 	-rm $(ALLESSENTIALMUTS)
 	for essential in $$(cat $(ESSENTIAL)); do grep $$essential $(ALLNONSYN) >> $(ALLESSENTIALMUTS); done
 
+##########################
+## Plot data generation ##
+##########################
+
+$(FEATURESDATA): $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS)
+	$(SRCDIR)/run_constraints_features $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS) --bootstraps 1000 > $@
+
 ########################
 ## Targets definition ##
 ########################
 
-features: $(FEATURES)
-mutations: $(MUTATIONS)
-annmutations: $(TOLMUTATIONS)
-test: $(ALLESSENTIALMUTS) $(UNIPROTSIZES) $(ALLFEATURES) $(ALLOTHERS) $(OBSFEATURES) $(OBSOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLACCESSIBILITY) $(OBSFOLDXBED) $(ALLFOLDXBED)
+features: $(FEATURESDATA)
 
-all: features mutations annmutations
+all: features
 
-.PHONY: all features mutations annmutations test
+.PHONY: all features
