@@ -39,11 +39,23 @@ ALLNONSYNBED = $(MUTATION)/all_nonsynmuts.bed
 # All sift scores for the mutations
 ALLSIFT = $(INPUT)/all_sift.tsv
 ALLSIFTBED = $(MUTATION)/all_sift.bed
+OBSSIFT = $(INPUT)/all_sift_nonsyn.tsv
+OBSSIFTBED = $(MUTATION)/all_sift_nonsyn.bed
+# All foldx scores for the mutations
+ALLFOLDX = $(INPUT)/all_foldx.tsv
+ALLFOLDXBED = $(MUTATION)/all_foldx.bed
+OBSFOLDX = $(INPUT)/all_foldx_nonsyn.tsv
+OBSFOLDXBED = $(MUTATION)/all_foldx_nonsyn.bed
+# Accessibility data
+ACCESSIBILITY = $(INPUT)/all_accessibility.bed
+ALLACCESSIBILITY = $(MUTATION)/all_accessibility.bed
 
 # Overlap between Uniprot features and non-syn mutations
 OBSFEATURES = $(MUTATION)/observed_features.bed
 OBSOTHERS = $(MUTATION)/observed_others.bed
 # SIFT data that overlaps with Uniprot features
+ALLSIFTFEATURES = $(MUTATION)/all_sift_features.bed
+ALLSIFTOTHERS = $(MUTATION)/all_sift_others.bed
 SIFTFEATURES = $(MUTATION)/sift_features.bed
 SIFTOTHERS = $(MUTATION)/sift_others.bed
 
@@ -58,8 +70,8 @@ CONVERSION = $(MUTATION)/locus_uniprot.tsv
 TOLMUTATIONS = $(MUTATION)/tolerated.txt
 DELMUTATIONS = $(MUTATION)/deleterious.txt
 # TODO: add rule to generate this from observed SIFT data
-TOLSIFT = $(MUTATION)/tolerated.sift.txt
-DELSIFT = $(MUTATION)/deleterious.sift.txt
+TOLSIFT = $(INPUT)/tolerated.sift.txt
+DELSIFT = $(INPUT)/deleterious.sift.txt
 
 ##############################
 ## Non-synonymous mutations ##
@@ -104,11 +116,33 @@ $(TOLMUTATIONS): $(ANNMUTATIONS) $(ALLESSENTIALMUTS)
 
 $(ALLSIFTBED): $(ALLSIFT)
 	$(SRCDIR)/sift2bed $< > $@
+$(OBSSIFTBED): $(OBSSIFT)
+	$(SRCDIR)/sift2bed $< > $@
 
-$(SIFTFEATURES): $(FEATURESBED) $(ALLSIFTBED)
+$(ALLSIFTFEATURES): $(FEATURESBED) $(ALLSIFTBED)
 	bedtools intersect -a $(ALLSIFTBED) -b $(FEATURESBED) > $@
-$(SIFTOTHERS): $(FEATURESBED) $(ALLSIFTBED)
+$(ALLSIFTOTHERS): $(FEATURESBED) $(ALLSIFTBED)
 	bedtools intersect -a $(ALLSIFTBED) -b $(FEATURESBED) -v > $@
+$(SIFTFEATURES): $(FEATURESBED) $(OBSSIFTBED)
+	bedtools intersect -a $(OBSSIFTBED) -b $(FEATURESBED) > $@
+$(SIFTOTHERS): $(FEATURESBED) $(OBSSIFTBED)
+	bedtools intersect -a $(OBSSIFTBED) -b $(FEATURESBED) -v > $@
+
+################
+## FOLDX data ##
+################
+
+$(ALLFOLDXBED): $(ALLFOLDX)
+	$(SRCDIR)/sift2bed $< > $@
+$(OBSFOLDXBED): $(OBSFOLDX)
+	$(SRCDIR)/sift2bed $< > $@
+
+########################
+## Accessibility data ##
+########################
+
+$(ALLACCESSIBILITY): $(ACCESSIBILITY) $(ALLNONSYNBED) 
+	bedtools intersect -a $(ACCESSIBILITY) -b $(ALLNONSYNBED) > $@
 
 ##########################
 ## Locus to Uniprot IDs ##
@@ -151,7 +185,7 @@ $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 features: $(FEATURES)
 mutations: $(MUTATIONS)
 annmutations: $(TOLMUTATIONS)
-test: $(UNIPROTSIZES) $(OBSFEATURES) $(OBSOTHERS) $(SIFTFEATURES) $(SIFTOTHERS)
+test: $(UNIPROTSIZES) $(ALLFEATURES) $(ALLOTHERS) $(OBSFEATURES) $(OBSOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLACCESSIBILITY) $(OBSFOLDXBED) $(ALLFOLDXBED)
 
 all: features mutations annmutations
 
