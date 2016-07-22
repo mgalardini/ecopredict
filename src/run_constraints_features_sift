@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run constraint analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_constraints_features_sift')
+    parser.add_argument('essential', action='store',
+                        help='essential genes file')
+    parser.add_argument('siftfeatures', action='store',
+                        help='Sift scores BED file')
+    parser.add_argument('siftothers', action='store',
+                        help='Sift scores BED file')
+    parser.add_argument('allsiftfeatures', action='store',
+                        help='Sift scores BED file')
+    parser.add_argument('allsiftothers', action='store',
+                        help='Sift scores BED file')
+
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=1000,
+                        help='Bootstraps [Default: 100]')
+    parser.add_argument('--offset', action='store',
+                        type=float,
+                        default=1.527487632E-04,
+                        help='SIFT score offset [Default: 1.527487632E-04]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import random
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    essential = [x.rstrip()
+                 for x in open(options.essential)]
+
+    feats = pd.read_table(options.siftfeatures, header=None)[[0, 1, 4]]
+    feats.columns = ['uniprot', 'pos', 'score']
+    feats = feats.set_index('uniprot').loc[
+            set(feats.uniprot).difference(essential)
+            ].reset_index()
+    feats.score = [-np.log(x + options.offset) for x in feats.score]
+    others = pd.read_table(options.siftothers, header=None)[[0, 1, 4]]
+    others.columns = ['uniprot', 'pos', 'score']
+    others = others.set_index('uniprot').loc[
+            set(feats.uniprot)
+            ].reset_index()
+    others.score = [-np.log(x + options.offset) for x in others.score]
+    afeats = pd.read_table(options.allsiftfeatures, header=None)[[0, 1, 4]]
+    afeats.columns = ['uniprot', 'pos', 'score']
+    afeats = afeats.set_index('uniprot').loc[
+            set(feats.uniprot)
+            ].reset_index()
+    afeats.score = [-np.log(x + options.offset) for x in afeats.score]
+    aothers = pd.read_table(options.allsiftothers, header=None)[[0, 1, 4]]
+    aothers.columns = ['uniprot', 'pos', 'score']
+    aothers = aothers.set_index('uniprot').loc[
+            set(afeats.uniprot).difference(essential)
+            ].reset_index()
+    aothers.score = [-np.log(x + options.offset) for x in aothers.score]
+
+    a = list(feats.score.values)
+    b = list(others.score.values)
+    for score in a:
+        print('\t'.join(('features', '', str(score))))
+    random.shuffle(b)
+    for score in b[:len(a)]:
+        print('\t'.join(('others', '', str(score))))
+    a = list(afeats.score.values)
+    b = list(aothers.score.values)
+    for score in a:
+        print('\t'.join(('all features', '', str(score))))
+    random.shuffle(b)
+    for score in b[:len(a)]:
+        print('\t'.join(('all others', '', str(score))))
+
+    for i in range(options.bootstraps):
+        obs = list(feats.score.values) + list(others.score.values)
+        random.shuffle(obs)
+        for score in obs[:feats.shape[0]]:
+            print('\t'.join(('features shuffle', str(i), str(score))))
+        for score in obs[feats.shape[0]:feats.shape[0]*2]:
+            print('\t'.join(('others shuffle', str(i), str(score))))
+        obs = list(afeats.score.values) + list(aothers.score.values)
+        random.shuffle(obs)
+        for score in obs[:afeats.shape[0]]:
+            print('\t'.join(('all features shuffle', str(i), str(score))))
+        for score in obs[afeats.shape[0]:afeats.shape[0]*2]:
+            print('\t'.join(('all others shuffle', str(i), str(score))))
+            

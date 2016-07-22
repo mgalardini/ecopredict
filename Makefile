@@ -75,6 +75,7 @@ TOLSIFT = $(INPUT)/tolerated.sift.txt
 DELSIFT = $(INPUT)/deleterious.sift.txt
 
 FEATURESDATA = $(PLOTDATA)/features.tsv
+SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 
 ##############################
 ## Non-synonymous mutations ##
@@ -188,11 +189,14 @@ $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 $(FEATURESDATA): $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS)
 	$(SRCDIR)/run_constraints_features $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS) --bootstraps 1000 > $@
 
+$(SIFTFEATURESDATA): $(ESSENTIAL) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS)
+	$(SRCDIR)/run_constraints_features_sift $(ESSENTIAL)  $(SIFTFEATURES) $(SIFTOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) --bootstraps 1000 > $@
+
 ########################
 ## Targets definition ##
 ########################
 
-features: $(FEATURESDATA)
+features: $(FEATURESDATA) $(SIFTFEATURESDATA)
 
 all: features
 
