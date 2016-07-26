@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run constraint analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_constraints_accessibility')
+    parser.add_argument('essential', action='store',
+                        help='essential genes file')
+    parser.add_argument('allaccessibility', action='store',
+                        help='All accessibility in BED format')
+    parser.add_argument('accessibility', action='store',
+                        help='Observed accessibility in BED format')
+
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=100,
+                        help='Bootstraps [Default: 100]')
+    parser.add_argument('--bins', action='store',
+                        type=int,
+                        default=100,
+                        help='Accessibility bins [Default: 100]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import random
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    essential = [x.rstrip()
+                 for x in open(options.essential)]
+
+    m1 = pd.read_table(options.allaccessibility,
+                               header=None)[[0, 1, 4]]
+    m1.columns = ['uniprot', 'pos', 'score']
+    m1.set_index('uniprot').loc[[x for x in set(m1.uniprot)
+                                 if x not in essential]].reset_index()
+    m2 = pd.read_table(options.accessibility,
+                               header=None)[[0, 1, 4]]
+    m2.columns = ['uniprot', 'pos', 'score']
+    m2.set_index('uniprot').loc[[x for x in set(m2.uniprot)
+                                 if x not in essential]].reset_index()
+
+    res = []
+    thresholds = []
+    c1 = None
+    c2 = None
+    csize = None
+    for t1, t2, size in zip(np.histogram(m1.score, bins=options.bins)[1][:-1],
+                            np.histogram(m1.score, bins=options.bins)[1][1:],
+                            np.histogram(m1.score, bins=options.bins)[0]):
+        if csize is None:
+            csize = size
+        if csize <= 2000:
+            if c1 is None:
+                c1 = t1
+            c2 = t2
+            csize += size
+            continue
+        if c1 is None:
+            thresholds.append( [t1, t2, csize] )
+            c1 = None
+            c2 = None
+            csize = None
+        else:
+            thresholds.append( [c1, c2, csize] )
+            c1 = None
+            c2 = None
+            csize = None
+    thresholds[-1][1] = c2
+    thresholds[-1][2] = thresholds[-1][2] + csize
+    for t1, t2, size in thresholds:
+        try:
+            nonsyn_density = m2[(m2.score > t1) &
+                                (m2.score <= t2)].dropna().shape[0]/float(m1[(m1.score > t1) &
+                                (m1.score <= t2)].dropna().shape[0])
+            others_density = m2[(m2.score > t2)].dropna().shape[0]/float(m1[(m1.score > t2)].dropna().shape[0])
+            print('\t'.join(('', str(t1), str(t2), str(np.log2(nonsyn_density/others_density)))))
+        except ZeroDivisionError:
+            continue
+
+    for i in range(options.bootstraps):
+        rand = []
+        for k in set(m2.uniprot):
+            accessibility = m1[m1.uniprot == k][['pos', 'score']].set_index('pos').to_dict()['score']
+            positions = list(accessibility.keys())
+            random.shuffle(positions)
+            for z,p in zip(m2[m2.uniprot == k].groupby(('uniprot', 'pos')).count().reset_index().values,
+                           positions):
+                for j in range(z[2]):
+                    rand.append((k, p, accessibility[p]))
+        rand = pd.DataFrame(rand)
+        rand.columns = ['uniprot', 'pos', 'score']
+        for t1, t2, size in thresholds:
+            try:
+                nonsyn_density = rand[(rand.score > t1) &
+                                    (rand.score <= t2)].dropna().shape[0]/float(m1[(m1.score > t1) &
+                                    (m1.score <= t2)].dropna().shape[0])
+                others_density = rand[(rand.score > t2)].dropna().shape[0]/float(m1[(m1.score > t2)].dropna().shape[0])
+                print('\t'.join((str(i), str(t1), str(t2), str(np.log2(nonsyn_density/others_density)))))
+            except ZeroDivisionError:
+                continue
+

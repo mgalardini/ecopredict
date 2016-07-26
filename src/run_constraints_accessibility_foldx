@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run constraint analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_constraints_accessibility_foldx')
+    parser.add_argument('essential', action='store',
+                        help='essential genes file')
+    parser.add_argument('allaccessibility', action='store',
+                        help='All accessibility in BED format')
+    parser.add_argument('allfoldx', action='store',
+                        help='All FoldX data in BED format')
+    parser.add_argument('obsfoldx', action='store',
+                        help='Observed FoldX in BED format')
+
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=100,
+                        help='Bootstraps [Default: 100]')
+    parser.add_argument('--buried', action='store',
+                        type=float,
+                        default=20,
+                        help='Buried threshold [Default: 20]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import random
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    essential = [x.rstrip()
+                 for x in open(options.essential)]
+
+    a = pd.read_table(options.allaccessibility,
+                               header=None)[[0, 1, 4]]
+    a.columns = ['uniprot', 'pos', 'score']
+    a.set_index('uniprot').loc[[x for x in set(a.uniprot)
+                                 if x not in essential]].reset_index()
+    m1 = pd.read_table(options.allfoldx,
+                               header=None)[[0, 1, 4]]
+    m1.columns = ['uniprot', 'pos', 'score']
+    m1.set_index('uniprot').loc[[x for x in set(m1.uniprot)
+                                 if x not in essential]].reset_index()
+    m2 = pd.read_table(options.obsfoldx,
+                               header=None)[[0, 1, 4]]
+    m2.columns = ['uniprot', 'pos', 'score']
+    m2.set_index('uniprot').loc[[x for x in set(m2.uniprot)
+                                 if x not in essential]].reset_index()
+
+    obs_buried = list(m2.set_index(['uniprot',
+                        'pos']).loc[
+                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        ].reset_index().dropna().score.values)
+    for v in obs_buried:
+        print('\t'.join(('buried', '', str(v))))
+    obs_others = list(m2.set_index(['uniprot',
+                        'pos']).loc[
+                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        ].reset_index().dropna().score.values)
+    random.shuffle(obs_others)
+    for v in obs_others[:len(obs_buried)]:
+        print('\t'.join(('others', '', str(v))))
+    all_buried = list(m1.set_index(['uniprot',
+                        'pos']).loc[
+                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        ].reset_index().dropna().score.values)
+    all_others = list(m1.set_index(['uniprot',
+                        'pos']).loc[
+                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        ].reset_index().dropna().score.values)
+    for i in range(options.bootstraps):
+        random.shuffle(all_buried)
+        random.shuffle(all_others)
+        for v in all_buried[:len(obs_buried)]:
+            print('\t'.join(('all buried', str(i), str(v))))
+        for v in all_others[:len(obs_buried)]:
+            print('\t'.join(('all others', str(i), str(v))))
+
+

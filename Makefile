@@ -76,6 +76,8 @@ DELSIFT = $(INPUT)/deleterious.sift.txt
 
 FEATURESDATA = $(PLOTDATA)/features.tsv
 SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
+ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
+FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 
 ##############################
 ## Non-synonymous mutations ##
@@ -180,24 +182,30 @@ $(ESSENTIAL): $(CONVERSION)
 
 $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 	-rm $(ALLESSENTIALMUTS)
-	for essential in $$(cat $(ESSENTIAL)); do grep $$essential $(ALLNONSYN) >> $(ALLESSENTIALMUTS); done
+	-for essential in $$(cat $(ESSENTIAL)); do grep $$essential $(ALLNONSYN) >> $(ALLESSENTIALMUTS); done
 
 ##########################
 ## Plot data generation ##
 ##########################
 
 $(FEATURESDATA): $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS)
-	$(SRCDIR)/run_constraints_features $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS) --bootstraps 1000 > $@
+	$(SRCDIR)/run_constraints_features $(ESSENTIAL) $(UNIPROTSIZES) $(FEATURESBED) $(OBSFEATURES) $(OBSOTHERS) --bootstraps 100 > $@
 
 $(SIFTFEATURESDATA): $(ESSENTIAL) $(SIFTFEATURES) $(SIFTOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS)
-	$(SRCDIR)/run_constraints_features_sift $(ESSENTIAL)  $(SIFTFEATURES) $(SIFTOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) --bootstraps 1000 > $@
+	$(SRCDIR)/run_constraints_features_sift $(ESSENTIAL)  $(SIFTFEATURES) $(SIFTOTHERS) $(ALLSIFTFEATURES) $(ALLSIFTOTHERS) --bootstraps 100 > $@
+
+$(ACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLACCESSIBILITY)
+	$(SRCDIR)/run_constraints_accessibility $(ESSENTIAL) $(ACCESSIBILITY) $(ALLACCESSIBILITY) --bootstraps 100 --bins 100 > $@
+
+$(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED)
+	$(SRCDIR)/run_constraints_accessibility_foldx $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED) --bootstraps 100 --buried 33 > $@
 
 ########################
 ## Targets definition ##
 ########################
 
-features: $(FEATURESDATA) $(SIFTFEATURESDATA)
+constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
 
-all: features
+all: constraints
 
-.PHONY: all features
+.PHONY: all constraints
