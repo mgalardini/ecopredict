@@ -27,14 +27,14 @@ if __name__ == "__main__":
         if (categ == 'CROSSLNK' or categ == 'DISULFID') and (start != stop):
             print('\t'.join((uniprot,
                              start,
-                             start,
+                             str(int(start)+1),
                              categ)))
             print('\t'.join((uniprot,
                              stop,
-                             stop,
+                             str(int(stop)+1),
                              categ)))
         else:
             print('\t'.join((uniprot,
                              start,
-                             stop,
+                             str(int(stop)+1),
                              categ)))
