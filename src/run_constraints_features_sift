@@ -67,7 +67,7 @@ if __name__ == "__main__":
     aothers = pd.read_table(options.allsiftothers, header=None)[[0, 1, 4]]
     aothers.columns = ['uniprot', 'pos', 'score']
     aothers = aothers.set_index('uniprot').loc[
-            set(afeats.uniprot).difference(essential)
+            set(feats.uniprot)
             ].reset_index()
     aothers.score = [-np.log(x + options.offset) for x in aothers.score]
 
@@ -78,25 +78,12 @@ if __name__ == "__main__":
     random.shuffle(b)
     for score in b[:len(a)]:
         print('\t'.join(('others', '', str(score))))
-    a = list(afeats.score.values)
-    b = list(aothers.score.values)
-    for score in a:
-        print('\t'.join(('all features', '', str(score))))
-    random.shuffle(b)
-    for score in b[:len(a)]:
-        print('\t'.join(('all others', '', str(score))))
-
+    c = list(afeats.score.values)
+    d = list(aothers.score.values)
     for i in range(options.bootstraps):
-        obs = list(feats.score.values) + list(others.score.values)
-        random.shuffle(obs)
-        for score in obs[:feats.shape[0]]:
-            print('\t'.join(('features shuffle', str(i), str(score))))
-        for score in obs[feats.shape[0]:feats.shape[0]*2]:
-            print('\t'.join(('others shuffle', str(i), str(score))))
-        obs = list(afeats.score.values) + list(aothers.score.values)
-        random.shuffle(obs)
-        for score in obs[:afeats.shape[0]]:
-            print('\t'.join(('all features shuffle', str(i), str(score))))
-        for score in obs[afeats.shape[0]:afeats.shape[0]*2]:
-            print('\t'.join(('all others shuffle', str(i), str(score))))
-            
+        random.shuffle(c)
+        for score in c[:len(a)]:
+            print('\t'.join(('all features', str(i), str(score))))
+        random.shuffle(d)
+        for score in b[:len(a)]:
+            print('\t'.join(('all others', str(i), str(score))))

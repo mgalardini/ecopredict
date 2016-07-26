@@ -58,7 +58,7 @@ if __name__ == "__main__":
     for k, v in sizes.items():
         if k not in features:
             continue
-        others[k] = set()
+        others[k] = set()    
         for i in set(range(1, v+1)).difference(features[k]):
             others[k].add(i)
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
                 ).intersection(mut_features
                 ).intersection(mut_others
                 ).difference(essential):
-        if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+        if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
             continue
         print('\t'.join(('real', '',
                          str(np.log2(density(mut_features[k],
@@ -93,7 +93,7 @@ if __name__ == "__main__":
                     ).intersection(mut_features
                     ).intersection(mut_others
                     ).difference(essential):
-            if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+            if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
                 continue
             r_features[k] = []
             r_others[k] = []
@@ -118,7 +118,7 @@ if __name__ == "__main__":
                     ).intersection(mut_features
                     ).intersection(mut_others
                     ).difference(essential):
-            if len(mut_features[k]) == 0 or len(mut_others[k]) == 0:
+            if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
                 continue
             print('\t'.join(('random', str(i),
                              str(np.log2(density(r_features[k],
