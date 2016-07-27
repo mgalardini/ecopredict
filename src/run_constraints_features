@@ -71,6 +71,8 @@ if __name__ == "__main__":
     features = {}
     for l in open(options.features):
         uniprot, start, stop, categ = l.rstrip().split('\t')
+        if uniprot in essential:
+            continue
         features[uniprot] = features.get(uniprot, set())
         for i in range(int(start), int(stop)):
             features[uniprot].add(i)
@@ -93,7 +95,7 @@ if __name__ == "__main__":
 
     others = {}
     for k, v in sizes.items():
-        if k not in features:
+        if k in essential or k not in features:
             continue
         others[k] = set()    
         for i in set(range(1, v+1)).difference(features[k]):
@@ -112,70 +114,61 @@ if __name__ == "__main__":
         mut_others[uniprot] = mut_others.get(uniprot, [])
         mut_others[uniprot].append(int(start))
 
-    for k in set(features
-                ).intersection(others
-                ).intersection(mut_features
-                ).intersection(mut_others
-                ).difference(essential):
-        if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
-            continue
-        if options.flanking is not None:
-            variability = np.log2(density(mut_features[k],
-                                          features[k]) /
-                                  density(mut_others[k],
-                                          flanking[k]))
-        else:
-            variability = np.log2(density(mut_features[k],
-                                          features[k]) /
-                                  density(mut_others[k],
-                                          others[k]))
+    mfeatures = []
+    for k in features:
+        v = mut_features.get(k, [])
+        for i in v:
+            mfeatures.append(i)
+    lfeatures = []
+    for k, v in features.items():
+        for i in v:
+            lfeatures.append(i)
+    for r in range(options.bootstraps):
+        lothers = []
+        mothers = []
+        for k in features:
+            positions = list(others[k])
+            random.shuffle(positions)
+            positions = positions[:len(features[k])]
+            for i in positions:
+                lothers.append(i)
+            v = mut_others.get(k, [])
+            for i in v:
+                if i not in positions:
+                    continue
+                mothers.append(i)
+        
+        variability = np.log2(density(mfeatures,
+                                      lfeatures) /
+                              density(mothers,
+                                      lothers))
         print('\t'.join(('real', '',
                          str(variability))))
-    
-    for i in range(options.bootstraps):
-        r_features = {}
-        r_others = {}
-        for k in set(features
-                    ).intersection(others
-                    ).intersection(mut_features
-                    ).intersection(mut_others
-                    ).difference(essential):
-            if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
-                continue
-            r_features[k] = []
-            r_others[k] = []
-            positions = list(set(mut_features[k]).union(mut_others[k]))
+
+    for r in range(options.bootstraps):
+        rfeatures = []
+        rothers = []
+        for k in features:
+            positions = list(range(1, sizes[k]+1))
             random.shuffle(positions)
-            for p in positions[:len(set(mut_features[k]))]:
-                if p in mut_features[k]:
+            for p in positions[:len(set(features[k]))]:
+                if p in mut_features.get(k, []):
                     for j in range(mut_features[k].count(p)):
-                        r_features[k].append(p)
+                        rfeatures.append(p)
                 else:
-                    for j in range(mut_others[k].count(p)):
-                        r_features[k].append(p)
-            for p in positions[len(set(mut_features[k])):]:
-                if p in mut_features[k]:
+                    for j in range(mut_others.get(k, []).count(p)):
+                        rfeatures.append(p)
+            for p in positions[len(set(features[k])):len(set(features[k]))*2]:
+                if p in mut_features.get(k, []):
                     for j in range(mut_features[k].count(p)):
-                        r_others[k].append(p)
+                        rothers.append(p)
                 else:
-                    for j in range(mut_others[k].count(p)):
-                        r_others[k].append(p)
-        for k in set(features
-                    ).intersection(others
-                    ).intersection(mut_features
-                    ).intersection(mut_others
-                    ).difference(essential):
-            if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
-                continue
-            if options.flanking is not None:
-                variability = np.log2(density(r_features[k],
-                                              features[k]) /
-                                      density(r_others[k],
-                                              flanking[k]))
-            else:
-                variability = np.log2(density(r_features[k],
-                                              features[k]) /
-                                      density(r_others[k],
-                                              others[k]))
-            print('\t'.join(('random', str(i),
-                             str(variability))))
+                    for j in range(mut_others.get(k, []).count(p)):
+                        rothers.append(p)
+        
+        variability = np.log2(density(rfeatures,
+                                      lfeatures) /
+                              density(rothers,
+                                      lothers))
+        print('\t'.join(('random', str(r),
+                         str(variability))))
