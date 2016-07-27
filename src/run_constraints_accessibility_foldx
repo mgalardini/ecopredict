@@ -68,7 +68,7 @@ if __name__ == "__main__":
         print('\t'.join(('buried', '', str(v))))
     obs_others = list(m2.set_index(['uniprot',
                         'pos']).loc[
-                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        a[a.score >= options.buried].set_index(['uniprot', 'pos']).index
                         ].reset_index().dropna().score.values)
     random.shuffle(obs_others)
     for v in obs_others[:len(obs_buried)]:
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                         ].reset_index().dropna().score.values)
     all_others = list(m1.set_index(['uniprot',
                         'pos']).loc[
-                        a[a.score < options.buried].set_index(['uniprot', 'pos']).index
+                        a[a.score >= options.buried].set_index(['uniprot', 'pos']).index
                         ].reset_index().dropna().score.values)
     for i in range(options.bootstraps):
         random.shuffle(all_buried)
