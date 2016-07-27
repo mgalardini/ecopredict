@@ -26,6 +26,10 @@ def get_options():
                         type=int,
                         default=100,
                         help='Bootstraps [Default: 100]')
+    parser.add_argument('--flanking', action='store',
+                        type=float,
+                        default=None,
+                        help='Use flanking regions [Default: 100]')
     
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -35,11 +39,28 @@ def get_options():
 def density(observed, bases):
     return len(observed)/float(len(bases))
 
+def cont(L):
+    s = set()
+    if len(L) == 1:
+        yield set((L[0],))
+        return
+    for i, j in zip(L[:-1],
+                    L[1:]):
+        s.add(i)
+        if j-i > 1:
+            yield s
+            s = set()
+        else:
+            s.add(j)
+    s.add(j)
+    yield s
+
 if __name__ == "__main__":
+    import sys
     import random
     import numpy as np
     import pandas as pd
-
+    
     options = get_options()
 
     essential = [x.rstrip()
@@ -51,8 +72,24 @@ if __name__ == "__main__":
     for l in open(options.features):
         uniprot, start, stop, categ = l.rstrip().split('\t')
         features[uniprot] = features.get(uniprot, set())
-        for i in range(int(start), int(stop)+1):
+        for i in range(int(start), int(stop)):
             features[uniprot].add(i)
+
+    flanking = {}
+    if options.flanking is not None:
+        for k, v in features.items():
+            flanking[k] = set()
+            for w in cont(sorted(v)):
+                for i in range(int(min(w)-len(w)*options.flanking),
+                               min(w)):
+                    if i in v or i <= 0 or i > sizes[k]:
+                        continue
+                    flanking[k].add(i)
+                for i in range(max(w)+1,
+                               int(max(w)+len(w)*options.flanking)+1):
+                    if i in v or i <= 0 or i > sizes[k]:
+                        continue
+                    flanking[k].add(i)
 
     others = {}
     for k, v in sizes.items():
@@ -70,6 +107,8 @@ if __name__ == "__main__":
     mut_others = {}
     for l in open(options.obsothers):
         uniprot, start, stop, mut = l.rstrip().split('\t')
+        if options.flanking is not None and int(start) not in flanking.get(uniprot, set()):
+            continue
         mut_others[uniprot] = mut_others.get(uniprot, [])
         mut_others[uniprot].append(int(start))
 
@@ -80,11 +119,19 @@ if __name__ == "__main__":
                 ).difference(essential):
         if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
             continue
+        if options.flanking is not None:
+            variability = np.log2(density(mut_features[k],
+                                          features[k]) /
+                                  density(mut_others[k],
+                                          flanking[k]))
+        else:
+            variability = np.log2(density(mut_features[k],
+                                          features[k]) /
+                                  density(mut_others[k],
+                                          others[k]))
         print('\t'.join(('real', '',
-                         str(np.log2(density(mut_features[k],
-                             features[k])/density(mut_others[k],
-                                                  others[k]))))))
-
+                         str(variability))))
+    
     for i in range(options.bootstraps):
         r_features = {}
         r_others = {}
@@ -120,7 +167,15 @@ if __name__ == "__main__":
                     ).difference(essential):
             if len(mut_features.get(k, [])) == 0 or len(mut_others.get(k, [])) == 0:
                 continue
+            if options.flanking is not None:
+                variability = np.log2(density(r_features[k],
+                                              features[k]) /
+                                      density(r_others[k],
+                                              flanking[k]))
+            else:
+                variability = np.log2(density(r_features[k],
+                                              features[k]) /
+                                      density(r_others[k],
+                                              others[k]))
             print('\t'.join(('random', str(i),
-                             str(np.log2(density(r_features[k],
-                                         features[k])/density(r_others[k],
-                                                              others[k]))))))
+                             str(variability))))
