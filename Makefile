@@ -86,6 +86,7 @@ ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 
 TREEPLOT = $(PLOTDIR)/tree.svg
+CONSTRAINTSPLOT = $(PLOTDIR)/constraints.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -213,14 +214,17 @@ $(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOL
 ######################
 
 $(TREEPLOT): $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT)
-	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 5
+	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 5 --dpi 300
+
+$(CONSTRAINTSPLOT): $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
+	$(SRCDIR)/run_constraints_plot $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA) $@ --height 5 --width 5 --dpi 300
 
 ########################
 ## Targets definition ##
 ########################
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
-plots: $(TREEPLOT)
+plots: $(TREEPLOT) $(CONSTRAINTSPLOT)
 
 all: constraints plots
 
