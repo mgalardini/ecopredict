@@ -12,6 +12,7 @@ SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
 MUTATION = $(CURDIR)/mutations
 PLOTDATA = $(CURDIR)/plotdata
+PLOTDIR = $(CURDIR)/plots
 
 ############
 ## Files ##
@@ -74,10 +75,17 @@ DELMUTATIONS = $(MUTATION)/deleterious.txt
 TOLSIFT = $(INPUT)/tolerated.sift.txt
 DELSIFT = $(INPUT)/deleterious.sift.txt
 
+TREE = $(INPUT)/tree.nwk
+NONSYNCOUNT = $(INPUT)/strains_nonsyn.txt
+PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
+EVOLUTION = $(INPUT)/evolution_experiment.txt
+
 FEATURESDATA = $(PLOTDATA)/features.tsv
 SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
+
+TREEPLOT = $(PLOTDIR)/tree.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -200,12 +208,20 @@ $(ACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLACCESSIBILITY)
 $(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED)
 	$(SRCDIR)/run_constraints_accessibility_foldx $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED) --bootstraps 100 --buried 50 > $@
 
+######################
+## Plots generation ##
+######################
+
+$(TREEPLOT): $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT)
+	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 5
+
 ########################
 ## Targets definition ##
 ########################
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
+plots: $(TREEPLOT)
 
-all: constraints
+all: constraints plots
 
-.PHONY: all constraints
+.PHONY: all constraints plots
