@@ -1,0 +1,356 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "Compute gene sickness score"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'get_sickness')
+
+    parser.add_argument('--sift', action='store',
+                        default=None,
+                        help='sift file')
+    parser.add_argument('--foldx', action='store',
+                        default=None,
+                        help='foldx pdb file')
+    parser.add_argument('--model', action='store',
+                        default=None,
+                        help='foldx models file')
+    parser.add_argument('--stop', action='store',
+                        default=None,
+                        help='stop file')
+    parser.add_argument('--nonsyn', action='store',
+                        default=None,
+                        help='nonsyn file (used for coverage)')
+    parser.add_argument('--pangenome', action='store',
+                        default=None,
+                        help='OMA orthologs file')
+    parser.add_argument('--conversion', action='store',
+                        help='Locus to uniprot file')
+    
+    parser.add_argument('--combine', action='store',
+                        default='sift',
+                        choices=['sift', 'min', 'mean', 'max'],
+                        help='How to combine multiple P(neutral) [Default: sift has priority]')
+    parser.add_argument('--accessory', action='store_true',
+                        default=False,
+                        help='Use accessory genome info [Default: False]')
+    parser.add_argument('--mask-accessory', action='store_true',
+                        default=False,
+                        help='Use accessory genome info but mask the values with 9999 [Default: 0.95]')
+    parser.add_argument('--missing', action='store_true',
+                        default=False,
+                        help='Compute missing P(AF) with safest value [Default: False]')
+    
+    parser.add_argument('--exclude', action='store',
+                        default=None,
+                        help='Mutations to exclude [Default: consider all]')
+    parser.add_argument('--exclude-gene', action='store',
+                        default=None,
+                        help='Accessory genes to exclude [Default: consider all]')
+    parser.add_argument('--coverage', action='store',
+                        type=float,
+                        default=0.7,
+                        help='Minimum protein coverage cutoff [Default: 0.7]')
+    
+    parser.add_argument('--sift-model', action='store',
+                        choices=['linear', 'logistic'],
+                        default='logistic',
+                        help='Sift model fit [Default: linear]')
+    parser.add_argument('--sift-slope', action='store',
+                        type=float,
+                        default=-0.761,
+                        help='Sift model slope [Default: -0.761]')
+    parser.add_argument('--sift-intercept', action='store',
+                        type=float,
+                        default=2.888,
+                        help='Sift model intercept [Default: 2.888]')
+    parser.add_argument('--sift-offset', action='store',
+                        type=float,
+                        default=1.59802721091e-05,
+                        help='Sift score offset [Default: 1.59802721091e-05]')
+    
+    parser.add_argument('--foldx-model', action='store',
+                        choices=['linear', 'logistic'],
+                        default='logistic',
+                        help='Foldx model fit [Default: logistic]')
+    parser.add_argument('--foldx-slope', action='store',
+                        type=float,
+                        default=-1.394,
+                        help='Foldx model slope [Default: -1.394]')
+    parser.add_argument('--foldx-intercept', action='store',
+                        type=float,
+                        default=1.457,
+                        help='Foldx model intercept [Default: 1.457]')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def parse_orthologs(f):
+    d = {}
+    for l in open(f):
+        if l.startswith('#'):
+            continue
+        o, p, i = l.rstrip().split('\t')
+        d[o] = d.get(o, set())
+        d[o].add( (p, i) )
+    return d
+
+def linear(score, slope, intercept):
+    return (slope * score) + intercept
+
+def logistic(score, slope, intercept):
+    return 1. / (1 + np.exp(-((slope * score) + intercept)))
+
+if __name__ == "__main__":
+    import numpy as np
+
+    options = get_options()
+
+    exclude = set()
+    try:
+        for l in open(options.exclude):
+            prot, mut = l.rstrip().split('\t')
+            exclude.add( (prot, mut) )
+    except:
+        pass
+    exclude_genes = set()
+    try:
+        for l in open(options.exclude_gene):
+            prot = l.rstrip()
+            exclude_genes.add( prot )
+    except:
+        pass
+
+    # All the mutations that should be considered
+    nonsyn = {}
+    for l in open(options.nonsyn):
+       mut, prot = l.rstrip().split('\t')
+       nonsyn[prot] = nonsyn.get(prot, set())
+       nonsyn[prot].add( mut )
+    # Coverage holder
+    cov = set()
+    # Remove the excluded mutations from the nonsyn pool
+    for prot, mut in exclude:
+        try:
+            nonsyn[prot].remove(mut)
+        except:
+            pass
+    
+    conversion = {x.rstrip().split()[1]:x.split()[0]
+                  for x in open(options.conversion)}
+    rconversion = {x.split()[0]:x.rstrip().split()[1]
+                  for x in open(options.conversion)}
+
+    accessory = {}
+    pangenome = {}
+    if options.pangenome is not None:
+        paf_accessory = 0.99
+        pangenome = parse_orthologs(options.pangenome)
+        for k in pangenome:
+            if 'target' not in {x[1] for x in pangenome[k]}:
+                for prot in {x[0] for x in pangenome[k]}:
+                    if prot in exclude_genes:
+                        continue
+                    accessory[conversion.get(prot, prot)] = 1
+    
+    pneutral = {}
+    if options.sift is not None:
+        for l in open(options.sift):
+            if l.startswith('#'):
+                continue
+            prot, mut, score = l.rstrip().split('\t')
+            if (prot, mut) in exclude or prot in exclude_genes:
+                continue
+            pneutral[prot] = pneutral.get(prot, {})
+
+            score1 = -np.log(float(score) + options.sift_offset)
+            if options.sift_model == 'linear':
+                p = linear(score1,
+                           options.sift_slope,
+                           options.sift_intercept)
+            else:
+                p = logistic(score1,
+                           options.sift_slope,
+                           options.sift_intercept)
+            if p < 0:
+                p = 0
+            pneutral[prot][mut] = pneutral[prot].get(mut, [])
+            pneutral[prot][mut].append(p)
+            cov.add( (prot, mut) )
+    
+    fcov = set()
+    if options.foldx is not None:
+        for l in open(options.foldx):
+            if l.startswith('#'):
+                continue
+            prot, mut, score = l.rstrip().split('\t')
+            if (prot, mut) in exclude or prot in exclude_genes:
+                continue
+            if options.combine == 'sift' and (prot, mut) in cov:
+                continue            
+            pneutral[prot] = pneutral.get(prot, {})
+
+            score = float(score)
+            if options.foldx_model == 'linear':
+                p = linear(score,
+                           options.foldx_slope,
+                           options.foldx_intercept)
+            else:
+                p = logistic(score,
+                           options.foldx_slope,
+                           options.foldx_intercept)
+            if p < 0:
+                p = 0
+            pneutral[prot][mut] = pneutral[prot].get(mut, [])
+            pneutral[prot][mut].append(p)
+            cov.add( (prot, mut) )
+            fcov.add( (prot, mut) )
+
+    if options.model is not None:
+        for l in open(options.model):
+            if l.startswith('#'):
+                continue
+            prot, mut, score = l.rstrip().split('\t')
+            if (prot, mut) in exclude or prot in exclude_genes:
+                continue
+            if (prot, mut) in fcov:
+                continue
+            if options.combine == 'sift' and (prot, mut) in cov:
+                continue            
+            pneutral[prot] = pneutral.get(prot, {})
+
+            score = float(score)
+            if options.foldx_model == 'linear':
+                p = linear(score,
+                           options.foldx_slope,
+                           options.foldx_intercept)
+            else:
+                p = logistic(score,
+                           options.foldx_slope,
+                           options.foldx_intercept)
+            if p < 0:
+                p = 0
+            pneutral[prot][mut] = pneutral[prot].get(mut, [])
+            pneutral[prot][mut].append(p)
+            cov.add( (prot, mut) )
+    
+    # Add the uncovered mutations
+    if options.missing:
+        for prot, muts in nonsyn.items():
+            for mut in muts:
+                if (prot, mut) in exclude or prot in exclude_genes:
+                    continue
+                if (prot, mut) in cov:
+                    continue
+                if options.sift is not None:
+                    score = -np.log(float(1) + options.sift_offset)
+                    if options.sift_model == 'linear':
+                        p = linear(score,
+                                   options.sift_slope,
+                                   options.sift_intercept)
+                    else:
+                        p = logistic(score,
+                                   options.sift_slope,
+                                   options.sift_intercept)
+                    pneutral[prot] = pneutral.get(prot, {})
+                    pneutral[prot][mut] = pneutral[prot].get(mut, [])
+                    pneutral[prot][mut].append(p)
+                if options.combine == 'sift':
+                    continue
+                if options.foldx is not None or options.model is not None:
+                    if options.foldx_model == 'linear':
+                        p = linear(0,
+                                   options.foldx_slope,
+                                   options.foldx_intercept)
+                    else:
+                        p = logistic(0,
+                                   options.foldx_slope,
+                                   options.foldx_intercept)
+                    pneutral[prot] = pneutral.get(prot, {})
+                    pneutral[prot][mut] = pneutral[prot].get(mut, [])
+                    pneutral[prot][mut].append(p)
+    
+    # Stop codon mutations are not in the nonsyn file
+    if options.stop is not None:
+        for l in open(options.stop):
+            if l.startswith('#'):
+                continue
+            prot, mut, score = l.rstrip().split('\t')
+            if (prot, mut) in exclude or prot in exclude_genes:
+                continue
+            pneutral[prot] = pneutral.get(prot, {})
+            
+            kind, from_start, to_end = score.split('/')
+            from_start = int(from_start)
+            to_end = int(to_end)
+            if kind == 'start_lost':
+                score = 0.01
+            elif kind == 'stop_lost':
+                score = 0.01
+            elif kind == 'stop_gained':
+                if to_end < 16:
+                    score = 0.99
+                else:
+                    score = 0.01
+            pneutral[prot][mut] = pneutral[prot].get(mut, [])
+            pneutral[prot][mut].append(score)
+
+    # Handle exception: no predictor as input, only accessory genes
+    methods = {options.sift, options.foldx, options.model, options.stop}
+    if len(methods) == 1 and None in methods:
+        # Don't let the nonsyn file "pollute" the accessory genes results
+        pass
+    else:
+        for prot, allmuts in nonsyn.items():
+            if prot in exclude_genes:
+                continue
+            ps = pneutral.get(prot, {})
+            if options.combine in ('sift', 'mean'):
+                ps = [np.mean(x) for k,x in ps.items()]
+            elif options.combine == 'min':
+                ps = [min(x) for k,x in ps.items()]
+            elif options.combine == 'max':
+                ps = [max(x) for k,x in ps.items()]
+            covered = [v for v in cov if v[0] =='prot']
+            # First check: is the gene present in the genome?
+            locus = conversion.get(prot, None)
+            if options.accessory and locus is not None and 'target' not in {x[1]
+                                for (k, v) in pangenome.items()
+                                for x in v
+                                if locus in [y[0] for y in v]}:
+                if options.mask_accessory:
+                    print('\t'.join((prot, str(9999), 'accessory')))
+                else:
+                    print('\t'.join((prot, str(paf_accessory), 'accessory')))
+                continue
+            # Check coverage
+            if len(allmuts) != 0 and float(len(covered))/len(allmuts) < options.coverage:
+                print('\t'.join((prot, str(np.nan), 'uncovered')))
+            elif len(allmuts) == 0:
+                print('\t'.join((prot, str(0.0), 'excluded')))
+            elif len(ps) == 0:
+                print('\t'.join((prot, str(0.0), 'noscores')))
+            else: 
+                paff = 1 - np.prod(ps)
+                if paff > 0.999999:
+                    paff = 0.999999
+                print('\t'.join((prot, str(paff), 'covered')))
+    # Output the remaining accessory genes
+    if options.accessory:
+        for prot in accessory:
+            if prot in exclude_genes:
+                continue
+            if rconversion.get(prot, prot) in nonsyn:
+                continue
+            if options.mask_accessory:
+                print('\t'.join((rconversion.get(prot, prot), str(9999), 'accessory')))
+            else:
+                print('\t'.join((rconversion.get(prot, prot), str(paf_accessory), 'accessory')))

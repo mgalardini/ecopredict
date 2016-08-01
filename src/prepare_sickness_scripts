@@ -1,0 +1,285 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "Prepare sickness scripts"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'prepare_sickness_scripts')
+
+    parser.add_argument('--outdir', action='store',
+                        help='Output directory')
+    parser.add_argument('--vepdir', action='store',
+                        help='VEP directory')
+    parser.add_argument('--conversion', action='store',
+                        help='Locus to uniprot conversion file')
+    parser.add_argument('--exclude-genes', action='store',
+                        help='Genes to exclude')
+    parser.add_argument('--outgroups', action='store',
+                        help='Strains to exclude')
+    parser.add_argument('--coverage', action='store',
+                        type=float,
+                        default=0.0,
+                        help='Minimum protein coverage cutoff [Default: 0.0]')
+    parser.add_argument('--sift-slope', action='store',
+                        type=float,
+                        default=-0.625,
+                        help='Sift model slope [Default: -0.625]')
+    parser.add_argument('--sift-intercept', action='store',
+                        type=float,
+                        default=1.971,
+                        help='Sift model intercept [Default: 1.971]')
+    parser.add_argument('--sift-offset', action='store',
+                        type=float,
+                        default=1.527487632E-04,
+                        help='Sift score offset [Default: 1.527487632E-04]')
+    parser.add_argument('--foldx-slope', action='store',
+                        type=float,
+                        default=0.625,
+                        help='Foldx model slope [Default: -1.465]')
+    parser.add_argument('--foldx-intercept', action='store',
+                        type=float,
+                        default=-2.123,
+                        help='Foldx model intercept [Default: 1.201]')
+
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+    
+    import itertools
+    import os
+
+    c1 = (('1', 'sift'),
+          ('2', 'foldx'),
+          ('3', 'model'),
+          ('4', 'stop'),
+          ('5', 'pangenome'),
+          ('6', 'missing'))
+
+    start = '''mkdir -p {0}/{1}
+    for s in $(find -L {2} -maxdepth 1 -type d -name NT*);
+    do
+      strain=$(echo $s | awk -F'/' '{{print $NF}}');
+      src/get_sickness \\'''
+
+    finish = '''--combine sift \\
+                --conversion {0} \\
+                --pangenome {1}/$strain.pangenome.tsv \\
+                --nonsyn $s/nonsynmuts.tsv \\
+                --exclude-gene {2} \\
+                --coverage {3} \\
+                --sift-model logistic \\
+                --sift-intercept {4}  --sift-slope {5} \\
+                --sift-offset {6} \\
+                --foldx-model logistic \\
+                --foldx-intercept {7} --foldx-slope {8} > {9}/{10}/$strain;
+    done
+    src/merge_tables {9}/{10}/NT* --exclude {11} > {9}/{10}/all.txt
+    '''
+
+    for a in c1:
+        name = a[0]
+        name1 = a[1]
+        if name != '5':
+            continue
+        f = open('%s/%s.sh' % (options.outdir, name), 'w')
+        f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+        if name1 == 'sift':
+            f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+        elif name1 == 'foldx':
+            f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+        elif name1 == 'model':
+            f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+        elif name1 == 'stop':
+            f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+        elif name1 == 'pangenome':
+            f.write('--accessory \\' + '\n')
+        elif name1 == 'missing':
+            f.close()
+            os.remove('%s/%s.sh' % (options.outdir, str(a[0])))
+            continue
+        f.write(finish.format(options.conversion,
+            options.vepdir,
+            options.exclude_genes,
+            options.coverage,
+            options.sift_intercept,
+            options.sift_slope,
+            options.sift_offset,
+            options.foldx_intercept,
+            options.foldx_slope,
+            options.outdir,
+            name,
+            options.outgroups) + '\n')
+        f.close()
+
+    for a, b in itertools.combinations(c1, 2):
+        name = ''.join( (a[0], b[0]) )
+        if name not in ['16',]:
+            continue
+        names = (a[1], b[1])
+        f = open('%s/%s.sh' % (options.outdir, name), 'w')
+        f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+        if 'sift' in names:
+            f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+        if 'foldx' in names:
+            f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+        if 'model' in names:
+            f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+        if 'stop' in names:
+            f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+        if 'pangenome' in names:
+            f.write('--accessory \\' + '\n')
+        if 'missing' in names:
+            f.write('--missing \\' + '\n')
+        f.write(finish.format(options.conversion,
+            options.vepdir,
+            options.exclude_genes,
+            options.coverage,
+            options.sift_intercept,
+            options.sift_slope,
+            options.sift_offset,
+            options.foldx_intercept,
+            options.foldx_slope,
+            options.outdir,
+            name,
+            options.outgroups) + '\n')
+        f.close()
+
+    for a, b, c in itertools.combinations(c1, 3):
+        name = ''.join( (a[0], b[0], c[0]) )
+        if name not in ['156', '236',]:
+            continue
+        names = (a[1], b[1], c[1])
+        f = open('%s/%s.sh' % (options.outdir, name), 'w')
+        f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+        if 'sift' in names:
+            f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+        if 'foldx' in names:
+            f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+        if 'model' in names:
+            f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+        if 'stop' in names:
+            f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+        if 'pangenome' in names:
+            f.write('--accessory \\' + '\n')
+        if 'missing' in names:
+            f.write('--missing \\' + '\n')
+        f.write(finish.format(options.conversion,
+            options.vepdir,
+            options.exclude_genes,
+            options.coverage,
+            options.sift_intercept,
+            options.sift_slope,
+            options.sift_offset,
+            options.foldx_intercept,
+            options.foldx_slope,
+            options.outdir,
+            name,
+            options.outgroups) + '\n')
+        f.close()
+
+    for a, b, c, d in itertools.combinations(c1, 4):
+        name = ''.join( (a[0], b[0], c[0], d[0]) )
+        if name not in ['2356',]:
+            continue
+        names = (a[1], b[1], c[1], d[1])
+        f = open('%s/%s.sh' % (options.outdir, name), 'w')
+        f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+        if 'sift' in names:
+            f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+        if 'foldx' in names:
+            f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+        if 'model' in names:
+            f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+        if 'stop' in names:
+            f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+        if 'pangenome' in names:
+            f.write('--accessory \\' + '\n')
+        if 'missing' in names:
+            f.write('--missing \\' + '\n')
+        f.write(finish.format(options.conversion,
+            options.vepdir,
+            options.exclude_genes,
+            options.coverage,
+            options.sift_intercept,
+            options.sift_slope,
+            options.sift_offset,
+            options.foldx_intercept,
+            options.foldx_slope,
+            options.outdir,
+            name,
+            options.outgroups) + '\n')
+        f.close()
+
+    for a, b, c, d, e in itertools.combinations(c1, 5):
+        name = ''.join( (a[0], b[0], c[0], d[0], e[0]) )
+        if name not in ['12356',]:
+            continue
+        names = (a[1], b[1], c[1], d[1], e[1])
+        f = open('%s/%s.sh' % (options.outdir, name), 'w')
+        f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+        if 'sift' in names:
+            f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+        if 'foldx' in names:
+            f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+        if 'model' in names:
+            f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+        if 'stop' in names:
+            f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+        if 'pangenome' in names:
+            f.write('--accessory \\' + '\n')
+        if 'missing' in names:
+            f.write('--missing \\' + '\n')
+        f.write(finish.format(options.conversion,
+            options.vepdir,
+            options.exclude_genes,
+            options.coverage,
+            options.sift_intercept,
+            options.sift_slope,
+            options.sift_offset,
+            options.foldx_intercept,
+            options.foldx_slope,
+            options.outdir,
+            name,
+            options.outgroups) + '\n')
+        f.close()
+
+    a, b, c, d, e, f = [x for x in c1]
+    name = ''.join( (a[0], b[0], c[0], d[0], e[0], f[0]) )
+    names = (a[1], b[1], c[1], d[1], e[1], f[1])
+    f = open('%s/%s.sh' % (options.outdir, name), 'w')
+    f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+    if 'sift' in names:
+        f.write('--sift %s/$strain.sift.tsv \\' % options.vepdir + '\n')
+    if 'foldx' in names:
+        f.write('--foldx %s/$strain.foldx.tsv \\' % options.vepdir + '\n')
+    if 'model' in names:
+        f.write('--model %s/$strain.models.tsv \\' % options.vepdir + '\n')
+    if 'stop' in names:
+        f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+    if 'pangenome' in names:
+        f.write('--accessory \\' + '\n')
+    if 'missing' in names:
+        f.write('--missing \\' + '\n')
+    f.write(finish.format(options.conversion,
+        options.vepdir,
+        options.exclude_genes,
+        options.coverage,
+        options.sift_intercept,
+        options.sift_slope,
+        options.sift_offset,
+        options.foldx_intercept,
+        options.foldx_slope,
+        options.outdir,
+        name,
+        options.outgroups) + '\n')
+    f.close()

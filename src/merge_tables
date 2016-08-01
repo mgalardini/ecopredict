@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "Merge tables with outer joins"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'merge_tables')
+
+    parser.add_argument('table', action='store', nargs='+',
+                        help='Tables to join')
+    
+    parser.add_argument('--include', action='store',
+                        default=None,
+                        help='Tables to include [Default: all]')
+    parser.add_argument('--exclude', action='store',
+                        default=None,
+                        help='Tables to exclude')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def parse(f):
+    import os
+    import re
+    try:
+        m = pd.read_table(f,
+                          header=None)
+        m = m.drop(2, axis=1)
+        m.columns = ['prot', os.path.split(f)[-1].split('_')[0]]
+        m.set_index('prot', inplace=True)
+    except ValueError:
+        r = [[None, None, None]]
+        m = pd.DataFrame(r)
+        m = m.drop(2, axis=1)
+        m.columns = ['prot', os.path.split(f)[-1].split('_')[0]]
+        m = m.drop(0)
+        m.set_index('prot', inplace=True)
+    return m
+
+if __name__ == "__main__":
+    import pandas as pd
+    import sys
+    import os
+
+    options = get_options()
+
+    include = set()
+    if options.include is not None:
+        for l in open(options.include):
+            include.add(l.rstrip())
+    exclude = set()
+    if options.exclude is not None:
+        for l in open(options.exclude):
+            exclude.add(l.rstrip())
+
+    a = None
+    already = set()
+    for f in sorted(options.table):
+        # only the basename stripped of extensions
+        if options.include is not None and os.path.split(f)[-1].split('.')[0] not in include:
+            continue
+        #
+        # only the basename stripped of extensions
+        if os.path.split(f)[-1].split('.')[0] in exclude:
+            continue
+        #
+        # Keep only first instance of a genome
+        if os.path.split(f)[-1].split('_')[0] in already:
+            continue
+        already.add( os.path.split(f)[-1].split('_')[0] )
+        if a is None:
+            a = parse(f)
+        else:
+            a = pd.merge(a, parse(f),
+                         how='outer',
+                         left_index=True,
+                         right_index=True)
+
+    a.to_csv(sys.stdout, sep='\t')

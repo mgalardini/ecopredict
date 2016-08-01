@@ -1,5 +1,5 @@
 ###################
-## Cluster stuff ##
+## CLuster stuff ##
 ###################
 
 SUBMIT = eval
@@ -11,10 +11,13 @@ SUBMIT = eval
 SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
 MUTATION = $(CURDIR)/mutations
+SICKNESSDIR = $(CURDIR)/sickness
+ANNOTATION = $(CURDIR)/annotations
 PLOTDATA = $(CURDIR)/plotdata
 PLOTDIR = $(CURDIR)/plots
 SCHEMEDIR = $(CURDIR)/schemes
 FIGUREDIR = $(CURDIR)/figures
+VEPDIR = $(CURDIR)/strains-scores
 
 ############
 ## Files ##
@@ -68,32 +71,54 @@ ALLESSENTIALMUTS = $(MUTATION)/essential_nonsynmuts.tsv
 
 ECKFILE = $(MUTATION)/eck_uniprot.tsv
 GIFILE = $(MUTATION)/gi_uniprot.tsv
-
 CONVERSION = $(MUTATION)/locus_uniprot.tsv
 
+# Annotations sets
+# Biocyc
+PATHWAYS = $(ANNOTATION)/biocyc.pathways.txt
+PATHWAYSORIG = $(INPUT)/biocyc.pathways.orig.txt
+COMPLEXES = $(ANNOTATION)/biocyc.complexes.txt
+COMPLEXESORIG = $(INPUT)/biocyc.complexes.orig.txt
+# Operons
+OPERONS = $(ANNOTATION)/operons.txt
+OPERONSORIG = $(INPUT)/operons.orig.txt
+# PPI
+PPI = $(ANNOTATION)/ecoli_ppis_y2h_lit.txt
+
+# Analysis on mutations
 TOLMUTATIONS = $(MUTATION)/tolerated.txt
 DELMUTATIONS = $(MUTATION)/deleterious.txt
 # TODO: add rule to generate this from observed SIFT data
 TOLSIFT = $(INPUT)/tolerated.sift.txt
 DELSIFT = $(INPUT)/deleterious.sift.txt
 
+# Input (from external data)
 TREE = $(INPUT)/tree.nwk
 NONSYNCOUNT = $(INPUT)/strains_nonsyn.txt
 PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
 EVOLUTION = $(INPUT)/evolution_experiment.txt
+OUTGROUPS = $(INPUT)/outgroups.txt
 
+# Sickness files
+UNCOMMON = $(SICKNESSDIR)/uncommon.txt
+SICKNESS = $(SICKNESSDIR)/123456/all.txt
+
+# Generated data for plots
 FEATURESDATA = $(PLOTDATA)/features.tsv
 SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 
+# Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
 TREEBARS = $(PLOTDIR)/tree_colorbars.svg
 TREELEGEND = $(PLOTDIR)/tree_legend.svg
 CONSTRAINTSPLOT = $(PLOTDIR)/constraints.svg
 
+# Schemes
 SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
 
+# Figures
 FIGURE1 = $(FIGUREDIR)/figure_1.svg
 
 ##############################
@@ -167,23 +192,15 @@ $(OBSFOLDXBED): $(OBSFOLDX)
 $(ALLACCESSIBILITY): $(ACCESSIBILITY) $(ALLNONSYNBED) 
 	bedtools intersect -a $(ACCESSIBILITY) -b $(ALLNONSYNBED) > $@
 
-##########################
-## Locus to Uniprot IDs ##
-##########################
+######################
+## Conversion files ##
+######################
 
 $(CONVERSION): $(GENOME)
 	$(SRCDIR)/gbk2locusuniprot $(GENOME) > $(CONVERSION)
 
-########################
-## ECK TO UNIPROT IDS ##
-########################
-
 $(ECKFILE): $(GENOME)
 	$(SRCDIR)/eck2uniprot $(GENOME) | sort | uniq > $(ECKFILE)
-
-#######################
-## GI TO UNIPROT IDS ##
-#######################
 
 $(GIFILE): $(GENOME)
 	$(SRCDIR)/gbk2giuniprot $(GENOME) | sort | uniq > $(GIFILE)
@@ -200,6 +217,33 @@ $(ESSENTIAL): $(CONVERSION)
 $(ALLESSENTIALMUTS): $(ALLNONSYN) $(ESSENTIAL)
 	-rm $(ALLESSENTIALMUTS)
 	-for essential in $$(cat $(ESSENTIAL)); do grep $$essential $(ALLNONSYN) >> $(ALLESSENTIALMUTS); done
+
+#################
+## Annotations ##
+#################
+
+$(PATHWAYS): $(PATHWAYSORIG) $(CONVERSION)
+	tail -n+3 $(PATHWAYSORIG) > $(PATHWAYS)
+	for l in $$(awk '{print $$1}' $(PATHWAYS) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(PATHWAYS); done	
+
+$(COMPLEXES): $(COMPLEXESORIG) $(CONVERSION)
+	tail -n+2 $(COMPLEXESORIG) > $(COMPLEXES)
+	for l in $$(awk '{print $$1}' $(COMPLEXES) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(COMPLEXES); done	
+
+$(OPERONS): $(OPERONSORIG) $(CONVERSION)
+	tail -n+2 $(OPERONSORIG) > $(OPERONS)
+	for l in $$(awk '{print $$1}' $(OPERONS) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(OPERONS); done
+
+###################
+## Sickness data ##
+###################
+
+$(UNCOMMON): $(OUTGROUPS)
+	$(SRCDIR)/uncommon_genes $(VEPDIR) --exclude $(OUTGROUPS) --proportion 0.7 > $@
+
+$(SICKNESS): $(CONVERSION) $(UNCOMMON) $(OUTGROUPS)
+	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude-genes $(UNCOMMON) --outgroups $(OUTGROUPS) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
+	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
 ##########################
 ## Plot data generation ##
@@ -245,9 +289,10 @@ $(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 ########################
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
+sickness: $(SICKNESS)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 figures: $(FIGURE1)
 
-all: constraints plots figures
+all: constraints sickness plots figures
 
-.PHONY: all constraints plots figures
+.PHONY: all constraints sickness plots figures
