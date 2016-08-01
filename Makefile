@@ -13,6 +13,7 @@ INPUT = $(CURDIR)/input
 MUTATION = $(CURDIR)/mutations
 PLOTDATA = $(CURDIR)/plotdata
 PLOTDIR = $(CURDIR)/plots
+SCHEMEDIR = $(CURDIR)/schemes
 FIGUREDIR = $(CURDIR)/figures
 
 ############
@@ -90,6 +91,8 @@ TREEPLOT = $(PLOTDIR)/tree.svg
 TREEBARS = $(PLOTDIR)/tree_colorbars.svg
 TREELEGEND = $(PLOTDIR)/tree_legend.svg
 CONSTRAINTSPLOT = $(PLOTDIR)/constraints.svg
+
+SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
 
 FIGURE1 = $(FIGUREDIR)/figure_1.svg
 
