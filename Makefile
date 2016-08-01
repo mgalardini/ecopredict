@@ -85,6 +85,10 @@ OPERONSORIG = $(INPUT)/operons.orig.txt
 # PPI
 PPI = $(ANNOTATION)/ecoli_ppis_y2h_lit.txt
 
+# Roary pangenome
+PANGENOME = $(INPUT)/gene_presence_absence.csv
+CONSERVATION = $(MUTATION)/bactNOG.members.tsv.gz
+
 # Analysis on mutations
 TOLMUTATIONS = $(MUTATION)/tolerated.txt
 DELMUTATIONS = $(MUTATION)/deleterious.txt
@@ -108,6 +112,7 @@ FEATURESDATA = $(PLOTDATA)/features.tsv
 SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
+PROFILEDATA = $(PLOTDATA)/sickness_profile.done
 
 # Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
@@ -234,6 +239,10 @@ $(OPERONS): $(OPERONSORIG) $(CONVERSION)
 	tail -n+2 $(OPERONSORIG) > $(OPERONS)
 	for l in $$(awk '{print $$1}' $(OPERONS) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(OPERONS); done
 
+$(CONSERVATION):
+	wget -O $(MUTATION)/bactNOG.members.tsv.gz http://eggnogdb.embl.de/download/eggnog_4.5/data/bactNOG/bactNOG.members.tsv.gz
+	gunzip $(MUTATION)/bactNOG.members.tsv.gz
+
 ###################
 ## Sickness data ##
 ###################
@@ -260,6 +269,9 @@ $(ACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLACCESSIBILITY)
 
 $(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED)
 	$(SRCDIR)/run_constraints_accessibility_foldx $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOLDXBED) --bootstraps 100 --buried 50 > $@
+
+$(PROFILEDATA): $(SICKNESS) $(PANGENOME) $(CONSERVATION) $(ESSENTIAL) $(CONVERSION) $(ECKFILE) $(COMPLEXES) $(PATHWAYS) $(PPI) $(OPERONS) $(SICKNESSDIR)
+	$(SRCDIR)/run_sickness_profile --sickness $(SICKNESS) --pangenome $(PANGENOME) --conservation $(CONSERVATION) --essential $(ESSENTIAL) --conversion $(CONVERSION) --eckconversion $(ECKFILE) --complexes $(COMPLEXES) --pathways $(PATHWAYS) --ppi $(PPI) --operons $(OPERONS) --outdir $(SICKNESSDIR) && touch $(PROFILEDATA)
 
 ######################
 ## Plots generation ##

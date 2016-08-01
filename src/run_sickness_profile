@@ -1,0 +1,486 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Perform gene sickness profile analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_sickness_profile')
+
+    parser.add_argument('--sickness', action='store',
+                        help='Sickness scores file')
+    
+    parser.add_argument('--pangenome', action='store',
+                        help='Roary pangenome file')
+    parser.add_argument('--conservation', action='store',
+                        help='eggNOGG orthologs file')
+    
+    parser.add_argument('--essential', action='store',
+                        help='Essential genes file')
+    
+    parser.add_argument('--conversion', action='store',
+                        help='Locus to uniprot file')
+    parser.add_argument('--eckconversion', action='store',
+                        help='ECK to uniprot file')
+    
+    parser.add_argument('--complexes', action='store',
+                        help='Complexes file')
+    parser.add_argument('--pathways', action='store',
+                        help='Pathways file')
+    parser.add_argument('--ppi', action='store',
+                        help='Protein-protein interaction file')
+    parser.add_argument('--operons', action='store',
+                        help='Operons file')
+    
+    parser.add_argument('--outdir', action='store',
+                        help='Output directory')
+
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def expected(values, pseudo):
+    return sum(np.log(1 - values + pseudo))/values.shape[0]
+
+def ROC(m, benchfile, name, index=0, negative=False, ppi=False, truncate=True):
+    raw = {}
+    if ppi is False:
+        for l in open(benchfile):
+            if l.strip().startswith('#'):
+                continue
+            if len(l.strip().split()) != 2:
+                continue
+            g, cplx = l.strip().split()
+
+            cplx = name + cplx
+
+            raw[cplx] = raw.get(cplx, set())
+            raw[cplx].add( g )
+            
+        # Gene pairs that appear in complexes
+        pairs = set()
+        for k in filter(lambda x: len(raw[x]) > 1, raw):
+            for g1, g2 in itertools.permutations(raw[k], 2):
+                pairs.add( (g1, g2) )
+
+        # Gene pairs that appear in complexes and are in the matrix
+        visible_pairs = set()
+        visible_genes = {x.split('-')[index] for x in m.index}
+        for g1, g2 in pairs:
+            if g1 in visible_genes and g2 in visible_genes:
+                visible_pairs.add( (g1, g2) )
+
+        # Negative set made from components of the complexes
+        negative_pairs = set()
+        all_genes_complexes = {x for cpx in raw for x in raw[cpx] if x in visible_genes}
+        for g1, g2 in itertools.permutations(all_genes_complexes, 2):
+            if (g1, g2) not in visible_pairs:
+                negative_pairs.add( (g1, g2) )
+                
+        tested_pairs = []
+        dist_values = []
+
+        c = m.as_matrix()
+        name2id = {x.split('-')[index]:i for (x, i) in zip(m.index, range(m.shape[0]))}
+        l_all_genes = list(all_genes_complexes)
+        random.shuffle(l_all_genes)
+        if len(l_all_genes) > 1000 and truncate:
+            l_all_genes = l_all_genes[:1000]
+        for (x, y) in itertools.combinations(l_all_genes, 2):
+            v = c[[name2id[x]]][:, [name2id[y]]].flatten()
+            # The gene appears multiple times?
+            if len(v.shape) == 0:
+                if np.isnan(v):
+                    continue
+                dist_values.append(v)
+            elif len(v.shape) == 1:
+                mean = np.ma.mean(np.ma.masked_array(v, np.isnan(v)))
+                if np.isnan(float(mean)):
+                    continue
+                dist_values.append(mean)
+            else:
+                mean = np.ma.mean(np.ma.masked_array(v, np.isnan(v)))
+                if np.isnan(float(mean)):
+                    continue
+                dist_values.append(mean)
+            tested_pairs.append( (x, y) )
+    else:
+        pairs = set()
+        bait = set()
+        prey = set()
+        for l in open(benchfile):
+            if l.strip().startswith('#'):
+                continue
+            if len(l.strip().split()) != 2:
+                continue
+            g1, g2 = l.strip().split()
+            pairs.add( (g1, g2) )
+            bait.add( g1 )
+            prey.add( g2 )
+        
+        # Gene pairs that appear in complexes and are in the matrix
+        visible_pairs = set()
+        visible_genes = {x.split('-')[index] for x in m.index}
+        for g1, g2 in pairs:
+            if g1 in visible_genes and g2 in visible_genes:
+                visible_pairs.add( (g1, g2) )
+            
+        # Negative set made from components of the complexes
+        negative_pairs = set()
+        for g1, g2 in itertools.product(bait, prey):
+            if (g1, g2) not in visible_pairs:
+                negative_pairs.add( (g1, g2) )
+        
+        tested_pairs = []
+        dist_values = []
+
+        c = m.as_matrix()
+        name2id = {x.split('-')[index]:i for (x, i) in zip(m.index, range(m.shape[0]))}
+        for (x, y) in itertools.product(bait, prey):
+            if x not in name2id or y not in name2id:
+                continue
+            v = c[[name2id[x]]][:, [name2id[y]]].flatten()
+            # The gene appears multiple times?
+            if len(v.shape) == 0:
+                if np.isnan(v):
+                    continue
+                dist_values.append(v)
+            elif len(v.shape) == 1:
+                mean = np.ma.mean(np.ma.masked_array(v, np.isnan(v)))
+                if np.isnan(float(mean)):
+                    continue
+                dist_values.append(mean)
+            else:
+                mean = np.ma.mean(np.ma.masked_array(v, np.isnan(v)))
+                if np.isnan(float(mean)):
+                    continue
+                dist_values.append(mean)
+            tested_pairs.append( (x, y) )
+
+    true_values = [1 if (x, y) in pairs else 0 for (x, y) in tested_pairs]
+    
+    fpr, tpr, thresholds = roc_curve(true_values, dist_values)
+    if negative:
+        roc_auc = auc(1-fpr, 1-tpr)
+    else:
+        roc_auc = auc(fpr, tpr)
+        
+    if negative:
+        return 1-fpr, 1-tpr, thresholds, roc_auc
+    else:
+        return fpr, tpr, thresholds, roc_auc
+
+def get_sets(infile, m):
+    raw = {}
+    genes = set()
+    for l in open(infile):
+        if l.strip().startswith('#'):
+            continue
+        try:
+            g, cplx = l.strip().split()
+        except:
+            continue
+
+        raw[cplx] = raw.get(cplx, set())
+        raw[cplx].add( g )
+        
+    # Gene pairs that appear in complexes
+    pairs = set()
+    for k in filter(lambda x: len(raw[x]) > 1, raw):
+        for g1, g2 in itertools.permutations(raw[k], 2):
+            pairs.add( (g1, g2) )
+
+    # Negative set made from all components of the matrix
+    negative_pairs = set()
+    for g1, g2 in itertools.permutations(m.index, 2):
+        if (g1, g2) not in pairs:
+            negative_pairs.add( (g1, g2) )
+    
+    all_mutants = [x for x in m.index]
+    for ann, genes in raw.items():
+        real = set()
+        for g in m.index:
+            if g in genes:
+                real.add( g )
+        for g1, g2 in itertools.combinations(real, 2):
+            random.shuffle( all_mutants )
+            for i in range(len(all_mutants) - 1):
+                if (all_mutants[i], all_mutants[i+1]) in negative_pairs:
+                    yield (g1, g2), (all_mutants[i], all_mutants[i+1])
+                    break
+
+def get_interactions(infile, m):
+    pairs = set()
+    bait = set()
+    prey = set()
+    for l in open(infile):
+        if l.strip().startswith('#'):
+            continue
+        if len(l.strip().split()) != 2:
+            continue
+        g1, g2 = l.strip().split()
+        if g1 == 'NaN' or g2 =='NaN':
+            continue
+        if g1 not in m.index or g2 not in m.index:
+            continue
+        pairs.add( (g1, g2) )
+        bait.add( g1 )
+        prey.add( g2 )
+
+    # Gene pairs that appear in complexes and are in the matrix
+    visible_pairs = set()
+    visible_genes = set(m.index)
+    for g1, g2 in pairs:
+        if g1 in visible_genes and g2 in visible_genes:
+            visible_pairs.add( (g1, g2) )
+
+    # Negative set made from components of the complexes
+    negative_pairs = set()
+    for g1, g2 in itertools.product(bait, prey):
+        if (g1, g2) not in visible_pairs:
+            negative_pairs.add( (g1, g2) )
+    negative_pairs = list(negative_pairs)
+            
+    for g1, g2 in visible_pairs:
+        random.shuffle(negative_pairs)
+        yield (g1, g2), negative_pairs[0]
+
+if __name__ == "__main__":
+
+    options = get_options()
+
+    import os
+    import json
+    import numpy as np
+    import pandas as pd
+    import random
+    import itertools
+    import networkx as nx
+    import fastcluster as fst
+    from scipy.cluster.hierarchy import dendrogram
+    from sklearn.metrics import roc_curve, auc
+
+    # avoid essential genes
+    e = pd.read_table(options.essential)
+    e.set_index('locus', inplace=True)
+    essential = set(e[e.essential == 'Y'].index)
+    l2u = {x.rstrip().split()[0]:x.rstrip().split()[1]
+           for x in open(options.conversion)}
+    essential = {l2u.get(x, x) for x in essential}
+
+    # Read ECK to Uniprot conversion
+    conversion = {x.split()[0]:x.rstrip().split()[1]
+                  for x in open(options.eckconversion)}
+    # Read locus to Uniprot conversion
+    lconversion = {x.split()[0]:x.rstrip().split()[1]
+                  for x in open(options.conversion)}
+
+    p = pd.read_table(options.sickness)
+    p.set_index(p.columns[0], inplace=True)
+    p[np.isnan(p)] = 0
+    p = p / -p.apply(expected, pseudo=0.0)
+    p = p.T
+
+    pmean = p.mean().to_dict()
+
+    # Load roary
+    roary = pd.read_table(options.pangenome,
+                         sep=',',
+                         low_memory=False)
+    # Set index (group name)
+    roary.set_index(roary.columns[0], inplace=True)
+    # Drop the other info columns
+    roary.drop(list(roary.columns[:13]), axis=1, inplace=True)
+    # Transform it in a presence/absence matrix (1/0)
+    rsum = roary.replace('.{2,100}', 1, regex=True)
+    rsum.replace(np.nan, 0, regex=True, inplace=True)
+    rsum = rsum.T.sum()
+
+    core = {x for x in roary[rsum == rsum.max()]['genome']
+            if '\t' not in x}
+    accessory = {x for x in roary[rsum != rsum.max()]['genome'].dropna()
+                 if '\t' not in x}
+
+    gpro = pd.read_table(options.conservation,
+                         header=None)
+    gpro.columns = ['set', 'eggNOG', 'genes', 'species',
+                    'cog', 'proteins']
+    gpro.set_index('eggNOG', inplace=True)
+    dgpro = gpro['proteins'].to_dict()
+
+    gnog = set()
+    dgnog = {}
+    for x,y in dgpro.items():
+        for g1 in y.split(','):
+            if g1.split('.')[1] in core:
+                gnog.add(x)
+                dgnog[lconversion[g1.split('.')[1]]] = x
+                break
+    cmax = float(gpro.species.max())
+    gconservation = {x:gpro.loc[dgnog[x]].species/cmax for x in set(dgnog).intersection(pmean)}
+
+    res = []
+    all_genes = set(pmean).intersection(gconservation)
+    conserved = {x for x in all_genes if gconservation[x] > 0.95}
+    noconserved = {x for x in all_genes if gconservation[x] <= 0.95}
+    conserved = list(conserved)
+    noconserved = list(noconserved)
+    for i in range(len(conserved)):
+        random.shuffle(noconserved)
+        res.append( (np.mean([pmean[x] for x in conserved[i:i+1]]),
+                     np.mean([pmean[x] for x in noconserved[:1]])) )
+    res = pd.DataFrame(res)
+    res.columns = ['conserved', 'non conserved']
+
+    ucore = {lconversion.get(x, x) for x in core}
+    uaccessory = {lconversion.get(x, x) for x in accessory}
+
+    ess = p[[x for x in essential if x in p.columns and x in ucore]].mean()
+    others = p[[x for x in p.columns if x not in essential and x in ucore]].mean()
+    ogenes = list(others.index)
+    less = list(essential)
+    res_ess = []
+    res_rand = []
+    for i in range(len(less)):
+        random.shuffle(ogenes)
+        if less[i] not in ess.index:
+            continue
+        res_ess.append( ess[less[i]].mean() )
+        res_rand.append( others[ogenes[:1]].mean() )
+
+    pcore = p[[x for x in ucore
+               if x in p.columns]]
+    paccessory = p[[x for x in uaccessory
+                    if x in p.columns]]
+
+    pcorr = p.corr()
+
+    pcorr1 = pcorr.dropna(thresh=1).T.dropna(thresh=1).T
+
+    pcorecorr = pcore.corr()
+    pcorecorr = pcorecorr.dropna(thresh=1).T.dropna(thresh=1).T
+
+    pacccorr = paccessory.corr()
+    pacccorr = pacccorr.dropna(thresh=1).T.dropna(thresh=1).T
+
+    bench = {}
+    bench['complexes'] = ROC(pcorr1,
+                             options.complexes,
+                             'corr_cpx', index=0, negative=False)
+    bench['pathways'] = ROC(pcorr1,
+                            options.pathways,
+                            'corr_cpx', index=0, negative=False)
+    bench['protein interactions'] = ROC(pcorr1,
+                                options.ppi,
+                                'corr_cpx', index=0, negative=False,
+                           ppi=True)
+    bench['operons'] = ROC(pcorr1,
+                           options.operons,
+                           'corr_cpx', index=0, negative=False)
+
+    bench1 = {}
+    bench1['complexes'] = ROC(pcorecorr,
+                              options.complexes,
+                              'corr_cpx', index=0, negative=False)
+    bench1['pathways'] = ROC(pcorecorr,
+                             options.pathways,
+                             'corr_cpx', index=0, negative=False)
+    bench1['protein interactions'] = ROC(pcorecorr,
+                                         options.ppi,
+                                         'corr_cpx', index=0, negative=False,
+                                         ppi=True)
+    bench1['operons'] = ROC(pcorecorr,
+                            options.operons,
+                            'corr_cpx', index=0, negative=False)
+
+    bench2 = {}
+    bench2['complexes'] = ROC(pacccorr,
+                              options.complexes,
+                              'corr_cpx', index=0, negative=False)
+    bench2['pathways'] = ROC(pacccorr,
+                             options.pathways,
+                             'corr_cpx', index=0, negative=False)
+    bench2['protein interactions'] = ROC(pacccorr,
+                                         options.ppi,
+                                         'corr_cpx', index=0, negative=False,
+                                         ppi=True)
+    bench2['operons'] = ROC(pacccorr,
+                            options.operons,
+                            'corr_cpx', index=0, negative=False)
+
+    results = []
+
+    annd = {
+        'complexes': options.complexes,
+        'pathways': options.pathways,
+        'operons': options.operons,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_sets(infile, pcorr1):
+            r1 = pcorr1[real[0]][real[1]]
+            r2 = pcorr1[rand[0]][rand[1]]
+            results.append( (name, 'annotation', r1) )
+            results.append( (name, 'random', r2) )
+
+    annd = {
+        'ppi': options.ppi,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_interactions(infile, pcorr1):
+            r1 = pcorr1[real[0]][real[1]]
+            r2 = pcorr1[rand[0]][rand[1]]
+            results.append( (name, 'annotation', r1) )
+            results.append( (name, 'random', r2) )
+
+    results = pd.DataFrame(results)
+    results.columns = ['annotation',
+                       'set',
+                       'correlation']
+
+    json.dump(res_ess,
+              open('%s/res_ess.json' % options.outdir, 'w'))
+
+    json.dump(list(res['conserved'].values),
+              open('%s/res_conserved.json' % options.outdir, 'w'))
+
+    json.dump(list(res['non conserved'].values),
+              open('%s/res_non_conserved.json' % options.outdir, 'w'))
+
+    json.dump(res_rand,
+              open('%s/res_rand.json' % options.outdir, 'w'))
+
+    pcorr1.to_csv('%s/pcorr1.tsv' % options.outdir,
+                  sep='\t')
+
+    for key, value in bench.items():
+        value0 = list(value[0])
+        value1 = list(value[1])
+        value2 = list(value[2])
+        bench[key] = (value0, value1, value2, value[3])
+
+    json.dump(bench,
+              open('%s/bench.json' % options.outdir, 'w'))
+
+    for key, value in bench1.items():
+        value0 = list(value[0])
+        value1 = list(value[1])
+        value2 = list(value[2])
+        bench1[key] = (value0, value1, value2, value[3])
+
+    for key, value in bench2.items():
+        value0 = list(value[0])
+        value1 = list(value[1])
+        value2 = list(value[2])
+        bench2[key] = (value0, value1, value2, value[3])
+
+    json.dump(bench1,
+              open('%s/bench1.json' % options.outdir, 'w'))
+    json.dump(bench2,
+              open('%s/bench2.json' % options.outdir, 'w'))
