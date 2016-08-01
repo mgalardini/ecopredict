@@ -23,7 +23,7 @@ def get_options():
                         help='Output plot name and extension')
 
     parser.add_argument('--height', action='store',
-                        type=int,
+                        type=float,
                         default=5,
                         help='Figure height [Default: 5 inches]')
     parser.add_argument('--dpi', action='store',

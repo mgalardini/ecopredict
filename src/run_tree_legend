@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run tree plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_tree_colorbar_plot')
+    parser.add_argument('outfile', action='store',
+                        help='Foldx accessibility file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=2.5,
+                        help='Figure width [Default: 2.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=0.5,
+                        help='Figure height [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+    
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    fig = plt.figure(figsize=(options.width, options.height))
+
+    ax = fig.add_subplot(111)
+    ax.plot(0, 2, 'o', color=sns.xkcd_rgb['light red'])
+    ax.text(0.01, 2, 'Reference strain (K12)', va='center', size=8)
+    ax.plot(0, 1, 'ko')
+    ax.text(0.01, 1, 'Natural isolate', va='center', size=8)
+    ax.plot(0, 0, 'o', color=sns.xkcd_rgb['light grey'])
+    ax.text(0.01, 0, 'From evolution experiment', va='center', size=8)
+    ax.set_ylim(-0.5, 2.5)
+    ax.set_xlim(-0.01, 0.14)
+
+    ax.set_xticks([])
+    ax.set_yticks([])
+    ax.patch.set_facecolor(None)
+    ax.patch.set_alpha(0.0)
+    sns.despine(bottom=True, left=True)
+    
+    plt.savefig(options.outfile, dpi=options.dpi)

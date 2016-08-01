@@ -1,0 +1,94 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run tree plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_tree_colorbar_plot')
+    parser.add_argument('tree', action='store',
+                        help='tree file')
+    parser.add_argument('nonsyn', action='store',
+                        help='nonsyn file')
+    parser.add_argument('pangenome', action='store',
+                        help='pangenome file')
+    parser.add_argument('outfile', action='store',
+                        help='Foldx accessibility file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=7,
+                        help='Figure width [Default: 7 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=0.3,
+                        help='Figure height [Default: 0.3 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+    
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    import numpy as np
+    import ete3
+
+    tree = ete3.Tree(options.tree)
+    strains = {x.name.split('.fasta')[0].replace("'", '')
+               for x in tree.traverse()}
+    nonsyn = {int(x.rstrip().split()[1])
+              for x in open(options.nonsyn)
+              if x.rstrip().split()[0] in strains}
+    mnonsyn = max(nonsyn)
+    reference = {int(x.rstrip().split()[2])
+              for x in open(options.pangenome)
+              if x.rstrip().split()[0] in strains}
+    mreference = max(reference)
+
+    plt.figure(figsize=(options.width, options.height))
+
+    plt.subplot(121)
+    gradient = np.linspace(0, mnonsyn, mnonsyn)
+    gradient = np.vstack((gradient, gradient))
+    plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Blues'),
+               vmax=mnonsyn)
+
+    plt.xticks(range(0, mnonsyn, mnonsyn/5),
+               [str(x) for x in range(0, mnonsyn, mnonsyn/5)])
+    plt.yticks([])
+    plt.title('Non-syn. mutations')
+
+    plt.subplot(122)
+    gradient = np.linspace(0, mreference, mreference)
+    gradient = np.vstack((gradient, gradient))
+    plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Greens'),
+               vmax=mreference)
+
+    plt.xticks(range(0, mreference, mreference/6),
+               [str(x) for x in range(0, mreference, mreference/6)])
+    plt.yticks([])
+    plt.title('Missing reference genes')
+
+    plt.savefig(options.outfile, dpi=options.dpi)

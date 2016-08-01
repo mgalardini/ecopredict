@@ -1,0 +1,199 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run constraint plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_constraints_plot')
+    parser.add_argument('features', action='store',
+                        help='features file')
+    parser.add_argument('siftfeatures', action='store',
+                        help='Sift features file')
+    parser.add_argument('accessibility', action='store',
+                        help='Accessibility file')
+    parser.add_argument('foldxaccessibility', action='store',
+                        help='Foldx accessibility file')
+    parser.add_argument('outfile', action='store',
+                        help='Foldx accessibility file')
+
+    parser.add_argument('--width', action='store',
+                        type=int,
+                        default=5,
+                        help='Figure width [Default: 5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=int,
+                        default=5,
+                        help='Figure height [Default: 5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    m1 = pd.read_table(options.features, header=None)
+    m1.columns = ['set', 'round', 'variability']
+
+    m2 = pd.read_table(options.siftfeatures, header=None)
+    m2.columns = ['set', 'round', 'score']
+
+    m3 = pd.read_table(options.accessibility, header=None)
+    m3.columns = ['round', 'start', 'stop', 'variability']
+
+    m4 = pd.read_table(options.foldxaccessibility, header=None)
+    m4.columns = ['set', 'round', 'score']
+
+    plt.figure(figsize=(options.width, options.height))
+
+    ax1 = plt.subplot2grid((20,5), (0,0), colspan=1, rowspan=8)
+    plt.errorbar(0, m1[m1.set == 'real'].variability.median(),
+                 yerr=m1[m1.set == 'real'].variability.mad(),
+                 fmt='o', ms=7,
+                 color=sns.xkcd_rgb['light blue'],
+                 mec='k', mew=1,
+                 label='E. coli')
+    sns.stripplot(data=m1[m1['set'] == 'random'].groupby('round').median()['variability'],
+                  jitter=0.4,
+                  color='k',
+                  alpha=0.33,
+                  label='Permutations',
+                  zorder=0)
+
+    plt.legend(loc=(0.1, 0.8))
+
+    plt.ylabel('log$_2$(non-syn. ratio)')
+    plt.ylim(-2.5, 2.5)
+    plt.xticks([])
+    plt.axhline(0,
+                color='r',
+                linestyle='dashed')
+    sns.despine(bottom=True, ax=ax1)
+
+    ax2 = plt.subplot2grid((20,6), (0,2), colspan=4, rowspan=8)
+    data = m3[np.isnan(m3['round'])]
+
+    plt.plot((data.start+data.stop)/2.,
+             data.variability,
+             'o', ms=7,
+             color=sns.xkcd_rgb['mint green'],
+             mec='k', mew=1,
+             label='E. coli')
+
+    tmp = plt.plot((m3.dropna().start+m3.dropna().stop)/2.,
+             m3.dropna().variability,
+             '.',
+             color=sns.xkcd_rgb['grey'],
+             alpha=0.33,
+             label='Permutations',
+             zorder=0)
+    for t in tmp:
+        t.set_rasterized(True)
+
+    handles, labels = ax2.get_legend_handles_labels()
+    objs =[[(x, y)
+            for x,y in zip(handles, labels)
+            if y == 'Permutations'][0],
+           [(x, y)
+            for x,y in zip(handles, labels)
+            if y == 'E. coli'][0]]
+    plt.legend([x[0] for x in objs],
+               [x[1] for x in objs],
+               loc=(0.05, 0.8))
+
+    plt.ylim(-2.5, 2.5)
+    plt.axhline(0,
+                color='r',
+                linestyle='dashed')
+    plt.ylabel('log$_2$(non-syn. ratio)')
+    plt.xlabel('accessibility')
+    sns.despine(ax=ax2)
+
+    ax3 = plt.subplot2grid((20, 7), (12, 0), rowspan=8, colspan=3)
+
+    sns.boxplot(data=m2[(m2['set'] == 'features') |
+                        (m2['set'] == 'others')],
+                x='set',
+                y='score',
+                palette=[sns.xkcd_rgb['light blue'],
+                         sns.xkcd_rgb['light grey']])
+    tmp = sns.stripplot(data=m2.groupby(('set', 'round')).median().dropna().reset_index(),
+                  jitter=0.3,
+                  color='k',
+                  alpha=0.33,
+                  x='set',
+                  y='score',
+                  order=['all features',
+                         'all others'],
+                  label='All possible non-syn.')
+    tmp.set_rasterized(True)
+    handles, labels = ax3.get_legend_handles_labels()
+    objs = [[(x, y)
+            for x,y in zip(handles, labels)][0]]
+    plt.legend([x[0] for x in objs],
+               [x[1] for x in objs],
+               loc=(0.1, 1))
+    plt.ylim(0, 10)
+    plt.ylabel('-log(SIFT p-value)')
+    plt.xlabel('')
+    plt.xticks(range(2),
+               ['features', 'others'])
+    sns.despine(bottom=True, ax=ax3)
+
+    ax4 = plt.subplot2grid((20, 7), (12, 4), rowspan=8, colspan=3)
+
+    sns.boxplot(data=m4[(m4['set'] == 'buried') |
+                        (m4['set'] == 'others')],
+                x='set',
+                y='score',
+                palette=[sns.xkcd_rgb['mint green'],
+                         sns.xkcd_rgb['light grey']])
+    tmp = sns.stripplot(data=m4.groupby(('set', 'round')).median().dropna().reset_index(),
+                  jitter=0.3,
+                  color='k',
+                  alpha=0.33,
+                  x='set',
+                  y='score',
+                  order=['all buried',
+                         'all others'],
+                  label='All possible non-syn.')
+    tmp.set_rasterized(True)
+    handles, labels = ax4.get_legend_handles_labels()
+    objs = [[(x, y)
+            for x,y in zip(handles, labels)][0]]
+    plt.legend([x[0] for x in objs],
+               [x[1] for x in objs],
+               loc=(0.1, 1))
+    plt.ylabel('FoldX ddG')
+    plt.xlabel('')
+    plt.xticks(range(2),
+               ['buried', 'exposed'])
+    plt.ylim(-5, 10)
+    sns.despine(bottom=True, ax=ax4)
+
+    plt.savefig(options.outfile, dpi=options.dpi)

@@ -13,6 +13,7 @@ INPUT = $(CURDIR)/input
 MUTATION = $(CURDIR)/mutations
 PLOTDATA = $(CURDIR)/plotdata
 PLOTDIR = $(CURDIR)/plots
+FIGUREDIR = $(CURDIR)/figures
 
 ############
 ## Files ##
@@ -86,7 +87,11 @@ ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 
 TREEPLOT = $(PLOTDIR)/tree.svg
+TREEBARS = $(PLOTDIR)/tree_colorbars.svg
+TREELEGEND = $(PLOTDIR)/tree_legend.svg
 CONSTRAINTSPLOT = $(PLOTDIR)/constraints.svg
+
+FIGURE1 = $(FIGUREDIR)/figure_1.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -214,18 +219,32 @@ $(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOL
 ######################
 
 $(TREEPLOT): $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT)
-	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 5 --dpi 300
+	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 7 --dpi 90
+
+$(TREEBARS): $(TREE) $(NONSYNCOUNT) $(PANGENOMECOUNT)
+	$(SRCDIR)/run_tree_colorbar $(TREE) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 0.3 --width 5.7 --dpi 90
+
+$(TREELEGEND):
+	$(SRCDIR)/run_tree_legend $@ --height 0.5 --width 2 --dpi 90
 
 $(CONSTRAINTSPLOT): $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
-	$(SRCDIR)/run_constraints_plot $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA) $@ --height 5 --width 5 --dpi 300
+	$(SRCDIR)/run_constraints_plot $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA) $@ --height 7 --width 7 --dpi 90
+
+###############
+## Figures 1 ##
+###############
+
+$(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
+	$(SRCDIR)/run_figure_1 $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT) $@
 
 ########################
 ## Targets definition ##
 ########################
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
-plots: $(TREEPLOT) $(CONSTRAINTSPLOT)
+plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
+figures: $(FIGURE1)
 
-all: constraints plots
+all: constraints plots figures
 
-.PHONY: all constraints plots
+.PHONY: all constraints plots figures
