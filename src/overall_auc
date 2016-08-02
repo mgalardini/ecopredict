@@ -1,0 +1,86 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get the AUC for the predictions"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='score_auc')
+
+    parser.add_argument('predictions', action='store',
+                        help='Predictions file')
+    parser.add_argument('matrix', action='store',
+                        help='EMAP matrix')
+    parser.add_argument('fdr', action='store',
+                        help='FDR matrix')
+
+    parser.add_argument('--fdr-threshold', action='store',
+                        type=float,
+                        default=0.05,
+                        help='FDR threshold [Default: 0.05]')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+def compute_auc(a, v, m):
+    from sklearn.metrics import roc_curve, auc
+
+    conditions = set()
+    for c in m.columns:
+        if c in a.columns:
+            conditions.add(c)
+    strains = {}
+    mstrains = set(m.index)
+    for c in conditions:
+        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
+
+    true_values = []
+    scores = []
+    for c in sorted(conditions):
+        for s in strains[c]:
+            vvalue = v.loc[s][c]
+            if vvalue < 0:
+                t = True
+            else:
+                t = False
+            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
+            for x in mscore:
+                true_values.append(t)
+                scores.append(x)
+
+    fpr, tpr, thresholds = roc_curve(true_values, scores)
+    roc_auc = auc(fpr, tpr)
+
+    return roc_auc, tpr, fpr
+
+if __name__ == "__main__":
+    import pandas as pd
+
+    options = get_options()
+
+    # Read strains data
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    # Load the FDR corrections to identify proper phenotypes
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0], inplace=True)
+
+    # Apply the FDR correction
+    v = a[f < options.fdr_threshold]
+
+    m = pd.read_table(options.predictions)
+    m.set_index(m.columns[0], inplace=True)
+    m.index.name = 'condition'
+    m = m.T
+
+    sauc, tpr, fpr = compute_auc(a, v, m)
+    for x, y in zip(tpr, fpr):
+        print('%.5f\t%.5f\t%.5f' % (sauc, x, y))

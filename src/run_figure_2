@@ -1,0 +1,74 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Create figure 2"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_figure_2')
+    parser.add_argument('scheme', action='store',
+                        help='scheme')
+    parser.add_argument('essential', action='store',
+                        help='essential plot')
+    parser.add_argument('correlation', action='store',
+                        help='correlation plot')
+    parser.add_argument('roc', action='store',
+                        help='ROC plot')
+    parser.add_argument('annotation', action='store',
+                        help='annotation plot')
+    parser.add_argument('outfile', action='store',
+                        help='output (including extension)')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+    import svgutils.transform as sg
+
+    fig = sg.SVGFigure("9in", "5in")
+
+    fig1 = sg.fromfile(options.scheme)
+    fig2 = sg.fromfile(options.essential)
+    fig3 = sg.fromfile(options.correlation)
+    fig4 = sg.fromfile(options.roc)
+    fig5 = sg.fromfile(options.annotation)
+
+    plot1 = fig1.getroot()
+    plot1.moveto(25, 25, scale=2.75)
+    plot2 = fig2.getroot()
+    plot2.moveto(550, 40, scale=1)
+    plot3 = fig3.getroot()
+    plot3.moveto(25, 175, scale=1)
+    plot4 = fig4.getroot()
+    plot4.moveto(315, 175, scale=1)
+    plot5 = fig5.getroot()
+    plot5.moveto(575, 200, scale=1)
+
+    txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
+    txt2 = sg.TextElement(500, 25, "B)", size=12, weight="bold")
+    txt3 = sg.TextElement(25, 185, "C)", size=12, weight="bold")
+    txt4 = sg.TextElement(300, 185, "D)", size=12, weight="bold")
+    txt5 = sg.TextElement(560, 185, "E)", size=12, weight="bold")
+
+    fig.append([plot1,
+                plot2,
+                plot3,
+                plot4,
+                plot5
+               ])
+    fig.append([txt1,
+                txt2,
+                txt3,
+                txt4,
+                txt5
+               ])
+    
+    fig.save(options.outfile)

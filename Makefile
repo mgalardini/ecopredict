@@ -104,6 +104,9 @@ PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
 EVOLUTION = $(INPUT)/evolution_experiment.txt
 OUTGROUPS = $(INPUT)/outgroups.txt
 
+SCREENING = $(CHEMICAL)/emap.matrix.txt
+SCREENINGFDR = $(CHEMICAL)/emap.fdr.txt
+
 # Sickness files
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
 SICKNESS = $(SICKNESSDIR)/123456/all.txt
@@ -115,18 +118,24 @@ SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 PROFILEDATA = $(PLOTDATA)/sickness_profile.done
+AUCDATA = $(PLOTDATA)/auc.done
 
 # Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
 TREEBARS = $(PLOTDIR)/tree_colorbars.svg
 TREELEGEND = $(PLOTDIR)/tree_legend.svg
 CONSTRAINTSPLOT = $(PLOTDIR)/constraints.svg
+ESSENTIALPLOT = $(PLOTDIR)/sickness_essential.svg
+CORRELATIONPLOT = $(PLOTDIR)/sickness_correlation.svg
+ROCPLOT = $(PLOTDIR)/sickness_roc.svg
+ANNOTATIONPLOT = $(PLOTDIR)/sickness_annotation.svg
 
 # Schemes
 SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
 
 # Figures
 FIGURE1 = $(FIGUREDIR)/figure_1.svg
+FIGURE2 = $(FIGUREDIR)/figure_2.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -268,6 +277,13 @@ $(SCORE): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON)
 	  done; \
 	done && touch $@
 
+$(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
+	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  $(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_score.$$gf.txt; \
+	  $(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_score.$$gf.txt; \
+	done && touch $@
+
 ##########################
 ## Plot data generation ##
 ##########################
@@ -303,12 +319,27 @@ $(TREELEGEND):
 $(CONSTRAINTSPLOT): $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
 	$(SRCDIR)/run_constraints_plot $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA) $@ --height 7 --width 7 --dpi 90
 
-###############
-## Figures 1 ##
-###############
+$(ESSENTIALPLOT): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_conservation $(SICKNESSDIR)/res_ess.json $(SICKNESSDIR)/res_conserved.json $(SICKNESSDIR)/res_non_conserved.json $(SICKNESSDIR)/res_rand.json $@ --width 3.5 --height 1.5 --dpi 90
+
+$(CORRELATIONPLOT): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_correlation $(SICKNESSDIR)/pcorr1.tsv $@ --width 3.5 --height 3.5 --dpi 300
+
+$(ROCPLOT): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_roc $(SICKNESSDIR)/bench.json $@ --width 3.5 --height 3.5 --dpi 90
+
+$(ANNOTATIONPLOT): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_annotations $(SICKNESSDIR)/results.tsv $@ --width 3.5 --height 3 --dpi 90
+
+#############
+## Figures ##
+#############
 
 $(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 	$(SRCDIR)/run_figure_1 $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT) $@
+
+$(FIGURE2): $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT)
+	$(SRCDIR)/run_figure_2 $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) $@
 
 ########################
 ## Targets definition ##
@@ -317,9 +348,10 @@ $(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
 sickness: $(SICKNESS)
 score: $(SCORE)
-plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
-figures: $(FIGURE1)
+auc: $(AUCDATA)
+plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT)
+figures: $(FIGURE1) $(FIGURE2)
 
-all: constraints sickness score plots figures
+all: constraints sickness score auc plots figures
 
-.PHONY: all constraints sickness plots figures
+.PHONY: all constraints sickness score auc plots figures

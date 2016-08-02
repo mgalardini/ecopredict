@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run sickness plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='src/run_sickness_annotations')
+    parser.add_argument('results', action='store',
+                        help='results file')
+    parser.add_argument('outfile', action='store',
+                        help='output file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=3.5,
+                        help='Figure width [Default: 3.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1.5,
+                        help='Figure height [Default: 1.5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import pandas as pd
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    results = pd.read_table(options.results)
+
+    fig = plt.figure(figsize=(options.width, options.height))
+    fig.patch.set_alpha(0.0)
+
+    b = sns.boxplot(data=results,
+                y='correlation',
+                x='annotation',
+                hue='set',
+                palette={'annotation':sns.xkcd_rgb['pale red'],
+                         'random':sns.xkcd_rgb['light grey'],},
+                order=['operons', 
+                       'complexes',
+                       'pathways',
+                       'ppi',])
+
+    l1, l2, l3, l4 = sns.color_palette()[:4]            
+    for c, a in zip([l1, sns.xkcd_rgb['light grey'],
+                     l2, sns.xkcd_rgb['light grey'],
+                     l3, sns.xkcd_rgb['light grey'],
+                     l4, sns.xkcd_rgb['light grey']],
+                    b.artists):
+        a.set_facecolor(c)
+    plt.xticks(range(4),
+               ['operons', 
+                'complexes',
+                'pathways',
+                'PPIs',],
+               rotation=25)
+    plt.legend([])
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=-1)
+    plt.xlabel('')
+    plt.ylabel('Pairwise correlation')
+    plt.ylim(-0.5, 1.05)
+    sns.despine(bottom=True, trim=True)
+
+    plt.savefig(options.outfile, dpi=options.dpi)

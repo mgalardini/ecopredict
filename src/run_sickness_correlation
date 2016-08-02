@@ -1,0 +1,88 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run sickness plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='src/run_sickness_correlation')
+    parser.add_argument('correlation', action='store',
+                        help='correlation file')
+    parser.add_argument('outfile', action='store',
+                        help='output file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=3.5,
+                        help='Figure width [Default: 3.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1.5,
+                        help='Figure height [Default: 1.5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import json
+    import pandas as pd
+    import fastcluster as fst
+    from scipy.cluster.hierarchy import dendrogram
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    pcorr1 = pd.read_table(options.correlation)
+    pcorr1.set_index(pcorr1.columns[0],
+                     inplace=True)
+
+    plinkage = fst.linkage(pcorr1.as_matrix(),
+                           method='average',
+                           metric='euclidean')
+    pdend = dendrogram(plinkage,
+                       no_plot=True)
+    
+    fig = plt.figure(figsize=(options.width, options.height))
+    fig.patch.set_alpha(0.0)
+
+    cmap = sns.diverging_palette(217, 76, l=89, n=100,
+                                 center="dark", as_cmap=True)
+    plt.imshow(pcorr1.iloc[pdend['leaves'],
+                            pdend['leaves']],
+                cmap=cmap,
+                vmax=1, vmin=-1)
+    plt.xticks([])
+    plt.yticks([])
+    plt.xlabel('Genes')
+    plt.ylabel('Genes')
+    cbar = plt.colorbar(fraction=0.046, pad=0.04)
+    cbar.set_ticks([-1, -0.5, 0, 0.5, 1])
+    cbar.set_label('P(AF) correlation',
+                   rotation=270)
+
+    plt.savefig(options.outfile, dpi=options.dpi)

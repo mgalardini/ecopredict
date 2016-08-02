@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run sickness plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='src/run_sickness_conservation')
+    parser.add_argument('essential', action='store',
+                        help='essential file')
+    parser.add_argument('conserved', action='store',
+                        help='conserved file')
+    parser.add_argument('nonconserved', action='store',
+                        help='non-conserved file')
+    parser.add_argument('random', action='store',
+                        help='random file')
+    parser.add_argument('outfile', action='store',
+                        help='output file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=3.5,
+                        help='Figure width [Default: 3.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1.5,
+                        help='Figure height [Default: 1.5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import json
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    res_ess = json.load(open(options.essential))
+    res = {}
+    res['conserved'] = json.load(open(options.conserved))
+    res['non conserved'] = json.load(open(options.nonconserved))
+    res_rand = json.load(open(options.random))
+    
+    fig = plt.figure(figsize=(options.width, options.height))
+
+    fig.patch.set_alpha(0.0)
+    sns.boxplot(data=[res_ess,
+                      res['conserved'],
+                      res['non conserved'],
+                      res_rand],
+                orient='h',
+                palette=[sns.xkcd_rgb['azure'],
+                         sns.xkcd_rgb['azure'],
+                         sns.xkcd_rgb['grey'],
+                         sns.xkcd_rgb['grey']])
+    plt.yticks(range(4),
+               ['Essential',
+                'Highly conserved',
+                'Poorly conserved',
+                'Random',])
+    plt.xlabel('Median core genes P(AF) across strains')
+    sns.despine(left=True) 
+
+    plt.savefig(options.outfile, dpi=options.dpi)

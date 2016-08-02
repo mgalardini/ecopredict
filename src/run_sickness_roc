@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run sickness plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='src/run_sickness_roc')
+    parser.add_argument('benchmark', action='store',
+                        help='benchmark file')
+    parser.add_argument('outfile', action='store',
+                        help='output file')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=3.5,
+                        help='Figure width [Default: 3.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1.5,
+                        help='Figure height [Default: 1.5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import json
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    bench = json.load(open(options.benchmark))
+    
+    fig = plt.figure(figsize=(options.width, options.height))
+    fig.patch.set_alpha(0.0)
+
+    fpr, tpr, thresholds, roc_auc = bench['operons']
+    l1 = plt.plot(fpr, tpr, label='operons (%.2f)'%roc_auc)
+    l1 = l1[0].get_color()
+
+    fpr, tpr, thresholds, roc_auc = bench['complexes']
+    l2 = plt.plot(fpr, tpr, label='complexes (%.2f)'%roc_auc)
+    l2 = l2[0].get_color()
+
+    fpr, tpr, thresholds, roc_auc = bench['pathways']
+    l3 = plt.plot(fpr, tpr, label='pathways (%.2f)'%roc_auc)
+    l3 = l3[0].get_color()
+
+    fpr, tpr, thresholds, roc_auc = bench['protein interactions']
+    l4 = plt.plot(fpr, tpr, label='PPIs (%.2f)'%roc_auc)
+    l4 = l4[0].get_color()
+
+    plt.plot([0, 1],
+             [0, 1],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             label='random (0.50)',
+             zorder=-1)
+
+    plt.legend(loc='lower right', prop={'size':8})
+        
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+
+    plt.xlabel('False positive rate')
+    plt.ylabel('True positive rate')
+
+    plt.savefig(options.outfile, dpi=options.dpi)
