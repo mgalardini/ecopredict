@@ -182,7 +182,7 @@ def get_sets(infile, m):
         if l.strip().startswith('#'):
             continue
         try:
-            g, cplx = l.strip().split()
+            g, cplx = l.strip().split()[:2]
         except:
             continue
 
@@ -339,8 +339,8 @@ if __name__ == "__main__":
     ucore = {lconversion.get(x, x) for x in core}
     uaccessory = {lconversion.get(x, x) for x in accessory}
 
-    ess = p[[x for x in essential if x in p.columns and x in ucore]].mean()
-    others = p[[x for x in p.columns if x not in essential and x in ucore]].mean()
+    ess = p[[x for x in essential if x in p.columns and x in ucore]].median()
+    others = p[[x for x in p.columns if x not in essential and x in ucore]].median()
     ogenes = list(others.index)
     less = list(essential)
     res_ess = []
@@ -349,8 +349,8 @@ if __name__ == "__main__":
         random.shuffle(ogenes)
         if less[i] not in ess.index:
             continue
-        res_ess.append( ess[less[i]].mean() )
-        res_rand.append( others[ogenes[:1]].mean() )
+        res_ess.append( float(ess[less[i]]) )
+        res_rand.append( float(others[ogenes[:1]]) )
 
     pcore = p[[x for x in ucore
                if x in p.columns]]
@@ -483,3 +483,6 @@ if __name__ == "__main__":
               open('%s/bench1.json' % options.outdir, 'w'))
     json.dump(bench2,
               open('%s/bench2.json' % options.outdir, 'w'))
+
+    results.to_csv('%s/results.tsv' % options.outdir,
+                  sep='\t')
