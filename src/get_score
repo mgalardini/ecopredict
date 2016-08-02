@@ -1,0 +1,188 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "Compute strain-specific conditional score"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'get_score')
+
+    parser.add_argument('probabilities', action='store',
+                        help='Deleterious probabilities file')
+    parser.add_argument('deletion', action='store',
+                        help='Deletion experiment important genes (conditions -> genes)')
+
+    parser.add_argument('--conversion', action='store',
+                        default=None,
+                        help='ECK to uniprot identifiers')
+    parser.add_argument('--lconversion', action='store',
+                        default=None,
+                        help='Locus to uniprot identifiers')
+    parser.add_argument('--uncommon', action='store',
+                        default=None,
+                        help='Accessory genes to exclude from gene sets')
+    parser.add_argument('--pseudocount', action='store',
+                        type=float,
+                        default=0.01,
+                        help='Pseudocount [Default: 0.01]')
+
+    parser.add_argument('--linear', action='store_true',
+                        default=False,
+                        help='Linear addition of P(AF), instead of logaritmic')
+    parser.add_argument('--uncorrected', action='store_true',
+                        default=False,
+                        help='Do not apply genome-wide correction')
+    parser.add_argument('--mean', action='store_true',
+                        default=False,
+                        help='Mean log P(AF) score, correcting for gene set sizes')
+    parser.add_argument('--minimum', action='store',
+                        type=int,
+                        default=None,
+                        help='Minimum gene set size')
+    parser.add_argument('--maximum', action='store',
+                        type=int,
+                        default=None,
+                        help='Maximum gene set size')
+    parser.add_argument('--benchmark', action='store',
+                        choices=['shuffle', 'random'],
+                        default=None,
+                        help='Shuffle/Randomize the gene sets members')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def expected(values, pseudo):
+    return sum(np.log(1 - values + pseudo))/values.shape[0]
+
+def score(values, genes, pseudo):
+    return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
+        pseudo))
+        
+def score_mean(values, genes, pseudo):
+    return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
+        pseudo))/len(genes)
+
+def expected_linear(values, pseudo):
+    return sum((values + pseudo))/values.shape[0]
+
+def score_linear(values, genes, pseudo):
+    return sum((values.loc[genes].dropna() + pseudo)/expected_linear(values,
+        pseudo))
+
+def score_mean_linear(values, genes, pseudo):
+    return sum(values.loc[genes].dropna() + pseudo)/len(genes)
+
+def score_uncorrected(values, genes, pseudo):
+    return -sum(np.log(1 - values.loc[genes].dropna() + pseudo))
+
+if __name__ == "__main__":
+    import sys
+    import random
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+
+    conversion = {}
+    if options.conversion:
+        conversion = {x.split()[0]:x.rstrip().split()[1]
+                      for x in open(options.conversion)}
+    lconversion = {}
+    if options.lconversion:
+        lconversion = {x.split()[0]:x.rstrip().split()[1]
+                      for x in open(options.lconversion)}
+    uncommon = {}
+    if options.uncommon:
+        uncommon = {lconversion.get(x.rstrip(), x.rstrip())
+                    for x in open(options.uncommon)}
+    deletion = {x.split()[0]:{conversion.get(y.split('-')[0], y.split('-')[0])
+                              for y in x.rstrip().split('\t')[1].split()
+                              if conversion.get(y.split('-')[0], y.split('-')[0]) not in uncommon}
+                for x in open(options.deletion)
+                if len(x.split()) > 1}
+
+    if options.benchmark is not None:
+        if options.benchmark == 'shuffle':
+            # TODO: handle genes that are in multiple sets
+            all_genes = []
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                for gene in v:
+                    all_genes.append(gene)
+            random.shuffle(all_genes)
+            new_deletion = {}
+            i = 0
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                new_deletion[k] = all_genes[i:i+len(v)]
+                i += len(v)
+        else:
+            # TODO: simulate gene sets w/ same level of duplications as the real ones
+            all_genes = conversion.values()
+            new_deletion = {}
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                new_deletion[k] = []
+                while len(new_deletion[k]) < len(v):
+                    gene = random.choice(all_genes)
+                    if gene not in new_deletion[k]:
+                        new_deletion[k].append( gene )
+        deletion = new_deletion
+
+    m = pd.read_table(options.probabilities)
+    m.set_index('prot', inplace=True)
+    m[np.isnan(m)] = 0.
+
+    ps = []
+    for k in sorted(deletion):
+        genes = deletion[k]
+        if options.minimum is not None:
+            if len(genes) < options.minimum:
+                continue
+        if options.maximum is not None:
+            if len(genes) > options.maximum:
+                continue
+        try:
+            if not options.linear and not options.uncorrected and not options.mean:
+                p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+            elif options.linear and options.mean:
+                p = m.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
+            elif options.linear:
+                p = m.apply(score_linear, genes=genes, pseudo=options.pseudocount)
+            elif options.uncorrected:
+                p = m.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
+            elif options.mean:
+                p = m.apply(score_mean, genes=genes, pseudo=options.pseudocount)
+            else:
+                p = []
+            p = pd.DataFrame(p).T
+            p.index = [k]
+            ps.append(p)
+        except KeyError:
+            # Very rare, means that none of the genes was found
+            continue
+    s = pd.concat(ps)
+
+    s.to_csv(sys.stdout, sep='\t')

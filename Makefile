@@ -10,6 +10,7 @@ SUBMIT = eval
 
 SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
+CHEMICAL = $(INPUT)/chemical
 MUTATION = $(CURDIR)/mutations
 SICKNESSDIR = $(CURDIR)/sickness
 ANNOTATION = $(CURDIR)/annotations
@@ -106,6 +107,7 @@ OUTGROUPS = $(INPUT)/outgroups.txt
 # Sickness files
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
 SICKNESS = $(SICKNESSDIR)/123456/all.txt
+SCORE = $(SICKNESSDIR)/scores.done
 
 # Generated data for plots
 FEATURESDATA = $(PLOTDATA)/features.tsv
@@ -254,6 +256,18 @@ $(SICKNESS): $(CONVERSION) $(UNCOMMON) $(OUTGROUPS)
 	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude-genes $(UNCOMMON) --outgroups $(OUTGROUPS) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
+#######################
+## Conditional score ##
+#######################
+
+$(SCORE): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON)
+	for g in $$(find $(CHEMICAL) -type f -name 'deletion.all*.genes.*'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  for d in $$(find $(SICKNESSDIR)/* -maxdepth 0 -type d); do \
+	    $(SRCDIR)/get_score $$d/all.txt $$g --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$d/score.$$gf.txt; \
+	  done; \
+	done && touch $@
+
 ##########################
 ## Plot data generation ##
 ##########################
@@ -302,9 +316,10 @@ $(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
 sickness: $(SICKNESS)
+score: $(SCORE)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 figures: $(FIGURE1)
 
-all: constraints sickness plots figures
+all: constraints sickness score plots figures
 
 .PHONY: all constraints sickness plots figures
