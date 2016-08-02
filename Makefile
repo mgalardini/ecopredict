@@ -87,7 +87,7 @@ PPI = $(ANNOTATION)/ecoli_ppis_y2h_lit.txt
 
 # Roary pangenome
 PANGENOME = $(INPUT)/gene_presence_absence.csv
-CONSERVATION = $(MUTATION)/bactNOG.members.tsv.gz
+CONSERVATION = $(MUTATION)/bactNOG.members.tsv
 
 # Analysis on mutations
 TOLMUTATIONS = $(MUTATION)/tolerated.txt
@@ -236,12 +236,12 @@ $(COMPLEXES): $(COMPLEXESORIG) $(CONVERSION)
 	for l in $$(awk '{print $$1}' $(COMPLEXES) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(COMPLEXES); done	
 
 $(OPERONS): $(OPERONSORIG) $(CONVERSION)
-	tail -n+2 $(OPERONSORIG) > $(OPERONS)
+	tail -n+2 $(OPERONSORIG) | awk '{print $$3" "$$1}' > $(OPERONS)
 	for l in $$(awk '{print $$1}' $(OPERONS) | sort | uniq); do u=$$(grep $$l $(CONVERSION) | awk '{print $$2}'); sed -i 's/'$$l/$$u'/g' $(OPERONS); done
 
 $(CONSERVATION):
 	wget -O $(MUTATION)/bactNOG.members.tsv.gz http://eggnogdb.embl.de/download/eggnog_4.5/data/bactNOG/bactNOG.members.tsv.gz
-	gunzip $(MUTATION)/bactNOG.members.tsv.gz
+	gunzip -f $(MUTATION)/bactNOG.members.tsv.gz
 
 ###################
 ## Sickness data ##
