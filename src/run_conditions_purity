@@ -1,0 +1,201 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run conditions purity analysis"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_conditions_purity')
+    parser.add_argument('matrix', action='store',
+                        help='matrix file')
+    parser.add_argument('details', action='store',
+                        help='details file')
+    parser.add_argument('moa', action='store',
+                        help='moa file')
+    parser.add_argument('outfile1', action='store',
+                        help='Output file')
+    parser.add_argument('outfile2', action='store',
+                        help='Output file')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def purity(clusters,
+           double=False):
+    k = 0
+    empty = 0
+    for c in clusters:
+        if not double:
+            values = {x:len([y for y in c
+                             if y == x])
+                      for x in set(c)
+                      if x is not None}
+        else:
+            values = {x:len([y for y in c
+                             if y[0] == x
+                             or y[1] == x])
+                      for x in set([j for z in c
+                                    for j in z])
+                      if x is not None}
+        if not double:
+            empty += len([x for x in c
+                          if x is None])
+        else:
+            empty += len([x for x in c
+                          if len(set(x)) == 1
+                          and None in x])
+        if len(values) == 0:
+            continue
+        k += values[sorted(values, key=lambda x: values[x])[-1]]
+    try:
+        pur = float(k)/(len([y
+                         for x in clusters
+                         for y in x])-empty)
+    except ZeroDivisionError:
+        pur = np.nan
+    return pur
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+    import random
+    from scipy import cluster
+    import fastcluster as fst
+    from scipy.cluster import hierarchy
+
+    options = get_options()
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+
+    acorr = a.corr()
+    ncorr = a.corr()
+    ncorr[np.isnan(ncorr)] = 0
+    l = fst.linkage(ncorr, method='average')
+
+    chem1 = pd.read_table(
+        options.details
+        ).set_index('Label')['Chemical 1'].to_dict()
+    chem2 = pd.read_table(
+        options.details
+        ).set_index('Label')['Chemical 2'].to_dict()
+    
+    conditions = {}
+    categories = pd.read_table(
+        options.details
+        ).set_index('Label')['Type of stress'].to_dict()
+    for cat in set(categories.values()):
+        conditions[cat] = set()
+        for k, v in categories.items():
+            if v == cat:
+                conditions[cat].add(k)
+    cond_categ = {}
+    for t in conditions:
+        for c in conditions[t]:
+            cond_categ[c] = t
+
+    cc = pd.read_table(options.moa)
+
+    cactivity = {x:v
+                 for x,v in cc.set_index('screen conditions')['general activity'].to_dict().items()
+                 if str(v) != 'nan'}
+    ctarget = {x:v
+               for x,v in cc.set_index('screen conditions')['general target'].to_dict().items()
+               if str(v) != 'nan'}
+    cstarget = {x:v
+               for x,v in cc.set_index('screen conditions')['specific target'].to_dict().items()
+               if str(v) != 'nan'}
+
+    res = []
+    cdistances = np.linspace(0,
+                             max(cluster.hierarchy.maxdists(l)),
+                             num=100)
+    for cdist in cdistances:
+        cclusters = []
+        aclusters = []
+        correlations = []
+        single = 0
+        
+        clusters = hierarchy.fcluster(l, cdist, 'distance')
+        for c in set(clusters):
+            category = []
+            targets = []
+            
+            if acorr.index[clusters == c].shape[0] == 1:
+                single += 1
+                continue
+
+            for c1 in acorr.index[clusters == c]:
+                category.append(cond_categ[c1])
+                
+                t1 = ctarget.get(chem1.get(c1).lower(), None)
+                t2 = ctarget.get(chem2.get(c1).lower(), None)
+                if t1 == 'Others':
+                    t1 == None
+                if t2 == 'Others':
+                    t2 == None
+                
+                targets.append((t1, t2))
+                
+            cclusters.append(category)
+            aclusters.append(targets)
+            v = acorr.iloc[clusters == c, clusters == c].values
+            correlations.append(np.median([x for x in v[np.triu_indices(v.shape[0], k=1)].flatten()
+                                         if not np.isnan(x)]))
+            
+        if len(cclusters) == 0:
+            continue
+        res.append((cdist, purity(cclusters), purity(aclusters, double=True),
+                    single, np.median(correlations), 
+                    np.min(correlations),
+                    len(correlations)))
+    rres = []
+    for i in range(100):
+        conds = list(acorr.index)
+        random.shuffle(conds)
+        conds = np.array(conds)
+        for cdist in cdistances:
+            rclusters = []
+            
+            clusters = hierarchy.fcluster(l, cdist, 'distance')
+            for c in set(clusters):
+                if conds[clusters == c].shape[0] == 1:
+                    continue
+                # pick random conditions for a purity test
+                rrtargets = []
+                for c1 in conds[clusters == c]:
+                    t1 = ctarget.get(chem1.get(c1).lower(), None)
+                    t2 = ctarget.get(chem2.get(c1).lower(), None)
+                    if t1 == 'Others':
+                        t1 == None
+                    if t2 == 'Others':
+                        t2 == None
+                    rrtargets.append( (t1, t2) )
+                rclusters.append(rrtargets)
+                
+            if len(rclusters) == 0:
+                continue
+            rres.append((i, cdist, purity(rclusters, double=True)))
+
+    r = pd.DataFrame(res)
+    r.columns = ['distance',
+                 'category purity',
+                 'target purity',
+                 'singletons',
+                 'median correlation',
+                 'minimum correlation',
+                 'clusters']
+    r.to_csv(options.outfile1, sep='\t', index=None)
+    rr = pd.DataFrame(rres)
+    rr.columns = ['range',
+                  'distance',
+                  'target purity']
+    rr.to_csv(options.outfile2, sep='\t', index=None)
+

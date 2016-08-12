@@ -106,6 +106,8 @@ OUTGROUPS = $(INPUT)/outgroups.txt
 
 SCREENING = $(CHEMICAL)/emap.matrix.txt
 SCREENINGFDR = $(CHEMICAL)/emap.fdr.txt
+CONDITIONSDETAILS = $(CHEMICAL)/conditions_details.tsv
+CONDITIONSMOA = $(CHEMICAL)/conditions_moa.tsv
 
 # Sickness files
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
@@ -119,6 +121,8 @@ ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 PROFILEDATA = $(PLOTDATA)/sickness_profile.done
 AUCDATA = $(PLOTDATA)/auc.done
+PURITYDATA1 = $(PLOTDATA)/purity1.txt
+PURITYDATA2 = $(PLOTDATA)/purity2.txt
 
 # Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
@@ -302,6 +306,9 @@ $(FOLDXACCESSIBILITYDATA): $(ESSENTIAL) $(ACCESSIBILITY) $(ALLFOLDXBED) $(OBSFOL
 
 $(PROFILEDATA): $(SICKNESS) $(PANGENOME) $(CONSERVATION) $(ESSENTIAL) $(CONVERSION) $(ECKFILE) $(COMPLEXES) $(PATHWAYS) $(PPI) $(OPERONS) $(SICKNESSDIR)
 	$(SRCDIR)/run_sickness_profile --sickness $(SICKNESS) --pangenome $(PANGENOME) --conservation $(CONSERVATION) --essential $(ESSENTIAL) --conversion $(CONVERSION) --eckconversion $(ECKFILE) --complexes $(COMPLEXES) --pathways $(PATHWAYS) --ppi $(PPI) --operons $(OPERONS) --outdir $(SICKNESSDIR) && touch $(PROFILEDATA)
+
+$(PURITYDATA1): $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA)
+	$(SRCDIR)/run_conditions_purity $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(PURITYDATA1) $(PURITYDATA2)
 
 ######################
 ## Plots generation ##

@@ -1,0 +1,578 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run phenotypes plots"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_phenotypes_plot')
+    parser.add_argument('emap1', action='store',
+                        help='emap replicate 1')
+    parser.add_argument('emap2', action='store',
+                        help='emap replicate 2')
+    parser.add_argument('emap3', action='store',
+                        help='emap replicate 3')
+    parser.add_argument('matrix', action='store',
+                        help='matrix file')
+    parser.add_argument('fdr', action='store',
+                        help='fdr file')
+    parser.add_argument('details', action='store',
+                        help='details file')
+    parser.add_argument('moa', action='store',
+                        help='moa file')
+    parser.add_argument('shared', action='store',
+                        help='shared conditions file')
+    parser.add_argument('deletion', action='store',
+                        help='deletion screening matrix file')
+    parser.add_argument('purity1', action='store',
+                        help='purity analysis file 1')
+    parser.add_argument('purity2', action='store',
+                        help='purity analysis file 2')
+
+    parser.add_argument('--width', action='store',
+                        type=int,
+                        default=5,
+                        help='Figure width [Default: 5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=int,
+                        default=5,
+                        help='Figure height [Default: 5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def pick_distance(ccorr, num=100,
+                  minthreshold=0.2,
+                  medianthreshold=0.5,
+                  maxthreshold=None):
+    clinkage = fst.linkage(ccorr.as_matrix(), method='average', metric='euclidean')
+        
+    cdistances = np.linspace(0,
+                            max(cluster.hierarchy.maxdists(clinkage)),
+                            num=num)
+
+    sd = {}
+    for dist in cdistances:
+        clusters = cluster.hierarchy.fcluster(clinkage, dist, criterion='distance')
+
+        single = 0
+        values = []
+        sizes = []
+
+        for c in set(clusters):
+            v = ccorr.as_matrix()[clusters == c][:, clusters == c]
+            if len(v.shape) == 0:
+                single += 1
+                continue
+            elif v.shape == (1, 1):
+                single += 1
+                continue
+            m = v[np.triu_indices(v.shape[0], k=1)].mean()
+            if np.isnan(m):
+                raise ValueError
+            values.append(m)
+
+            sizes.append(v.shape[0])
+
+        sd[dist] = (single, values, sizes)
+        
+    if maxthreshold is not None:
+        passing = [x for x in sd
+                   if len(sd[x][1]) > 0
+                   and np.max(sd[x][1]) >= maxthreshold]
+    else:
+        passing = [x for x in sd
+                   if len(sd[x][1]) > 0
+                   and np.min(sd[x][1]) >= minthreshold
+                   and np.median(sd[x][1]) >= medianthreshold]
+    if len(passing) == 0:
+        dthreshold =  np.nan
+    else:
+        dthreshold = sorted(passing,
+                       key=lambda x: np.median(sd[x][1]))[0]
+
+    return dthreshold
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+    import fastcluster as fst
+    import random
+    from scipy import cluster
+    from scipy.cluster import hierarchy
+    import itertools
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    # Replicates
+
+    a1 = pd.read_table(options.emap1)
+    a1.set_index(a1.columns[0], inplace=True)
+
+    a2 = pd.read_table(options.emap2)
+    a2.set_index(a2.columns[0], inplace=True)
+
+    a3 = pd.read_table(options.emap3)
+    a3.set_index(a3.columns[0], inplace=True)
+
+    plt.figure(figsize=(16, 5))
+
+    plt.subplot(131)
+    c = set(a1.columns).intersection(a2.columns)
+    s = set(a1.index).intersection(a2.index)
+
+    v = pd.DataFrame([a1.loc[list(s), list(c)].values.flatten(),
+                      a2.loc[list(s), list(c)].values.flatten()])
+    v = v.T.dropna()
+
+    plt.plot(v[0],
+             v[1],
+             'k.',
+             alpha=0.3)
+
+    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+
+    plt.plot([-20, 15],
+             [-20, 15],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('replicate 1')
+    plt.ylabel('replicate 2')
+
+    plt.xlim(-20, 15)
+    plt.ylim(-20, 15)
+
+    plt.subplot(132)
+    c = set(a2.columns).intersection(a3.columns)
+    s = set(a2.index).intersection(a3.index)
+
+    v = pd.DataFrame([a2.loc[list(s), list(c)].values.flatten(),
+                      a3.loc[list(s), list(c)].values.flatten()])
+    v = v.T.dropna()
+
+    plt.plot(v[0],
+             v[1],
+             'k.',
+             alpha=0.3)
+
+    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+
+    plt.plot([-20, 15],
+             [-20, 15],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('replicate 2')
+    plt.ylabel('replicate 3')
+
+    plt.xlim(-20, 15)
+    plt.ylim(-20, 15)
+
+    plt.subplot(133)
+    c = set(a1.columns).intersection(a3.columns)
+    s = set(a1.index).intersection(a3.index)
+
+    v = pd.DataFrame([a1.loc[list(s), list(c)].values.flatten(),
+                      a3.loc[list(s), list(c)].values.flatten()])
+    v = v.T.dropna()
+
+    plt.plot(v[0],
+             v[1],
+             'k.',
+             alpha=0.3)
+
+    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+
+    plt.plot([-20, 15],
+             [-20, 15],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('replicate 1')
+    plt.ylabel('replicate 3')
+
+    plt.xlim(-20, 15)
+    plt.ylim(-20, 15)
+
+    plt.tight_layout()
+    sns.despine()
+
+    plt.savefig('test1.png')
+    plt.clf()
+
+    # Correlation
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0], inplace=True)
+    v = a[f < 0.05]
+    v = v[v < 0]
+
+    acorr = a.corr()
+
+    phenotypes_proportion = [v[c].dropna().shape[0]/float(a[c].dropna().shape[0])
+                             for c in acorr.columns]
+    phenotypes_proportion = [v[c].dropna().shape[0]
+                             for c in acorr.columns]
+    norm = mpl.colors.Normalize(vmin=0, vmax=max(phenotypes_proportion))
+    cmap = cm.Purples
+    m = cm.ScalarMappable(norm=norm, cmap=cmap)
+    phenotypes_colors = [m.to_rgba(x)[:3]
+                         for x in phenotypes_proportion]
+
+    ncorr = a.corr()
+    ncorr[np.isnan(ncorr)] = 0
+    t = pick_distance(ncorr,
+                      num=1000,
+                      minthreshold=0.3,
+                      medianthreshold=0.7)
+    l = fst.linkage(ncorr, method='average')
+
+    chem1 = pd.read_table(
+        options.details
+        ).set_index('Label')['Chemical 1'].to_dict()
+    chem2 = pd.read_table(
+        options.details
+        ).set_index('Label')['Chemical 2'].to_dict()
+
+    conditions = {}
+    categories = pd.read_table(
+        options.details
+        ).set_index('Label')['Type of stress'].to_dict()
+    for cat in set(categories.values()):
+        conditions[cat] = set()
+        for k, v in categories.items():
+            if v == cat:
+                conditions[cat].add(k)
+
+    categ_value = {x:i
+                   for x,i in zip(conditions, range(len(conditions)))}
+
+    cond_value = {}
+    for t1 in conditions:
+        for c in conditions[t1]:
+            cond_value[c] = categ_value[t1]
+    cond_categ = {}
+    for t1 in conditions:
+        for c in conditions[t1]:
+            cond_categ[c] = t1
+
+    palette = sns.color_palette('Spectral', len(conditions))
+    cond_colors = dict(zip(map(str, conditions), palette))
+    conditions_colors = [cond_colors[cond_categ[x]]
+                         for x in acorr.columns]
+
+    cmap = sns.diverging_palette(217, 76, l=89, n=100, center="dark", as_cmap=True)
+    cmap.set_bad(sns.xkcd_rgb['grey'], alpha=0.55)
+    mclust = sns.clustermap(acorr,
+                            xticklabels=False,
+                            yticklabels=False,
+                            linewidths=0,
+                            cmap=cmap,
+                            row_linkage=l,
+                            col_linkage=l,
+                            vmax=1, vmin=-1,
+                            figsize=(15, 15),
+                            col_colors=[phenotypes_colors,
+                                        conditions_colors],)
+    mclust.ax_col_colors.yaxis.tick_right()
+    mclust.ax_col_colors.set_yticks([0.5, 1.5])
+    mclust.ax_col_colors.set_yticklabels(['categories',
+                                          'phenotypes'])
+
+    # Draw the threshold lines
+    mclust.ax_col_dendrogram.hlines(t,
+                                   0,
+                                   acorr.shape[0]*10,
+                                   colors='r',
+                                   linewidths=2,
+                                   zorder=1)
+    mclust.ax_row_dendrogram.vlines(t,
+                                   0,
+                                   acorr.shape[0]*10,
+                                   colors='r',
+                                   linewidths=2,
+                                   zorder=1)
+
+    # Extract the clusters
+    clusters = hierarchy.fcluster(l, t, 'distance')
+    for c in set(clusters):
+        # Retrieve the position in the clustered matrix
+        index = [x for x in range(acorr.shape[0])
+                 if mclust.data2d.index[x] in acorr.index[clusters == c]]
+        # No singletons, please
+        if len(index) == 1:
+            continue
+        
+        # Draw a rectangle around the cluster
+        mclust.ax_heatmap.add_patch(
+            patches.Rectangle(
+                (min(index),
+                 acorr.shape[0] - max(index) - 1),
+                    len(index),
+                    len(index),
+                    facecolor='none',
+                    edgecolor='r',
+                    lw=3)
+            )
+
+    plt.savefig('test2.png')
+    plt.clf()
+        
+    # Correlations for MoA
+
+    cc = pd.read_table(options.moa)
+
+    ctarget = {x:v
+               for x,v in cc.set_index('screen conditions')['general target'].to_dict().items()
+               if str(v) != 'nan'}
+
+    targets = set(ctarget.values()).difference(('Others',))
+
+    res = []
+    for t1 in targets:
+        conditions = {x
+                      for x,v in ctarget.items()
+                      if v == t1}
+        ccond = set()
+        for c in acorr.columns:
+            if (chem1.get(c).lower() in conditions or
+                chem2.get(c).lower() in conditions):
+                ccond.add(c)
+        for c1, c2 in itertools.combinations(ccond, 2):
+            res.append( (t1, 'real', acorr.loc[c1, c2]) )
+            # pick two random conditions not from this set
+            while True:
+                r1 = random.choice(acorr.columns)
+                r2 = random.choice(acorr.columns)
+                if (chem1.get(r1).lower() in conditions or
+                    chem2.get(r1).lower() in conditions):
+                    continue
+                if (chem1.get(r2).lower() in conditions or
+                    chem2.get(r2).lower() in conditions):
+                    continue
+                res.append( (t1, 'random', acorr.loc[r1, r2]) )
+                break
+
+    r = pd.DataFrame(res)
+    r.columns = ['target', 'set', 'correlation']
+
+    plt.figure(figsize=(5, 9))
+
+    sns.boxplot(data=r[r['set'] == 'real'],
+                y='target',
+                x='correlation',
+                color=sns.xkcd_rgb['pale grey'])
+
+    # sns.stripplot(data=r[r['set'] == 'real'],
+    #             y='target',
+    #             x='correlation',
+    #             color=sns.xkcd_rgb['grey'],
+    #             jitter=0.4,
+    #             alpha=0.33)
+
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.yticks(range(len(set(r.target))),
+               [x + '\n(N=%d)' % len({k for k in acorr.columns
+                                      if chem1.get(k).lower() in
+                                      {y for y,v in ctarget.items()
+                                      if v == x}
+                                      or chem2.get(k).lower() in
+                                      {y for y,v in ctarget.items()
+                                      if v == x}})
+                for x in set(r.target)])
+
+    plt.legend(loc=(1, 0.9))
+    sns.despine(left=True)
+
+    plt.savefig('test3.svg')
+
+    # Purity
+
+    r = pd.read_table(options.purity1)
+    rr = pd.read_table(options.purity2)
+
+    plt.figure(figsize=(7, 3))
+
+    # plt.plot(r.distance,
+    #          r['category purity'],
+    #          'b.-',
+    #          label='condition category')
+    plt.plot(r.distance,
+             r['target purity'],
+             'k.-',
+             label='drug target')
+
+    plt.errorbar(sorted(set(rr.distance)),
+                 rr.groupby('distance').median()['target purity'].values,
+                 yerr=rr.groupby('distance').mad()['target purity'].values,
+                 color=sns.xkcd_rgb['grey'],
+                 label='random clusters')
+
+    plt.ylabel('hierarchical clustering distance')
+    plt.xlabel('purity')
+
+    plt.axvline(t,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                label='threshold')
+
+    plt.legend(loc='best')
+
+    plt.ylim(0.2, 1.01)
+
+    # plt.twinx()
+
+    # plt.plot(r.distance,
+    #          r['median correlation'],
+    #          'r.-')
+    # plt.ylabel('median clusters correlation',
+    #            color='r')
+    # plt.yticks(color='r')
+
+    # plt.ylim(-0.1, 1)
+    sns.despine()
+
+    plt.savefig('test4.png')
+
+    # Chemical genomics
+    shared = {x.rstrip().split('\t')[1]:x.rstrip().split('\t')[0]
+              for x in open(options.shared)}
+    remove = set()
+    already = set()
+    for k, val in shared.items():
+        if val in already:
+            remove.add(k)
+        already.add(val)
+    for k in remove:
+        del shared[k]
+
+    chem = pd.read_table(options.deletion)
+    chem.set_index(chem.columns[0], inplace=True)
+    chem.rename(columns=shared, inplace=True)
+    chem = chem[sorted(set(shared.values()))]
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    a = a[sorted(set(shared.values()))]
+
+    a = a[sorted(set(chem.columns).intersection(a.columns))]
+    chem = chem[sorted(set(chem.columns).intersection(a.columns))]
+
+    acorr = a.corr()
+    ncorr = a.corr()
+    ncorr[np.isnan(ncorr)] = 0
+    ccorr = chem.corr()
+
+    aclust = {}
+    t = pick_distance(ncorr,
+                      num=1000,
+                      minthreshold=0.3,
+                      medianthreshold=0.7)
+    l = fst.linkage(ncorr, method='average')
+    clusters = hierarchy.fcluster(l, t, 'distance')
+    for c in set(clusters):
+        if clusters[clusters == c].shape[0] == 1:
+            continue
+            
+        aclust[c] = set(acorr.index[clusters == c])
+
+    res = []
+    for c, cc in aclust.items():
+        for c1, c2 in itertools.combinations(cc, 2):
+            res.append(('real', ccorr.loc[c1, c2]))
+            while True:
+                c1 = random.choice(ccorr.columns)
+                c2 = random.choice(ccorr.columns)
+                if c1 == c2:
+                    continue
+                res.append(('random', ccorr.loc[c1, c2]))
+                break
+
+    rc = pd.DataFrame(res)
+    rc.columns = ['set', 'correlation']
+
+    plt.figure(figsize=(7, 2))
+
+    sns.boxplot(data=rc,
+                x='correlation',
+                y='set',
+                palette=[sns.xkcd_rgb['pale red'],
+                         sns.xkcd_rgb['pale grey']])
+
+    plt.xlabel('conditions correlation\n(chemical genomics)')
+    plt.yticks(range(2),
+               ['natural isolates clusters',
+                'random conditions'])
+    plt.ylabel('')
+
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+
+    sns.despine(left=True)
+
+    plt.savefig('test5.svg')
