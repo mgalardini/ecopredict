@@ -11,12 +11,16 @@ def get_options():
     description = "Run phenotypes plots"
     parser = argparse.ArgumentParser(description=description,
                                      prog='run_phenotypes_plot')
+    parser.add_argument('outdir', action='store',
+                        help='output directory')
     parser.add_argument('emap1', action='store',
                         help='emap replicate 1')
     parser.add_argument('emap2', action='store',
                         help='emap replicate 2')
     parser.add_argument('emap3', action='store',
                         help='emap replicate 3')
+    parser.add_argument('allmatrix', action='store',
+                        help='matrix (whole) file')
     parser.add_argument('matrix', action='store',
                         help='matrix file')
     parser.add_argument('fdr', action='store',
@@ -34,14 +38,10 @@ def get_options():
     parser.add_argument('purity2', action='store',
                         help='purity analysis file 2')
 
-    parser.add_argument('--width', action='store',
+    parser.add_argument('--size', action='store',
                         type=int,
-                        default=5,
-                        help='Figure width [Default: 5 inches]')
-    parser.add_argument('--height', action='store',
-                        type=int,
-                        default=5,
-                        help='Figure height [Default: 5 inches]')
+                        default=1,
+                        help='Figure size multiplier [Default: 1 inches]')
     parser.add_argument('--dpi', action='store',
                         type=int,
                         default=300,
@@ -110,6 +110,7 @@ if __name__ == "__main__":
     from scipy import stats
     import fastcluster as fst
     import random
+    import scipy
     from scipy import cluster
     from scipy.cluster import hierarchy
     import itertools
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     plt.rc('font', size=8)
     plt.rc('xtick', labelsize=8)
     plt.rc('ytick', labelsize=8)
-    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('axes', labelsize=10, titlesize=10)
     plt.rc('legend', fontsize=8)
 
     # Replicates
@@ -145,7 +146,7 @@ if __name__ == "__main__":
     a3 = pd.read_table(options.emap3)
     a3.set_index(a3.columns[0], inplace=True)
 
-    plt.figure(figsize=(16, 5))
+    plt.figure(figsize=(12*options.size, 4*options.size))
 
     plt.subplot(131)
     c = set(a1.columns).intersection(a2.columns)
@@ -255,7 +256,157 @@ if __name__ == "__main__":
     plt.tight_layout()
     sns.despine()
 
-    plt.savefig('test1.png')
+    plt.savefig('%s/p_replicates_all.svg' % options.outdir,
+                dpi=options.dpi)
+    plt.clf()
+
+    c = set(a1.columns).intersection(a2.columns)
+    s = set(a1.index).intersection(a2.index)
+    values = pd.DataFrame([a1.loc[list(s), list(c)].values.flatten(),
+                           a2.loc[list(s), list(c)].values.flatten()])
+    values = values.T.dropna().values
+
+    plt.figure(figsize=(7*options.size, 3.5*options.size))
+
+    plt.subplot(121)
+
+    #histogram definition
+    xyrange = [[-20, 10],
+               [-20, 10]]
+    bins = [150, 150]
+    thresh = 0.1
+
+    xdat = np.array([x[0] for x in values])
+    ydat = np.array([x[1] for x in values])
+
+    # histogram the data
+    hh, locx, locy = scipy.histogram2d(xdat,
+                                       ydat,
+                                       range=xyrange,
+                                       bins=bins)
+    posx = np.digitize(xdat, locx)
+    posy = np.digitize(ydat, locy)
+
+    #select points within the histogram
+    ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
+    hhsub = hh[posx[ind] - 1, posy[ind] - 1]
+    xdat1 = xdat[ind][hhsub < thresh]
+    ydat1 = ydat[ind][hhsub < thresh]
+    hh[hh < thresh] = np.nan
+
+    im = plt.imshow(np.flipud(hh.T),
+               cmap='viridis_r',
+               extent=np.array(xyrange).flatten(),
+               interpolation='none')
+    c = plt.colorbar(im, shrink=0.65)   
+    c.ax.set_ylabel('Density')
+
+    plt.plot([-20, 10],
+             [-20, 10],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('First replicate')
+    plt.ylabel('Second replicate')
+    plt.text(-19, 8, 'Pearson\'s r: %.3f\n(N=%d)'%(stats.pearsonr(
+            [x[0] for x in values],
+            [x[1] for x in values])[0],
+            len(xdat)))
+
+    sns.despine()
+    c.ax.yaxis.set_ticks_position('right')
+
+    a = pd.read_table(options.allmatrix)
+    a.set_index(a.columns[0], inplace=True)
+
+    p8 = {x.split()[0] for x in a.index
+          if '-P8' in x}
+    p9 = {x.split()[0] for x in a.index
+          if '-P9' in x}
+    p10 = {x.split()[0] for x in a.index
+          if '-P10' in x}
+
+    strains = p8.intersection(p9)
+
+    values = []
+    for x in strains:
+        p8 = x + ' - -P8'
+        p9 = x + ' - -P9'
+        
+        for j, k in a.loc[[p8, p9]].T.dropna().values:
+            values.append((j, k))
+
+    plt.subplot(122)
+
+    #histogram definition
+    xyrange = [[-15, 10],
+               [-15, 10]]
+    bins = [100, 100]
+    thresh = 0.1
+
+    xdat = np.array([x[0] for x in values])
+    ydat = np.array([x[1] for x in values])
+
+    # histogram the data
+    hh, locx, locy = scipy.histogram2d(xdat,
+                                       ydat,
+                                       range=xyrange,
+                                       bins=bins)
+    posx = np.digitize(xdat, locx)
+    posy = np.digitize(ydat, locy)
+
+    #select points within the histogram
+    ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
+    hhsub = hh[posx[ind] - 1, posy[ind] - 1]
+    xdat1 = xdat[ind][hhsub < thresh]
+    ydat1 = ydat[ind][hhsub < thresh]
+    hh[hh < thresh] = np.nan
+
+    im = plt.imshow(np.flipud(hh.T),
+               cmap='viridis_r',
+               extent=np.array(xyrange).flatten(),
+               interpolation='none')
+    c1 = plt.colorbar(im, shrink=0.65)   
+    c1.ax.set_ylabel('Density')
+
+    plt.plot([-15, 10],
+             [-15, 10],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('First plate')
+    plt.ylabel('Second plate')
+    plt.text(-14, 8, 'Pearson\'s r: %.3f\n(N=%d)'%(stats.pearsonr(
+            [x[0] for x in values],
+            [x[1] for x in values])[0],
+            len(xdat)))
+
+    sns.despine()
+    c.ax.yaxis.set_ticks_position('right')
+    c1.ax.yaxis.set_ticks_position('right')
+
+    plt.tight_layout()
+
+    plt.savefig('%s/p_replicates.svg' % options.outdir,
+                dpi=options.dpi)
     plt.clf()
 
     # Correlation
@@ -269,8 +420,6 @@ if __name__ == "__main__":
 
     acorr = a.corr()
 
-    phenotypes_proportion = [v[c].dropna().shape[0]/float(a[c].dropna().shape[0])
-                             for c in acorr.columns]
     phenotypes_proportion = [v[c].dropna().shape[0]
                              for c in acorr.columns]
     norm = mpl.colors.Normalize(vmin=0, vmax=max(phenotypes_proportion))
@@ -278,6 +427,7 @@ if __name__ == "__main__":
     m = cm.ScalarMappable(norm=norm, cmap=cmap)
     phenotypes_colors = [m.to_rgba(x)[:3]
                          for x in phenotypes_proportion]
+    mphen = max(phenotypes_proportion)
 
     ncorr = a.corr()
     ncorr[np.isnan(ncorr)] = 0
@@ -331,7 +481,7 @@ if __name__ == "__main__":
                             row_linkage=l,
                             col_linkage=l,
                             vmax=1, vmin=-1,
-                            figsize=(15, 15),
+                            figsize=(7*options.size, 7*options.size),
                             col_colors=[phenotypes_colors,
                                         conditions_colors],)
     mclust.ax_col_colors.yaxis.tick_right()
@@ -372,12 +522,46 @@ if __name__ == "__main__":
                     len(index),
                     facecolor='none',
                     edgecolor='r',
-                    lw=3)
+                    lw=1)
             )
 
-    plt.savefig('test2.png')
+    plt.title('Pearson\'s r')
+
+    plt.savefig('%s/p_correlation.svg' % options.outdir)
     plt.clf()
-        
+    
+    # Colorbar for correlation plot
+    plt.figure(figsize=(3*options.size, 0.3*options.size))
+
+    gradient = np.linspace(0, mphen, mphen)
+    gradient = np.vstack((gradient, gradient))
+    plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Purples'),
+               vmax=mphen)
+
+    plt.xticks(range(0, mphen, mphen/6),
+               [str(x) for x in range(0, mphen, mphen/6)])
+    plt.yticks([])
+    plt.title('Sick strains')
+    
+    plt.savefig('%s/p_correlation_colorbar.svg' % options.outdir)
+    plt.clf()
+   
+    plt.figure(figsize=(4*options.size, 0.3*options.size))
+
+    handles = []
+    for k, v in sorted(cond_colors.items(), key=lambda x: x[0]):
+        handles.append(patches.Patch(color=v, label=k))
+
+    plt.legend(handles=handles, ncol=len(handles)/2,
+               loc='center')
+    plt.yticks([])
+    plt.xticks([])
+    sns.despine(left=True,
+                bottom=True)
+
+    plt.savefig('%s/p_correlation_legend.svg' % options.outdir)
+    plt.clf()
+ 
     # Correlations for MoA
 
     cc = pd.read_table(options.moa)
@@ -416,19 +600,14 @@ if __name__ == "__main__":
     r = pd.DataFrame(res)
     r.columns = ['target', 'set', 'correlation']
 
-    plt.figure(figsize=(5, 9))
+    plt.figure(figsize=(5*options.size, 5*options.size))
 
     sns.boxplot(data=r[r['set'] == 'real'],
                 y='target',
                 x='correlation',
-                color=sns.xkcd_rgb['pale grey'])
+                color=sns.xkcd_rgb['light grey'])
 
-    # sns.stripplot(data=r[r['set'] == 'real'],
-    #             y='target',
-    #             x='correlation',
-    #             color=sns.xkcd_rgb['grey'],
-    #             jitter=0.4,
-    #             alpha=0.33)
+    plt.xlabel('Pearson\'s r')
 
     plt.axvline(0,
                 color=sns.xkcd_rgb['grey'],
@@ -448,55 +627,52 @@ if __name__ == "__main__":
     plt.legend(loc=(1, 0.9))
     sns.despine(left=True)
 
-    plt.savefig('test3.svg')
+    plt.savefig('%s/p_targets.svg' % options.outdir,
+                dpi=options.dpi)
 
     # Purity
 
     r = pd.read_table(options.purity1)
     rr = pd.read_table(options.purity2)
 
-    plt.figure(figsize=(7, 3))
+    plt.figure(figsize=(5*options.size, 2.5*options.size))
 
-    # plt.plot(r.distance,
-    #          r['category purity'],
-    #          'b.-',
-    #          label='condition category')
-    plt.plot(r.distance,
+    pl1 = plt.plot(r.distance,
              r['target purity'],
-             'k.-',
-             label='drug target')
+             '.-',
+             color=sns.xkcd_rgb['light red'],
+             label='Drug target')
 
-    plt.errorbar(sorted(set(rr.distance)),
+    pl2 = plt.errorbar(sorted(set(rr.distance)),
                  rr.groupby('distance').median()['target purity'].values,
+                 fmt='.-',
                  yerr=rr.groupby('distance').mad()['target purity'].values,
                  color=sns.xkcd_rgb['grey'],
-                 label='random clusters')
+                 label='Random clusters')
 
-    plt.ylabel('hierarchical clustering distance')
-    plt.xlabel('purity')
+    plt.xlabel('Hierarchical clustering distance')
+    plt.ylabel('Clusters purity')
 
-    plt.axvline(t,
+    pl3 = plt.axvline(t,
                 color=sns.xkcd_rgb['grey'],
                 linestyle='dashed',
-                label='threshold')
-
-    plt.legend(loc='best')
+                label='Threshold',
+                zorder=0)
+    
+    plt.legend([pl1[0],
+                pl2[0],
+                pl3],
+               ['Drug target',
+                'Random clusters',
+                'Threshold'],
+               loc='best')
 
     plt.ylim(0.2, 1.01)
 
-    # plt.twinx()
-
-    # plt.plot(r.distance,
-    #          r['median correlation'],
-    #          'r.-')
-    # plt.ylabel('median clusters correlation',
-    #            color='r')
-    # plt.yticks(color='r')
-
-    # plt.ylim(-0.1, 1)
     sns.despine()
 
-    plt.savefig('test4.png')
+    plt.savefig('%s/p_purity.svg' % options.outdir,
+                dpi=options.dpi)
 
     # Chemical genomics
     shared = {x.rstrip().split('\t')[1]:x.rstrip().split('\t')[0]
@@ -555,7 +731,7 @@ if __name__ == "__main__":
     rc = pd.DataFrame(res)
     rc.columns = ['set', 'correlation']
 
-    plt.figure(figsize=(7, 2))
+    plt.figure(figsize=(5*options.size, 1.5*options.size))
 
     sns.boxplot(data=rc,
                 x='correlation',
@@ -563,7 +739,7 @@ if __name__ == "__main__":
                 palette=[sns.xkcd_rgb['pale red'],
                          sns.xkcd_rgb['pale grey']])
 
-    plt.xlabel('conditions correlation\n(chemical genomics)')
+    plt.xlabel('Pearson\'s r\n(chemical genomics)')
     plt.yticks(range(2),
                ['natural isolates clusters',
                 'random conditions'])
@@ -573,6 +749,9 @@ if __name__ == "__main__":
                 color=sns.xkcd_rgb['grey'],
                 linestyle='dashed')
 
+    plt.xlim(-0.6, 1)
+
     sns.despine(left=True)
 
-    plt.savefig('test5.svg')
+    plt.savefig('%s/p_chemical.svg' % options.outdir,
+                dpi=options.dpi)
