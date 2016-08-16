@@ -106,8 +106,14 @@ OUTGROUPS = $(INPUT)/outgroups.txt
 
 SCREENING = $(CHEMICAL)/emap.matrix.txt
 SCREENINGFDR = $(CHEMICAL)/emap.fdr.txt
+ASCREENING = $(CHEMICAL)/emap.matrix.all.txt
 CONDITIONSDETAILS = $(CHEMICAL)/conditions_details.tsv
 CONDITIONSMOA = $(CHEMICAL)/conditions_moa.tsv
+REPLICATES1 = $(CHEMICAL)/matrixA.txt
+REPLICATES2 = $(CHEMICAL)/matrixB.txt
+REPLICATES3 = $(CHEMICAL)/matrixC.txt
+SHARED = $(CHEMICAL)/shared_conditions.txt
+DELETION = $(CHEMICAL)/all_genes_matched_and_joined_New_NT.txt
 
 # Sickness files
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
@@ -133,13 +139,25 @@ ESSENTIALPLOT = $(PLOTDIR)/sickness_essential.svg
 CORRELATIONPLOT = $(PLOTDIR)/sickness_correlation.svg
 ROCPLOT = $(PLOTDIR)/sickness_roc.svg
 ANNOTATIONPLOT = $(PLOTDIR)/sickness_annotation.svg
+PCHEMICAL = $(PLOTDIR)/p_chemical.svg
+PPURITY = $(PLOTDIR)/p_purity.svg
+PTARGETS = $(PLOTDIR)/p_targets.svg
+PCORRELATION = $(PLOTDIR)/p_correlation.svg
+PCORRELATIONL = $(PLOTDIR)/p_correlation_legend.svg
+PCORRELATIONC = $(PLOTDIR)/p_correlation_colorbar.svg
+PREPLICATES = $(PLOTDIR)/p_replicates.svg
+PREPLICATESA = $(PLOTDIR)/p_replicates_all.svg
+PTREEPLOT = $(PLOTDIR)/ptree.svg
+PTREEBARS = $(PLOTDIR)/ptree_colorbars.svg
 
 # Schemes
 SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
+SCHEMEPHENOTYPES = $(SCHEMEDIR)/phenotypes.svg
 
 # Figures
 FIGURE1 = $(FIGUREDIR)/figure_1.svg
 FIGURE2 = $(FIGUREDIR)/figure_2.svg
+FIGURE3 = $(FIGUREDIR)/figure_3.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -338,6 +356,15 @@ $(ROCPLOT): $(PROFILEDATA)
 $(ANNOTATIONPLOT): $(PROFILEDATA)
 	$(SRCDIR)/run_sickness_annotations $(SICKNESSDIR)/results.tsv $@ --width 3.5 --height 3 --dpi 90
 
+$(PTREEPLOT): $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR)
+	$(SRCDIR)/run_ptree_generation $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR) $@ --height 7 --dpi 90
+
+$(PTREEBARS): $(TREE) $(SCREENING) $(SCREENINGFDR)
+	$(SRCDIR)/run_ptree_colorbar $(TREE) $(SCREENING) $(SCREENINGFDR) $@ --height 0.3 --width 5.7 --dpi 90
+
+$(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION)
+	$(SRCDIR)/run_phenotypes_plot $(PLOTDIR) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION) $(PURITYDATA1) $(PURITYDATA2) --dpi 90
+
 #############
 ## Figures ##
 #############
@@ -348,6 +375,9 @@ $(FIGURE1): $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT)
 $(FIGURE2): $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT)
 	$(SRCDIR)/run_figure_2 $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) $@
 
+$(FIGURE3): $(SCHEMEPHENOTYPES) $(PREPLICATES)
+	$(SRCDIR)/run_figure_3 $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PCORRELATION) $(PCORRELATIONL) $(PCORRELATIONC) $(PTREEPLOT) $(TREELEGEND) $(PTREEBARS) $(PPURITY) $(PCHEMICAL) $(PTARGETS) $@
+
 ########################
 ## Targets definition ##
 ########################
@@ -356,8 +386,11 @@ constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACC
 sickness: $(SICKNESS)
 score: $(SCORE)
 auc: $(AUCDATA)
-plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT)
-figures: $(FIGURE1) $(FIGURE2)
+plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
+       $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
+       $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) \
+       $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
+figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
 
 all: constraints sickness score auc plots figures
 

@@ -1,0 +1,156 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Generate annotated tree"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_tree_generation')
+    parser.add_argument('tree', action='store',
+                        help='Tree in Newick format')
+    parser.add_argument('evolution', action='store',
+                        help='Evolution experiment strains')
+    parser.add_argument('matrix', action='store',
+                        help='Phenotypic matrix')
+    parser.add_argument('fdr', action='store',
+                        help='Phenotypic matrix (FDR)')
+    parser.add_argument('outfile', action='store',
+                        help='Output plot name and extension')
+
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=5,
+                        help='Figure height [Default: 5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+def get_tree(infile):
+    tree = Tree(infile)
+
+    for x in tree.traverse():
+        if not x.is_leaf():
+            continue
+        x.name = x.name.replace("'", '').split('.')[0]
+        if x.name == 'genome':
+            x.name = 'NT12001_189'
+    strains = {x.name.split('_')[0]
+               for x in tree.traverse()
+               if x.is_leaf()}
+    for s in strains:
+        nodes = sorted([x
+                        for x in tree.traverse()
+                        if x.name.startswith(s)],
+                       key=lambda x: x.name)
+        if len(nodes) == 1:
+            continue
+        for node in nodes[1:]:
+            node.delete()
+    for x in tree.traverse():
+        if not x.is_leaf():
+            continue
+        x.name = x.name.split('_')[0]
+    tree.set_outgroup(tree.get_midpoint_outgroup())
+
+    return tree
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib.colors as colors
+    from ete3 import TreeStyle, NodeStyle, Tree, RectFace
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0], inplace=True)
+    v = a[a < 0][f < 0.05]
+    v1 = a[a > 0][f < 0.05]
+   
+    evol = {x.rstrip()
+            for x in open(options.evolution)}
+
+    tree = get_tree(options.tree)
+
+    strains = {x.name for x in tree.traverse()
+               if x.name != ''}
+    evol_tree = {x.name
+                 for x in tree.traverse()
+                 if x.name in evol}
+
+    conditions = {}
+    for x in strains:
+        try:
+            conditions[x] = a.loc[x].dropna().shape[0]
+        except:
+            pass
+    phen = {}
+    for x in v.index:
+        phen[x] = v.loc[x].T.dropna().shape[0] / float(conditions[x])
+    phen1 = {}
+    for x in v1.index:
+        phen1[x] = v1.loc[x].T.dropna().shape[0] / float(conditions[x])
+ 
+    pcolor = {x:y                                                                                                                                      
+              for x,y in zip(range((int(max(conditions.values())*100)*2)),
+                            sns.color_palette('Greys', int(max(conditions.values())*100)*2))}
+    zcolor = {x:y                                                                                                                                      
+              for x,y in zip(range((int(max(phen.values())*1000)+1)),
+                            sns.color_palette('Reds', int(max(phen.values())*1000)+1))}
+    zcolor[-1] = pcolor[int(max(conditions.values())*100)]
+    zcolor[0] = (1.0, 1.0, 1.0)
+    zcolor1 = {x:y                                                                                                                                      
+              for x,y in zip(range((int(max(phen1.values())*100)+1)),
+                            sns.color_palette('Blues', int(max(phen1.values())*100)+1))}    
+
+    ref = NodeStyle()
+    ref['fgcolor'] = sns.xkcd_rgb['light red']
+    inner = NodeStyle()
+    inner['size'] = 0
+    for n in tree.traverse():
+        if not n.is_leaf():
+            n.set_style(inner)
+            continue
+        r = RectFace(10, 3,
+                     colors.rgb2hex(pcolor[int(conditions.get(n.name, 0)*100)]),
+                     colors.rgb2hex(pcolor[int(conditions.get(n.name, 0)*100)]))
+        n.add_face(r, 0,
+                   position="aligned")
+        r = RectFace(10, 3,
+                     colors.rgb2hex(zcolor[int(phen.get(n.name, -0.001)*1000)]),
+                     colors.rgb2hex(zcolor[int(phen.get(n.name, -0.001)*1000)]),)
+        n.add_face(r, 1,
+                   position="aligned")
+        if n.name in evol:
+            ev = NodeStyle()
+            ev["fgcolor"] = sns.xkcd_rgb['light grey']
+            n.set_style(ev)
+        elif n.name == 'NT12001':
+            n.set_style(ref)
+        elif n.name not in evol_tree:
+            ev = NodeStyle()
+            ev["fgcolor"] = "black"
+            n.set_style(ev)
+
+    circular_style = TreeStyle()
+    circular_style.mode = "c"
+    circular_style.scale = 525
+    circular_style.show_leaf_name = False
+    tree.render(options.outfile, h=options.height,
+                units="in",
+                tree_style=circular_style,
+                dpi=options.dpi)

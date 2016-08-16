@@ -486,8 +486,8 @@ if __name__ == "__main__":
                                         conditions_colors],)
     mclust.ax_col_colors.yaxis.tick_right()
     mclust.ax_col_colors.set_yticks([0.5, 1.5])
-    mclust.ax_col_colors.set_yticklabels(['categories',
-                                          'phenotypes'])
+    mclust.ax_col_colors.set_yticklabels(['Categories',
+                                          'Phenotypes'])
 
     # Draw the threshold lines
     mclust.ax_col_dendrogram.hlines(t,
@@ -600,14 +600,19 @@ if __name__ == "__main__":
     r = pd.DataFrame(res)
     r.columns = ['target', 'set', 'correlation']
 
-    plt.figure(figsize=(5*options.size, 5*options.size))
+    plt.figure(figsize=(5*options.size, 3.5*options.size))
 
+    order = sorted(set(r.target),
+                   key=lambda x: r[(r['set'] == 'real') &
+                                   (r.target == x)]['correlation'].dropna().median())
     sns.boxplot(data=r[r['set'] == 'real'],
                 y='target',
                 x='correlation',
+                order=order,
                 color=sns.xkcd_rgb['light grey'])
 
     plt.xlabel('Pearson\'s r')
+    plt.ylabel('')
 
     plt.axvline(0,
                 color=sns.xkcd_rgb['grey'],
@@ -622,7 +627,7 @@ if __name__ == "__main__":
                                       or chem2.get(k).lower() in
                                       {y for y,v in ctarget.items()
                                       if v == x}})
-                for x in set(r.target)])
+                for x in order])
 
     plt.legend(loc=(1, 0.9))
     sns.despine(left=True)
@@ -635,7 +640,7 @@ if __name__ == "__main__":
     r = pd.read_table(options.purity1)
     rr = pd.read_table(options.purity2)
 
-    plt.figure(figsize=(5*options.size, 2.5*options.size))
+    plt.figure(figsize=(5*options.size, 1.75*options.size))
 
     pl1 = plt.plot(r.distance,
              r['target purity'],
@@ -649,6 +654,8 @@ if __name__ == "__main__":
                  yerr=rr.groupby('distance').mad()['target purity'].values,
                  color=sns.xkcd_rgb['grey'],
                  label='Random clusters')
+    for x in pl2.get_children():
+        x.set_rasterized(True)
 
     plt.xlabel('Hierarchical clustering distance')
     plt.ylabel('Clusters purity')
@@ -741,8 +748,8 @@ if __name__ == "__main__":
 
     plt.xlabel('Pearson\'s r\n(chemical genomics)')
     plt.yticks(range(2),
-               ['natural isolates clusters',
-                'random conditions'])
+               ['Natural isolates',
+                'Random conditions'])
     plt.ylabel('')
 
     plt.axvline(0,
