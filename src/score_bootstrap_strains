@@ -8,9 +8,9 @@ def get_options():
     import sys
 
     # create the top-level parser
-    description = "Get the AUC for the predictions"
+    description = "Bootstrap the score by permutating strains"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='score_auc')
+                                     prog='score_bootstrap_strains')
 
     parser.add_argument('predictions', action='store',
                         help='Predictions file')
@@ -19,17 +19,21 @@ def get_options():
     parser.add_argument('fdr', action='store',
                         help='FDR matrix')
 
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=1000,
+                        help='Bootstraps [Default: 1000]')
     parser.add_argument('--fdr-threshold', action='store',
                         type=float,
                         default=0.05,
                         help='FDR threshold [Default: 0.05]')
-    
+
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
 
     return parser.parse_args()
 
-def compute_auc(a, v, m):
+def strains_bootstrap(a, v, m, repetitions=1000):
     import random
     from sklearn.metrics import roc_curve, auc
 
@@ -41,29 +45,37 @@ def compute_auc(a, v, m):
     mstrains = set(m.index)
     for c in conditions:
         strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-        
-    for c in sorted(conditions):
-        true_values = []
-        scores = []
-        for s in strains[c]:
-            vvalue = v.loc[s][c]
-            if vvalue < 0:
-                t = True
-            else:
-                t = False 
-            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
-            for x in mscore:
-                if np.isnan(x):
-                    continue
-                true_values.append( t )
-                scores.append( x )
-        if len(set(true_values)) < 2 or len(true_values) < 1:
-            continue
+            
+    for i in range(repetitions):
+        for c in conditions:
+            d = {}
+            ss = list(strains[c])
+            random.shuffle(ss)
+            for s1, s2 in zip(ss, strains[c]):
+                d[s2] = s1
+            
+            true_values = []
+            scores = []
+            for s in strains[c]:
+                sr = d[s]
+                vvalue = v.loc[s][c]
+                if vvalue < 0:
+                    t = True
+                else:
+                    t = False 
+                mscore = m.loc[[x for x in m.index if x.startswith(sr)]][c]
+                for x in mscore:
+                    if np.isnan(x):
+                        continue
+                    true_values.append( t )
+                    scores.append( x )
+            if len(set(true_values)) < 2 or len(true_values) < 1:
+                continue
 
-        fpr, tpr, thresholds = roc_curve(true_values, scores)
-        roc_auc = auc(fpr, tpr)
+            fpr, tpr, thresholds = roc_curve(true_values, scores)
+            roc_auc = auc(fpr, tpr)
 
-        yield c, roc_auc, tpr, fpr
+            yield i, c, roc_auc, tpr, fpr
 
 if __name__ == "__main__":
     import sys
@@ -87,9 +99,8 @@ if __name__ == "__main__":
     m.index.name = 'condition'
     m = m.T
 
-    for i, sauc, tpr, fpr in compute_auc(a, v, m):
+    for i, c, sauc, tpr, fpr in strains_bootstrap(a, v, m, options.bootstraps):
         for x, y in zip(tpr, fpr):
-            print('%s\t%.5f\t%.5f\t%.5f\t%d' % (i,
+            print('%s\t%s\t%.5f\t%.5f\t%.5f' % (i, c,
                                                 sauc,
-                                                x, y,
-                                                v[v < 0][i].dropna().shape[0]))
+                                                x, y))
