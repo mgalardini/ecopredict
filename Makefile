@@ -119,14 +119,15 @@ DELETION = $(CHEMICAL)/all_genes_matched_and_joined_New_NT.txt
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
 SICKNESS = $(SICKNESSDIR)/123456/all.txt
 SCORE = $(SICKNESSDIR)/scores.done
+PROFILEDATA = $(SICKNESSDIR)/sickness_profile.done
+AUCDATA = $(SICKNESSDIR)/auc.done
+BOOTSTRAPSDATA = $(SICKNESSDIR)/bootstraps.done
 
 # Generated data for plots
 FEATURESDATA = $(PLOTDATA)/features.tsv
 SIFTFEATURESDATA = $(PLOTDATA)/sift_features.tsv
 ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
-PROFILEDATA = $(PLOTDATA)/sickness_profile.done
-AUCDATA = $(PLOTDATA)/auc.done
 PURITYDATA1 = $(PLOTDATA)/purity1.txt
 PURITYDATA2 = $(PLOTDATA)/purity2.txt
 
