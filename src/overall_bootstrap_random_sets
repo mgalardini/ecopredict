@@ -10,7 +10,7 @@ def get_options():
     # create the top-level parser
     description = "Bootstrap the score by using random gene sets"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='score_bootstrap_random_sets')
+                                     prog='overall_bootstrap_random_sets')
 
     parser.add_argument('probabilities', action='store',
                         help='Deleterious probabilities file')
@@ -78,13 +78,11 @@ def prediction_auc(a, v, m):
                     continue
                 true_values.append(t)
                 scores.append(x)
-        if len(set(true_values)) < 2 or len(true_values) < 1:
-            continue
+    
+    fpr, tpr, thresholds = roc_curve(true_values, scores)
+    roc_auc = auc(fpr, tpr)
 
-        fpr, tpr, thresholds = roc_curve(true_values, scores)
-        roc_auc = auc(fpr, tpr)
-
-        yield c, roc_auc, tpr, fpr
+    return roc_auc, tpr, fpr
 
 
 def expected(values, pseudo):
@@ -161,8 +159,8 @@ if __name__ == "__main__":
         s.index.name = 'condition'
         s = s.T
  
-        for c, sauc, tpr, fpr in prediction_auc(a, v, s):
-            for x, y in zip(tpr, fpr):
-                print('%s\t%s\t%.5f\t%.5f\t%.5f' % (i, c,
-                                                    sauc,
-                                                    x, y))
+        sauc, tpr, fpr = prediction_auc(a, v, s)
+        for x, y in zip(tpr, fpr):
+            print('%s\t%.5f\t%.5f\t%.5f' % (i,
+                                            sauc,
+                                            x, y))

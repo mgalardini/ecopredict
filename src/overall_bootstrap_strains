@@ -1,0 +1,106 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "Bootstrap the score by permutating strains"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='overall_bootstrap_strains')
+
+    parser.add_argument('predictions', action='store',
+                        help='Predictions file')
+    parser.add_argument('matrix', action='store',
+                        help='EMAP matrix')
+    parser.add_argument('fdr', action='store',
+                        help='FDR matrix')
+
+    parser.add_argument('--bootstraps', action='store',
+                        type=int,
+                        default=1000,
+                        help='Bootstraps [Default: 1000]')
+    parser.add_argument('--fdr-threshold', action='store',
+                        type=float,
+                        default=0.05,
+                        help='FDR threshold [Default: 0.05]')
+
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def strains_bootstrap(a, v, m, repetitions=1000):
+    import random
+    from sklearn.metrics import roc_curve, auc
+
+    conditions = set()
+    for c in m.columns:
+        if c in a.columns:
+            conditions.add(c)
+    strains = {}
+    mstrains = set(m.index)
+    for c in conditions:
+        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
+            
+    for i in range(repetitions):
+        for c in conditions:
+            d = {}
+            ss = list(strains[c])
+            random.shuffle(ss)
+            for s1, s2 in zip(ss, strains[c]):
+                d[s2] = s1
+            
+            true_values = []
+            scores = []
+            for s in strains[c]:
+                sr = d[s]
+                vvalue = v.loc[s][c]
+                if vvalue < 0:
+                    t = True
+                else:
+                    t = False 
+                mscore = m.loc[[x for x in m.index if x.startswith(sr)]][c]
+                for x in mscore:
+                    if np.isnan(x):
+                        continue
+                    true_values.append( t )
+                    scores.append( x )
+        if len(set(true_values)) < 2 or len(true_values) < 1:
+            continue
+
+        fpr, tpr, thresholds = roc_curve(true_values, scores)
+        roc_auc = auc(fpr, tpr)
+
+        yield i, roc_auc, tpr, fpr
+
+if __name__ == "__main__":
+    import sys
+    import numpy as np
+    import pandas as pd
+
+    options = get_options()
+    
+    # Read strains data
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    # Load the FDR corrections to identify proper phenotypes
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0], inplace=True)
+
+    # Apply the FDR correction
+    v = a[f < options.fdr_threshold]
+
+    m = pd.read_table(options.predictions)
+    m.set_index(m.columns[0], inplace=True)
+    m.index.name = 'condition'
+    m = m.T
+
+    for i, sauc, tpr, fpr in strains_bootstrap(a, v, m, options.bootstraps):
+        for x, y in zip(tpr, fpr):
+            print('%s\t%.5f\t%.5f\t%.5f' % (i,
+                                            sauc,
+                                            x, y))

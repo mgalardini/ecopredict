@@ -296,15 +296,44 @@ $(SCORE): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON)
 	for g in $$(find $(CHEMICAL) -type f -name 'deletion.all*.genes.*'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  for d in $$(find $(SICKNESSDIR)/* -maxdepth 0 -type d); do \
-	    $(SRCDIR)/get_score $$d/all.txt $$g --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$d/score.$$gf.txt; \
+	    $(SUBMIT) "$(SRCDIR)/get_score $$d/all.txt $$g --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$d/score.$$gf.txt"; \
 	  done; \
 	done && touch $@
 
 $(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
 	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
-	  $(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_score.$$gf.txt; \
-	  $(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_score.$$gf.txt; \
+	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_score.$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_score.$$gf.txt"; \
+	done && touch $@
+	
+$(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION)
+	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/bootstrap3_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round"; \
+	  done; \
 	done && touch $@
 
 ##########################
@@ -387,12 +416,13 @@ constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACC
 sickness: $(SICKNESS)
 score: $(SCORE)
 auc: $(AUCDATA)
+bootstraps: $(BOOTSTRAPSDATA)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
 figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
 
-all: constraints sickness score auc plots figures
+all: constraints sickness score auc bootstraps plots figures
 
-.PHONY: all constraints sickness score auc plots figures
+.PHONY: all constraints sickness score auc bootstraps plots figures

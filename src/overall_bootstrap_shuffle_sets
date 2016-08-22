@@ -3,21 +3,19 @@
 __author__ = "Marco Galardini"
 __version__ = '0.1.0'
 
-
 def get_options():
     import argparse
+    import sys
 
     # create the top-level parser
-    description = "Bootstrap the score by using random gene sets"
+    description = "Bootstrap the score by permutating strains"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='score_bootstrap_random_sets')
+                                     prog='overall_bootstrap_strains')
 
     parser.add_argument('probabilities', action='store',
                         help='Deleterious probabilities file')
     parser.add_argument('deletion', action='store',
                         help='Deletion experiment important genes (conditions -> genes)')
-    parser.add_argument('delmatrix', action='store',
-                        help='Deletion matrix (used to get gene names)')
     parser.add_argument('matrix', action='store',
                         help='EMAP matrix')
     parser.add_argument('fdr', action='store',
@@ -46,10 +44,9 @@ def get_options():
                         help='FDR threshold [Default: 0.05]')
 
     parser.add_argument('--version', action='version',
-                        version='%(prog)s '+__version__)
+                         version='%(prog)s '+__version__)
 
     return parser.parse_args()
-
 
 def prediction_auc(a, v, m):
     from sklearn.metrics import roc_curve, auc
@@ -62,7 +59,7 @@ def prediction_auc(a, v, m):
     mstrains = set(m.index)
     for c in conditions:
         strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-
+            
     for c in conditions:
         true_values = []
         scores = []
@@ -71,31 +68,28 @@ def prediction_auc(a, v, m):
             if vvalue < 0:
                 t = True
             else:
-                t = False
+                t = False 
             mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
             for x in mscore:
                 if np.isnan(x):
                     continue
-                true_values.append(t)
-                scores.append(x)
-        if len(set(true_values)) < 2 or len(true_values) < 1:
-            continue
+                true_values.append( t )
+                scores.append( x )
 
-        fpr, tpr, thresholds = roc_curve(true_values, scores)
-        roc_auc = auc(fpr, tpr)
+    fpr, tpr, thresholds = roc_curve(true_values, scores)
+    roc_auc = auc(fpr, tpr)
 
-        yield c, roc_auc, tpr, fpr
-
+    return roc_auc, tpr, fpr
 
 def expected(values, pseudo):
     return sum(np.log(1 - values + pseudo))/values.shape[0]
 
-
 def score(values, genes, pseudo):
     return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
-               pseudo))
+        pseudo))
 
 if __name__ == "__main__":
+    import sys
     import random
     import numpy as np
     import pandas as pd
@@ -130,25 +124,21 @@ if __name__ == "__main__":
                 for x in open(options.deletion)
                 if len(x.split()) > 1}
 
-    dm = pd.read_table(options.delmatrix)
-    dm.set_index(dm.columns[0], inplace=True)
-    dgenes = list({conversion.get(x.split('-')[0], x.split('-')[0])
-                  for x in dm.index
-                  if conversion.get(x.split('-')[0], x.split('-')[0]) not in uncommon})
-
     m = pd.read_table(options.probabilities)
     m.set_index(m.columns[0], inplace=True)
     m[np.isnan(m)] = 0.
 
     for i in range(options.bootstraps):
-        # random gene sets with same numerosity
+        # shuffle gene sets    
         rsets = {}
-        for c in deletion:
-            random.shuffle(dgenes)
-            rsets[c] = {dgenes[x] for x in range(len(deletion[c]))}
-
+        sets = list(deletion.keys())
+        random.shuffle(sets)
+        for g1, g2 in zip(sets, deletion.keys()):
+            rsets[g2] = g1
+        
         ps = []
-        for k, genes in rsets.items():
+        for k in deletion:
+            genes = deletion[rsets[k]]
             try:
                 p = m.apply(score, genes=genes, pseudo=options.pseudocount)
                 p = pd.DataFrame(p).T
@@ -160,9 +150,9 @@ if __name__ == "__main__":
         s = pd.concat(ps)
         s.index.name = 'condition'
         s = s.T
- 
-        for c, sauc, tpr, fpr in prediction_auc(a, v, s):
-            for x, y in zip(tpr, fpr):
-                print('%s\t%s\t%.5f\t%.5f\t%.5f' % (i, c,
-                                                    sauc,
-                                                    x, y))
+        
+        sauc, tpr, fpr = prediction_auc(a, v, s)
+        for x, y in zip(tpr, fpr):
+            print('%s\t%.5f\t%.5f\t%.5f' % (i,
+                                            sauc,
+                                            x, y))

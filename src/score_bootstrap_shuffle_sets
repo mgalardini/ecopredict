@@ -127,7 +127,7 @@ if __name__ == "__main__":
                 if len(x.split()) > 1}
 
     m = pd.read_table(options.probabilities)
-    m.set_index('prot', inplace=True)
+    m.set_index(m.columns[0], inplace=True)
     m[np.isnan(m)] = 0.
 
     for i in range(options.bootstraps):
