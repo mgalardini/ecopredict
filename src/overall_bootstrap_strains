@@ -47,6 +47,8 @@ def strains_bootstrap(a, v, m, repetitions=1000):
         strains[c] = {x for x in a[c].dropna().index if x in mstrains}
             
     for i in range(repetitions):
+        true_values = []
+        scores = []
         for c in conditions:
             d = {}
             ss = list(strains[c])
@@ -54,8 +56,6 @@ def strains_bootstrap(a, v, m, repetitions=1000):
             for s1, s2 in zip(ss, strains[c]):
                 d[s2] = s1
             
-            true_values = []
-            scores = []
             for s in strains[c]:
                 sr = d[s]
                 vvalue = v.loc[s][c]

@@ -59,10 +59,10 @@ def prediction_auc(a, v, m):
     mstrains = set(m.index)
     for c in conditions:
         strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-            
+    
+    true_values = []
+    scores = []
     for c in conditions:
-        true_values = []
-        scores = []
         for s in strains[c]:
             vvalue = v.loc[s][c]
             if vvalue < 0:
