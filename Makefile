@@ -122,6 +122,7 @@ SCORE = $(SICKNESSDIR)/scores.done
 PROFILEDATA = $(SICKNESSDIR)/sickness_profile.done
 AUCDATA = $(SICKNESSDIR)/auc.done
 BOOTSTRAPSDATA = $(SICKNESSDIR)/bootstraps.done
+COLLECTBOOTSTRAPS = $(SICKNESSDIR)/collected.done
 
 # Generated data for plots
 FEATURESDATA = $(PLOTDATA)/features.tsv
@@ -336,6 +337,20 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  done; \
 	done && touch $@
 
+$(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
+	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap1_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap2_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap3_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap1_$$gf/ > $$(dirname $$g)/overall_bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap2_$$gf/ > $$(dirname $$g)/overall_bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
+	done && touch $@
+
 ##########################
 ## Plot data generation ##
 ##########################
@@ -417,12 +432,13 @@ sickness: $(SICKNESS)
 score: $(SCORE)
 auc: $(AUCDATA)
 bootstraps: $(BOOTSTRAPSDATA)
+collect: $(COLLECTBOOTSTRAPS)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
 figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
 
-all: constraints sickness score auc bootstraps plots figures
+all: constraints sickness score auc bootstraps collect plots figures
 
-.PHONY: all constraints sickness score auc bootstraps plots figures
+.PHONY: all constraints sickness score auc bootstraps collect plots figures

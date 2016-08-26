@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Collect bootstraps"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='collect_bootstraps')
+
+    parser.add_argument('folder', action='store',
+                        help='bootstraps folder')
+    parser.add_argument('matrix', action='store',
+                        help='EMAP matrix')
+    parser.add_argument('fdr', action='store',
+                        help='EMAP FDR matrix')
+
+    parser.add_argument('--phenotypes', action='store',
+                        type=int,
+                        default=0,
+                        help='Minimum number of phenotypes [Default: 0]')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def mad(data, axis=None):
+        return np.median(np.absolute(data - np.median(data, axis)), axis)
+
+if __name__ == "__main__":
+    import os
+    import pandas as pd
+    import numpy as np
+
+    options = get_options()
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0],
+                        inplace=True)
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0],
+                        inplace=True)
+    v = a[f < 0.05]
+    v = v[v < 0]
+
+    conds = {x for x in v.columns
+             if v[x].dropna().shape[0] >= options.phenotypes}
+
+    boots = os.listdir(options.folder)
+    res = []
+    for b in boots:
+        bootstrap = pd.read_table(os.path.join(options.folder, b),
+                                  header=None)
+        bootstrap.columns = ['iteration', 'condition', 'auc', 'tpr', 'fpr']
+        for i in set(bootstrap.iteration):
+            conditions = set(bootstrap[bootstrap.iteration == i].condition).intersection(conds)
+            boot = bootstrap[bootstrap.iteration == i]
+            values = [boot[boot.condition == c].auc.values[0]
+                      for c in conditions]
+            print('\t'.join([str(x) for x in 
+                             (np.median(values), mad(values), np.mean(values), np.std(values))]))

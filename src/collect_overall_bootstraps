@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Collect bootstraps"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='collect_overall_bootstraps')
+
+    parser.add_argument('folder', action='store',
+                        help='bootstraps folder')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import os
+    import pandas as pd
+    import numpy as np
+
+    options = get_options()
+
+    boots = os.listdir(options.folder)
+    res = []
+    for b in boots:
+        bootstrap = pd.read_table(os.path.join(options.folder, b),
+                                  header=None)
+        bootstrap.columns = ['iteration', 'auc', 'tpr', 'fpr']
+        for i in set(bootstrap.iteration):
+            auc = bootstrap[bootstrap.iteration == i].auc.values[0]
+            print(auc)
