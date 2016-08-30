@@ -12,28 +12,13 @@ def get_options():
     parser = argparse.ArgumentParser(description=description,
                                      prog='overall_bootstrap_strains')
 
-    parser.add_argument('probabilities', action='store',
-                        help='Deleterious probabilities file')
-    parser.add_argument('deletion', action='store',
-                        help='Deletion experiment important genes (conditions -> genes)')
+    parser.add_argument('predictions', action='store',
+                        help='Predictions file')
     parser.add_argument('matrix', action='store',
                         help='EMAP matrix')
     parser.add_argument('fdr', action='store',
                         help='FDR matrix')
 
-    parser.add_argument('--conversion', action='store',
-                        default=None,
-                        help='ECK to uniprot identifiers')
-    parser.add_argument('--lconversion', action='store',
-                        default=None,
-                        help='Locus to uniprot identifiers')
-    parser.add_argument('--uncommon', action='store',
-                        default=None,
-                        help='Genes to exclude from the gene sets')
-    parser.add_argument('--pseudocount', action='store',
-                        type=float,
-                        default=0.01,
-                        help='Pseudocount [Default: 0.01]')
     parser.add_argument('--bootstraps', action='store',
                         type=int,
                         default=1000,
@@ -69,24 +54,16 @@ def prediction_auc(a, v, m):
                 t = True
             else:
                 t = False 
-            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
-            for x in mscore:
-                if np.isnan(x):
-                    continue
-                true_values.append( t )
-                scores.append( x )
+            mscore = m.loc[s][c]
+            if np.isnan(mscore):
+                continue
+            true_values.append( t )
+            scores.append( mscore )
 
     fpr, tpr, thresholds = roc_curve(true_values, scores)
     roc_auc = auc(fpr, tpr)
 
     return roc_auc, tpr, fpr
-
-def expected(values, pseudo):
-    return sum(np.log(1 - values + pseudo))/values.shape[0]
-
-def score(values, genes, pseudo):
-    return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
-        pseudo))
 
 if __name__ == "__main__":
     import sys
@@ -106,51 +83,20 @@ if __name__ == "__main__":
     # Apply the FDR correction
     v = a[f < options.fdr_threshold]
 
-    conversion = {}
-    if options.conversion:
-        conversion = {x.split()[0]:x.rstrip().split()[1]
-                      for x in open(options.conversion)}
-    lconversion = {}
-    if options.lconversion:
-        lconversion = {x.split()[0]:x.rstrip().split()[1]
-                       for x in open(options.lconversion)}
-    uncommon = {}
-    if options.uncommon:
-        uncommon = {lconversion.get(x.rstrip(), x.rstrip())
-                    for x in open(options.uncommon)}
-    deletion = {x.split()[0]:{conversion.get(y.split('-')[0], y.split('-')[0])
-                              for y in x.rstrip().split('\t')[1].split()
-                              if conversion.get(y.split('-')[0], y.split('-')[0]) not in uncommon}
-                for x in open(options.deletion)
-                if len(x.split()) > 1}
-
-    m = pd.read_table(options.probabilities)
+    m = pd.read_table(options.predictions)
     m.set_index(m.columns[0], inplace=True)
-    m[np.isnan(m)] = 0.
+    m.index.name = 'condition'
+    m = m.T
 
     for i in range(options.bootstraps):
-        # shuffle gene sets    
-        rsets = {}
-        sets = list(deletion.keys())
-        random.shuffle(sets)
-        for g1, g2 in zip(sets, deletion.keys()):
-            rsets[g2] = g1
-        
-        ps = []
-        for k in deletion:
-            genes = deletion[rsets[k]]
-            try:
-                p = m.apply(score, genes=genes, pseudo=options.pseudocount)
-                p = pd.DataFrame(p).T
-                p.index = [k]
-                ps.append(p)
-            except KeyError:
-                # Very rare, means that none of the genes was found
-                continue
-        s = pd.concat(ps)
-        s.index.name = 'condition'
-        s = s.T
-        
+        conditions = list([m[c] for c in m.columns])
+        random.shuffle(conditions)
+
+        s = m.copy(deep=True)
+
+        for c1, c2 in zip(conditions, m.columns):
+            s[c2] = c1
+
         sauc, tpr, fpr = prediction_auc(a, v, s)
         for x, y in zip(tpr, fpr):
             print('%s\t%.5f\t%.5f\t%.5f' % (i,

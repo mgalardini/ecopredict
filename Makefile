@@ -317,7 +317,7 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
 	  for round in $$(seq 1 100); do \
@@ -329,7 +329,7 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
 	  for round in $$(seq 1 100); do \

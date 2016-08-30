@@ -48,30 +48,23 @@ def strains_bootstrap(a, v, m, repetitions=1000):
             
     for i in range(repetitions):
         for c in conditions:
-            d = {}
-            ss = list(strains[c])
-            random.shuffle(ss)
-            for s1, s2 in zip(ss, strains[c]):
-                d[s2] = s1
-            
             true_values = []
             scores = []
             for s in strains[c]:
-                sr = d[s]
                 vvalue = v.loc[s][c]
                 if vvalue < 0:
                     t = True
                 else:
                     t = False 
-                mscore = m.loc[[x for x in m.index if x.startswith(sr)]][c]
-                for x in mscore:
-                    if np.isnan(x):
-                        continue
-                    true_values.append( t )
-                    scores.append( x )
+                mscore = m.loc[s][c]
+                if np.isnan(mscore):
+                    continue
+                true_values.append( t )
+                scores.append( mscore )
             if len(set(true_values)) < 2 or len(true_values) < 1:
                 continue
 
+            random.shuffle(true_values)
             fpr, tpr, thresholds = roc_curve(true_values, scores)
             roc_auc = auc(fpr, tpr)
 
