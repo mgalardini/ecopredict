@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Collect bootstraps"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='collect_bootstraps')
+
+    parser.add_argument('folder', action='store',
+                        help='bootstraps folder')
+
+    parser.add_argument('--phenotypes', action='store',
+                        type=int,
+                        default=0,
+                        help='Minimum number of phenotypes [Default: 0]')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def mad(data, axis=None):
+        return np.median(np.absolute(data - np.median(data, axis)), axis)
+
+if __name__ == "__main__":
+    import os
+    import pandas as pd
+    import numpy as np
+
+    options = get_options()
+
+    folders = os.listdir(options.folder)
+    for d in folders:
+        boots = os.listdir(os.path.join(options.folder, d))
+        for b in boots:
+            bootstrap = pd.read_table(os.path.join(options.folder, d, b),
+                                      header=None)
+            bootstrap.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+            boot = bootstrap[bootstrap.phenotypes >= options.phenotypes]
+            values = [boot[boot.condition == c].auc.values[0]
+                      for c in set(boot.condition)]
+            print('\t'.join([str(x) for x in 
+                             (np.median(values), mad(values), np.mean(values), np.std(values))]))

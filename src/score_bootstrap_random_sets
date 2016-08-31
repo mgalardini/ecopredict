@@ -72,12 +72,11 @@ def prediction_auc(a, v, m):
                 t = True
             else:
                 t = False
-            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
-            for x in mscore:
-                if np.isnan(x):
-                    continue
-                true_values.append(t)
-                scores.append(x)
+            mscore = m.loc[s][c]
+            if np.isnan(mscore):
+                continue
+            true_values.append(t)
+            scores.append(mscore)
         if len(set(true_values)) < 2 or len(true_values) < 1:
             continue
 
@@ -144,6 +143,8 @@ if __name__ == "__main__":
         # random gene sets with same numerosity
         rsets = {}
         for c in deletion:
+            if c not in set(a.columns):
+                continue
             random.shuffle(dgenes)
             rsets[c] = {dgenes[x] for x in range(len(deletion[c]))}
 

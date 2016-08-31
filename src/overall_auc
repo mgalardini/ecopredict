@@ -23,6 +23,10 @@ def get_options():
                         type=float,
                         default=0.05,
                         help='FDR threshold [Default: 0.05]')
+    parser.add_argument('--phenotypes', action='store',
+                        type=int,
+                        default=10,
+                        help='Minimum number of phenotypes [Default: 0]')
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -30,12 +34,16 @@ def get_options():
     return parser.parse_args()
 
 
-def compute_auc(a, v, m):
+def compute_auc(a, v, m, phenotypes=0):
     from sklearn.metrics import roc_curve, auc
+
+    z = v[v < 0]
 
     conditions = set()
     for c in m.columns:
         if c in a.columns:
+            if z[c].dropna().shape[0] < phenotypes:
+                continue
             conditions.add(c)
     strains = {}
     mstrains = set(m.index)
@@ -84,6 +92,6 @@ if __name__ == "__main__":
     m.index.name = 'condition'
     m = m.T
 
-    sauc, tpr, fpr = compute_auc(a, v, m)
+    sauc, tpr, fpr = compute_auc(a, v, m, options.phenotypes)
     for x, y in zip(tpr, fpr):
         print('%.5f\t%.5f\t%.5f' % (sauc, x, y))

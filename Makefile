@@ -313,27 +313,30 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
+	    echo "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
+	    echo "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
+	  mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/bootstrap3_$$gf/$$round"; \
+	    mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/; \
+	    mkdir -p $$(dirname $$g)/bootstrap3_$$gf/$$round/; \
+	    mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/; \
+	    for sround in $$(seq 1 10); do \
+	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
+	    done; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
+	    echo "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) $(SCREENINGFDR) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round"; \
+	    echo "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done && touch $@
 
@@ -344,11 +347,11 @@ $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap1_$$gf.10.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap2_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap2_$$gf.10.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap3_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ --phenotypes 0 > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ --phenotypes 10 > $$(dirname $$g)/bootstrap3_$$gf.10.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap1_$$gf/ > $$(dirname $$g)/overall_bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap2_$$gf/ > $$(dirname $$g)/overall_bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
 	done && touch $@
 
 ##########################
@@ -439,6 +442,4 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
 figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
 
-all: constraints sickness score auc bootstraps collect plots figures
-
-.PHONY: all constraints sickness score auc bootstraps collect plots figures
+.PHONY: constraints sickness score auc bootstraps collect plots figures
