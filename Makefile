@@ -313,11 +313,11 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    echo "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    echo "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
@@ -332,11 +332,11 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    echo "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    echo "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --pseudocount 0.0 --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done && touch $@
 
