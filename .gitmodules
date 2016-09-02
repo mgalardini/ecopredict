@@ -1,0 +1,3 @@
+[submodule "Scoary"]
+	path = Scoary
+	url = https://github.com/mgalardini/Scoary
