@@ -15,10 +15,17 @@ def get_options():
     parser.add_argument('folder', action='store',
                         help='bootstraps folder')
 
+    parser.add_argument('--curve', action='store_true',
+                        default=False,
+                        help='Output representative curve [Default: auc only]')
+    
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
 
     return parser.parse_args()
+
+def mad(data, axis=None):
+    return np.median(np.absolute(data - np.median(data, axis)), axis)
 
 if __name__ == "__main__":
     import os
@@ -29,10 +36,23 @@ if __name__ == "__main__":
 
     boots = os.listdir(options.folder)
     res = []
+    px = np.linspace(0, 1, 15)
     for b in boots:
         bootstrap = pd.read_table(os.path.join(options.folder, b),
                                   header=None)
         bootstrap.columns = ['iteration', 'auc', 'tpr', 'fpr']
         for i in set(bootstrap.iteration):
-            auc = bootstrap[bootstrap.iteration == i].auc.values[0]
-            print(auc)
+            if not options.curve:
+                auc = bootstrap[bootstrap.iteration == i].auc.values[0]
+                print(auc)
+            else:
+                py = np.interp(px,
+                               bootstrap[bootstrap.iteration == i]['fpr'],
+                               bootstrap[bootstrap.iteration == i]['tpr'])
+                res.append(py)
+    if options.curve:
+        r = np.array(res)
+        for x, y, m in zip(px,
+                           np.median(r, axis=0),
+                           mad(r, axis=0)):
+            print('\t'.join((str(x), str(y), str(m))))

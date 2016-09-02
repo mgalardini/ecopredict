@@ -25,8 +25,14 @@ def get_options():
                         help='FDR threshold [Default: 0.05]')
     parser.add_argument('--phenotypes', action='store',
                         type=int,
-                        default=10,
+                        default=0,
                         help='Minimum number of phenotypes [Default: 0]')
+    parser.add_argument('--exclude', action='store',
+                        default=None,
+                        help='Excluded conditions [Default: all]')
+    parser.add_argument('--exclude-strains', action='store',
+                        default=None,
+                        help='Excluded strains [Default: all]')
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -34,21 +40,32 @@ def get_options():
     return parser.parse_args()
 
 
-def compute_auc(a, v, m, phenotypes=0):
+def compute_auc(a, v, m,
+                phenotypes=0,
+                exclude=None,
+                sexclude=None):
     from sklearn.metrics import roc_curve, auc
+
+    if exclude is None:
+        exclude = set()
+    if sexclude is None:
+        sexclude = set()
 
     z = v[v < 0]
 
     conditions = set()
     for c in m.columns:
         if c in a.columns:
+            if c in exclude:
+                continue
             if z[c].dropna().shape[0] < phenotypes:
                 continue
             conditions.add(c)
     strains = {}
     mstrains = set(m.index)
     for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
+        strains[c] = {x for x in a[c].dropna().index if x in mstrains
+                      and x not in sexclude}
 
     true_values = []
     scores = []
@@ -92,6 +109,19 @@ if __name__ == "__main__":
     m.index.name = 'condition'
     m = m.T
 
-    sauc, tpr, fpr = compute_auc(a, v, m, options.phenotypes)
+    exclude = set()
+    if options.exclude is not None:
+        exclude = {x.rstrip()
+                   for x in open(options.exclude)}
+
+    sexclude = set()
+    if options.exclude_strains is not None:
+        sexclude = {x.rstrip()
+                   for x in open(options.exclude_strains)}
+
+    sauc, tpr, fpr = compute_auc(a, v, m,
+                                 options.phenotypes,
+                                 exclude,
+                                 sexclude)
     for x, y in zip(tpr, fpr):
         print('%.5f\t%.5f\t%.5f' % (sauc, x, y))
