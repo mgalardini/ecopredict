@@ -11,8 +11,11 @@ SUBMIT = eval
 SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
 CHEMICAL = $(INPUT)/chemical
+PHENOTYPEDIR = $(CHEMICAL)/phenotypes
+PHENOTYPESTRAINSDIR = $(CHEMICAL)/strains
 MUTATION = $(CURDIR)/mutations
 SICKNESSDIR = $(CURDIR)/sickness
+ASSOCIATIONDIR = $(CURDIR)/associations
 ANNOTATION = $(CURDIR)/annotations
 PLOTDATA = $(CURDIR)/plotdata
 PLOTDIR = $(CURDIR)/plots
@@ -88,6 +91,7 @@ PPI = $(ANNOTATION)/ecoli_ppis_y2h_lit.txt
 
 # Roary pangenome
 PANGENOME = $(INPUT)/gene_presence_absence.csv
+FIXEDPANGENOME = $(INPUT)/pangenome.csv
 CONSERVATION = $(MUTATION)/bactNOG.members.tsv
 
 # Analysis on mutations
@@ -123,6 +127,9 @@ PROFILEDATA = $(SICKNESSDIR)/sickness_profile.done
 AUCDATA = $(SICKNESSDIR)/auc.done
 BOOTSTRAPSDATA = $(SICKNESSDIR)/bootstraps.done
 COLLECTBOOTSTRAPS = $(SICKNESSDIR)/collected.done
+
+# Associations
+ASSOCIATIONDATA = $(ASSOCIATIONDIR)/.associations.done
 
 # Generated data for plots
 FEATURESDATA = $(PLOTDATA)/features.tsv
@@ -354,6 +361,19 @@ $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
 	done && touch $@
 
+##################
+## Associations ##
+##################
+
+$(FIXEDPANGENOME): $(PANGENOME)
+	$(SRCDIR)/fix_roary $< > $@
+
+$(ASSOCIATIONDATA): $(FIXEDPANGENOME)
+	cd $(ASSOCIATIONDIR) && \
+	for i in $$(find $(PHENOTYPEDIR) -type f); do \
+	  $(SUBMIT) "python ../Scoary/scoary.py -t $$i -g $(FIXEDPANGENOME) -r $(PHENOTYPESTRAINSDIR)/$$(basename $$i) --no-time"; \
+	done && touch $@
+
 ##########################
 ## Plot data generation ##
 ##########################
@@ -436,10 +456,11 @@ score: $(SCORE)
 auc: $(AUCDATA)
 bootstraps: $(BOOTSTRAPSDATA)
 collect: $(COLLECTBOOTSTRAPS)
+associations: $(ASSOCIATIONDATA)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
 figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
 
-.PHONY: constraints sickness score auc bootstraps collect plots figures
+.PHONY: constraints sickness score auc bootstraps collect associations plots figures
