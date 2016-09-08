@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run association plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_associations_plot')
+
+    parser.add_argument('eck')
+    parser.add_argument('locus')
+    parser.add_argument('chemical')
+    parser.add_argument('deletion')
+    parser.add_argument('pangenome')
+    parser.add_argument('auc')
+    parser.add_argument('association')
+    parser.add_argument('outfile')
+
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure height [Default: 1 inches]')
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure width [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    import os
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    plt.figure(figsize=(options.width, options.height))
+
+    conversion = {x.split('\t')[0]: x.rstrip().split('\t')[1]
+                  for x in open(options.eck)}
+    lconversion = {x.split('\t')[0]: x.rstrip().split('\t')[1]
+                   for x in open(options.locus)}
+
+    a = pd.read_table(options.chemical)
+    a.set_index(a.columns[0], inplace=True)
+    agenes = {conversion.get(x.split('-')[0],
+                             x.split('-')[0])
+              for x in a.index}
+
+    roary = pd.read_table(options.pangenome,
+                          sep=',',
+                          low_memory=False)
+
+    d = {x: {lconversion.get(z)
+             for z in y.split('\t')}
+         for x,y in
+         roary[['Gene', 'NT12001']].dropna().values}
+
+    genes = {x.split('\t')[0]: {conversion.get(y.split('-')[0],
+                                               y.split('-')[0])
+                                for y in x.rstrip().split('\t')[1].split()}
+             for x in open(options.deletion)
+             if len(x.split()) > 1}
+
+    associations = {'.'.join(x.split('.')[:2])
+                    for x in
+                    os.listdir(options.association)}.intersection(genes.keys())
+
+    auc = {x.split()[0]: float(x.split()[1])
+           for x in open(options.auc)}
+
+    res = []
+    for c in associations:
+        print(c)
+        m = pd.read_table(os.path.join(options.association, c + '.results.csv'),
+                          sep=',')
+        ass = {y
+               for x in
+               m[m['Benjamini_H_p'] < 0.05]['Gene'].values
+               if x in d
+               for y in d.get(x, (x,))
+               if y in agenes}
+        if len(ass) > 0:
+            table = [[len(ass.intersection(genes[c])), len(ass.difference(genes[c]))],
+                     [len(ass.intersection(agenes).difference(genes[c])), len(agenes.difference(genes[c]).difference(ass))]]
+            prob = -np.log10(stats.fisher_exact(table,
+                                                alternative='greater')[1])
+            if prob > 4:
+                pass
+            else:
+                pass
+            res.append((c, prob, auc[c]))
+    r = pd.DataFrame(res)
+    r.columns = ['condition', 'prob', 'auc']
+
+    tmp = plt.plot(r.auc,
+             r.prob,
+             'ko',
+             markersize=10,
+             alpha=0.77)
+    for t in tmp:
+        t.set_rasterized(True)
+
+    plt.axvline(0.5,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+    plt.axhline(4,
+                color=sns.xkcd_rgb['pale red'],
+                linestyle='dashed')
+    plt.xlim(0.2, 0.8)
+    plt.ylim(0, 7.2)
+    plt.ylabel('conditional genes\nenrichment')
+    plt.xlabel('condition\'s AUC')
+    sns.despine()
+
+    plt.savefig(options.outfile,
+                dpi=options.dpi)

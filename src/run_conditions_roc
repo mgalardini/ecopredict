@@ -1,0 +1,254 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run phenotypes plots"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_overall_roc')
+
+    parser.add_argument('directory1')
+    parser.add_argument('directory2')
+    parser.add_argument('directory3')
+    parser.add_argument('outfile')
+
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure height [Default: 1 inches]')
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure width [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    import os
+    import numpy as np
+    import pandas as pd
+    from sklearn.metrics import auc as fauc
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+    import matplotlib
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    fig = plt.figure(figsize=(options.width, options.height))
+
+    fig.subplots_adjust(hspace=0)
+
+    transFigure = fig.transFigure.inverted()
+
+    ax1 = plt.subplot(4, 1, 1)
+    ax1.patch.set_alpha(0)
+
+    mkde = []
+    auc = pd.read_table(os.path.join(options.directory1, 'auc_score.2.txt'),
+                        header=None)
+    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    for boot, color, name in zip([1, 2, 3],
+                                  sns.color_palette('Greys_r', 4),
+                                  ('Strains shuffling',
+                                   'Gene sets shuffling',
+                                   'Random gene sets')):
+        boots = pd.read_table(os.path.join(options.directory1, 'bootstrap%s_2.txt' % boot),
+                                  header=None)
+        boots.columns = ['median', 'mad', 'mean', 'std']
+        kde = sns.kdeplot(boots['median'],
+                          color=color,
+                          shade=True,
+                          label=name)
+        mkde.append(kde.get_ylim()[1])
+    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
+                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+            'ro',
+            markersize=10,
+            label='Predictions')
+    plt.legend(loc=(0.6, 0.2),
+               frameon=True)
+    plt.xlim(0.45, 0.65)
+    plt.ylim(0, max(mkde))
+    plt.axvline(0.5,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+    plt.yticks([])
+    plt.xticks([])
+    plt.ylabel('SNPs\n(SIFT)',
+               rotation=0,
+               horizontalalignment='right')
+
+    coord1 = transFigure.transform(ax1.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
+                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
+
+    sns.despine(left=True, bottom=True,
+                ax=ax1)
+
+    ax2 = plt.subplot(4, 1, 2)
+    ax2.patch.set_alpha(0)
+
+    mkde = []
+    auc = pd.read_table(os.path.join(options.directory2, 'auc_score.2.txt'),
+                        header=None)
+    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    for boot, color, name in zip([1, 2, 3],
+                           sns.color_palette('Greys_r', 4),
+                           ('Strains shuffling',
+                            'Gene sets shuffling',
+                            'Random gene sets')):
+        boots = pd.read_table(os.path.join(options.directory2, 'bootstrap%s_2.txt' % boot),
+                                  header=None)
+        boots.columns = ['median', 'mad', 'mean', 'std']
+        kde = sns.kdeplot(boots['median'],
+                          color=color,
+                          shade=True,
+                          label=name)
+        mkde.append(kde.get_ylim()[1])
+    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
+                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+                 'ro',
+                 markersize=10,
+                 label='Predictions')
+    plt.legend([])
+    plt.xlim(0.45, 0.65)
+    plt.ylim(0, max(mkde))
+    plt.axvline(0.5,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+    plt.yticks([])
+    plt.xticks([])
+    plt.ylabel('Accessory genome',
+               rotation=0,
+               horizontalalignment='right')
+
+    coord2 = transFigure.transform(ax2.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
+                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
+
+    sns.despine(left=True, bottom=True,
+                ax=ax2)
+
+    ax3 = plt.subplot(4, 1, 3)
+    ax3.patch.set_alpha(0.)
+
+    mkde = []
+    auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
+                        header=None)
+    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    for boot, color in zip([1, 2, 3],
+                           sns.color_palette('Greys_r', 4)):
+        boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.txt' % boot),
+                                  header=None)
+        boots.columns = ['median', 'mad', 'mean', 'std']
+        kde = sns.kdeplot(boots['median'],
+                          color=color,
+                          shade=True,
+                          label='_')
+        mkde.append(kde.get_ylim()[1])
+    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
+                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+                 'ro',
+                 markersize=10)
+    plt.legend([])
+    plt.xlim(0.45, 0.65)
+    plt.ylim(0, max(mkde))
+    plt.axvline(0.5,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+    plt.yticks([])
+    plt.xticks([])
+    plt.ylabel('All predictors',
+               rotation=0,
+               horizontalalignment='right')
+
+    coord3 = transFigure.transform(ax3.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
+                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
+
+    sns.despine(left=True, bottom=True,
+                ax=ax3)
+
+    ax4 = plt.subplot(4, 1, 4)
+    ax4.patch.set_alpha(0.)
+
+    mkde = []
+    auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
+                        header=None)
+    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    for boot, color in zip([1, 2, 3],
+                           sns.color_palette('Greys_r', 4)):
+        boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.10.txt' % boot),
+                                  header=None)
+        boots.columns = ['median', 'mad', 'mean', 'std']
+        kde = sns.kdeplot(boots['median'],
+                          color=color,
+                          shade=True,
+                          label='_')
+        mkde.append(kde.get_ylim()[1])
+    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
+                            for c in set(auc[auc.phenotypes >= 10].condition)]),
+                 max(mkde)/2.,
+                 'ro',
+                 markersize=10)
+    plt.legend([])
+    plt.xlim(0.45, 0.65)
+    plt.ylim(0, max(mkde))
+    plt.axvline(0.5,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed')
+    plt.yticks([])
+    plt.xticks([0.45, 0.5, 0.55, 0.6, 0.65])
+    plt.ylabel('All predictors\n(>= 10 phenotypes)',
+               rotation=0,
+               horizontalalignment='right')
+
+    coord4 = transFigure.transform(ax4.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
+                                                            for c in set(auc[auc.phenotypes >= 10].condition)]),
+                                                            max(mkde)/2.]))
+
+    plt.xlabel('Median AUC')
+
+    line = matplotlib.lines.Line2D((coord1[0],coord2[0],coord3[0],coord4[0]),
+                                   (coord1[1],coord2[1],coord3[1],coord4[1]),
+                                   transform=fig.transFigure,
+                                   color='r')
+    fig.lines = line,
+
+    sns.despine(left=True,
+                ax=ax4)
+
+    plt.savefig(options.outfile,
+                dpi=options.dpi)

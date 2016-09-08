@@ -138,6 +138,9 @@ ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 PURITYDATA1 = $(PLOTDATA)/purity1.txt
 PURITYDATA2 = $(PLOTDATA)/purity2.txt
+BOOTSTRAP1 = $(PLOTDATA)/bootstrap1.txt
+BOOTSTRAP2 = $(PLOTDATA)/bootstrap2.txt
+BOOTSTRAP3 = $(PLOTDATA)/bootstrap3.txt
 
 # Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
@@ -158,15 +161,27 @@ PREPLICATES = $(PLOTDIR)/p_replicates.svg
 PREPLICATESA = $(PLOTDIR)/p_replicates_all.svg
 PTREEPLOT = $(PLOTDIR)/ptree.svg
 PTREEBARS = $(PLOTDIR)/ptree_colorbars.svg
+OVERALLPLOT = $(PLOTDIR)/overall_auc.svg
+CONDITIONSPLOT = $(PLOTDIR)/conditions_auc.svg
+CATEGORIESPLOT = $(PLOTDIR)/categories_auc.svg
+ASSOCIATIONPLOT = $(PLOTDIR)/association_auc.svg
+EXAMPLE1PLOT = $(PLOTDIR)/example_1.svg
+EXAMPLE2PLOT = $(PLOTDIR)/example_2.svg
+EXAMPLE1APLOT = $(PLOTDIR)/example_1a.svg
+EXAMPLE2APLOT = $(PLOTDIR)/example_2a.svg
+EXAMPLE2APLOT = $(PLOTDIR)/example_2a.svg
+EXAMPLEROCPLOT = $(PLOTDIR)/example_roc.svg
 
 # Schemes
 SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
 SCHEMEPHENOTYPES = $(SCHEMEDIR)/phenotypes.svg
+SCHEMEPREDICTIONS = $(SCHEMEDIR)/prediction.svg
 
 # Figures
 FIGURE1 = $(FIGUREDIR)/figure_1.svg
 FIGURE2 = $(FIGUREDIR)/figure_2.svg
 FIGURE3 = $(FIGUREDIR)/figure_3.svg
+FIGURE4 = $(FIGUREDIR)/figure_4.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -371,7 +386,7 @@ $(FIXEDPANGENOME): $(PANGENOME)
 $(ASSOCIATIONDATA): $(FIXEDPANGENOME)
 	cd $(ASSOCIATIONDIR) && \
 	for i in $$(find $(PHENOTYPEDIR) -type f); do \
-	  $(SUBMIT) "python ../Scoary/scoary.py -t $$i -g $(FIXEDPANGENOME) -r $(PHENOTYPESTRAINSDIR)/$$(basename $$i) --no-time"; \
+	  $(SUBMIT) "python ../Scoary/scoary.py -t $$i -g $(FIXEDPANGENOME) -r $(PHENOTYPESTRAINSDIR)/$$(basename $$i) --no-time -c I"; \
 	done && touch $@
 
 ##########################
@@ -395,6 +410,13 @@ $(PROFILEDATA): $(SICKNESS) $(PANGENOME) $(CONSERVATION) $(ESSENTIAL) $(CONVERSI
 
 $(PURITYDATA1): $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA)
 	$(SRCDIR)/run_conditions_purity $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(PURITYDATA1) $(PURITYDATA2)
+
+$(BOOTSTRAP1): $(BOOTSTRAPSDATA)
+	$(SRCDIR)/collect_overall_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap1_2/ --curve > $@
+$(BOOTSTRAP2): $(BOOTSTRAPSDATA)
+	$(SRCDIR)/collect_overall_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap2_2/ --curve > $@
+$(BOOTSTRAP3): $(BOOTSTRAPSDATA)
+	$(SRCDIR)/collect_overall_random_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap3_2/ --curve > $@
 
 ######################
 ## Plots generation ##
@@ -433,6 +455,30 @@ $(PTREEBARS): $(TREE) $(SCREENING) $(SCREENINGFDR)
 $(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION)
 	$(SRCDIR)/run_phenotypes_plot $(PLOTDIR) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION) $(PURITYDATA1) $(PURITYDATA2) --dpi 90
 
+$(OVERALLPLOT): $(BOOTSTRAPSDATA) $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3)
+	$(SRCDIR)/run_overall_roc $(SICKNESSDIR)/123456/overall_auc_score.2.txt $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3) $@ --size 3.5 --dpi 90
+
+$(CONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
+	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/16 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 4 --dpi 90
+
+$(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
+	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90
+
+$(ASSOCIATIONPLOT): $(AUCDATA) $(ASSOCIATIONDATA) $(ECKFILE) $(CONVERSION) $(FIXEDPANGENOME) $(DELETION)
+	$(SRCDIR)/run_associations_plot $(ECKFILE) $(CONVERSION) $(DELETION) $(CHEMICAL)/deletion.all.genes.2.txt $(FIXEDPANGENOME) $(SICKNESSDIR)/123456/auc_score.2.txt $(ASSOCIATIONDIR) $@ --height 2 --width 4 --dpi 300
+
+$(EXAMPLE1PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3 --dpi 300 --notree
+$(EXAMPLE1APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3.5 --dpi 300
+$(EXAMPLE2PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3 --dpi 300 --notree
+$(EXAMPLE2APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3.5 --dpi 300
+
+$(EXAMPLEROCPLOT): $(AUCDATA)
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_score.2.txt $@ --condition OXACILLIN.5UM PSEUDOMONICACID.2 --cname "Oxacillin 5 uM" "Pseudomonic acid 2 ug/ml" --size 3.5 --dpi 90
+
 #############
 ## Figures ##
 #############
@@ -445,6 +491,9 @@ $(FIGURE2): $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(ROCPLOT) $(A
 
 $(FIGURE3): $(SCHEMEPHENOTYPES) $(PREPLICATES)
 	$(SRCDIR)/run_figure_3 $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PCORRELATION) $(PCORRELATIONL) $(PCORRELATIONC) $(PTREEPLOT) $(TREELEGEND) $(PTREEBARS) $(PPURITY) $(PCHEMICAL) $(PTARGETS) $@
+
+$(FIGURE4): $(SCHEMEPREDICTIONS) $(OVERALLPLOT) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT)
+	$(SRCDIR)/run_figure_4 $(SCHEMEPREDICTIONS) $(OVERALLPLOT) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT) $@
 
 ########################
 ## Targets definition ##
@@ -460,7 +509,12 @@ associations: $(ASSOCIATIONDATA)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(ROCPLOT) $(ANNOTATIONPLOT) \
-       $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS)
-figures: $(FIGURE1) $(FIGURE2) $(FIGURE3)
+       $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS) \
+       $(OVERALLPLOT) $(CONDITIONSPLOT) \
+       $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) \
+       $(EXAMPLE1PLOT) $(EXAMPLE1APLOT) \
+       $(EXAMPLE2PLOT) $(EXAMPLE2APLOT) \
+       $(EXAMPLEROCPLOT)
+figures: $(FIGURE1) $(FIGURE2) $(FIGURE3) $(FIGURE4)
 
 .PHONY: constraints sickness score auc bootstraps collect associations plots figures

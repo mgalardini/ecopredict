@@ -1,0 +1,456 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run example plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_examples')
+
+    parser.add_argument('eck')
+    parser.add_argument('gbk')
+    parser.add_argument('deletion')
+    parser.add_argument('sickness')
+    parser.add_argument('predictions')
+    parser.add_argument('matrix')
+    parser.add_argument('fdr')
+    parser.add_argument('tree')
+    parser.add_argument('condition')
+    parser.add_argument('cname')
+    parser.add_argument('outfile')
+
+    parser.add_argument('--notree', action='store_true',
+                        default=False,
+                        help='Plot roc curve with no tree')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure height [Default: 1 inches]')
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=1,
+                        help='Figure width denominator [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    new_cmap = colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n)))
+    return new_cmap
+
+
+def expected(values, pseudo):
+    return sum(np.log(1 - values + pseudo))/values.shape[0]
+
+
+def plot_condition(c,
+                   cname,
+                   tree,
+                   phenotypes,
+                   mdist,
+                   m,
+                   score,
+                   genes,
+                   height, width,
+                   outfile,
+                   dpi,
+                   mdist_offset=0):
+    p_vector = phenotypes.loc[[x.name
+                              for x in tree.get_terminals()],
+                              c]
+    
+    grid_length = 5 + len([x for x in genes[c]
+                            if x in m.index]) + 1 + 1 + 1
+
+    grid_height = len(tree.get_terminals())
+    
+    fig = plt.figure(figsize=(grid_length/float(width), height))
+
+    cmap = cmap = truncate_colormap(plt.cm.plasma, 0, 0.8)
+    cmap.set_bad('grey', 0.2)
+    cmap.set_under('red', 1)
+
+    ax3=plt.subplot2grid((grid_height, grid_length),
+                         (0, 5),
+                         colspan=len([x for x in genes[c]
+                                      if x in m.index]),
+                         rowspan=len(tree.get_terminals()))
+    a=ax3.imshow(m.loc[[x for x in
+                        m.loc[
+                        genes[c]
+                        ].T.mad().sort_values(ascending=False).index
+                       if x in m.index],
+                       [x.name
+                        for x in tree.get_terminals()]].T,
+                 cmap=cmap,
+                 vmin=0, vmax=1,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax3.set_yticks([])
+    ax3.set_xticks([])
+    for i  in range(len([x for x in genes[c]
+                         if x in m.index])):
+        ax3.axvline(i+0.5,
+                    color='k')
+    ax3.set_xticks([x for x in range(len([x for x in genes[c]
+                                               if x in m.index]))])
+    ax3.set_xticklabels([en.get(x, '') for x in genes[c]
+                         if x in m.index],
+                        rotation=90)
+    ax3.set_xlabel('Sickness score')
+    
+    cmap = plt.cm.Reds
+    cmap.set_bad('grey', 0.2)
+
+    ax1=plt.subplot2grid((grid_height, grid_length),
+                         (0, 7 + len([x for x in genes[c]
+                                       if x in m.index])),
+                         colspan=1,
+                         rowspan=len(tree.get_terminals()))
+    a=ax1.imshow([[x] for x in p_vector],
+                 cmap=cmap,
+                 vmin=0, vmax=1,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax1.set_yticks([])
+    ax1.set_xticks([0.])
+    ax1.set_xticklabels(['Phenotype'],
+                        rotation=90)
+    
+    cmap = plt.cm.Reds
+    cmap.set_bad('grey', 0.2)
+    
+    ax4=plt.subplot2grid((grid_height, grid_length),
+                         (0, 6 + len([x for x in genes[c]
+                                     if x in m.index])),
+                         colspan=1,
+                         rowspan=len(tree.get_terminals()))
+    a=ax4.imshow([[x] for x in score.T.loc[[x.name
+                  for x in tree.get_terminals()],
+                  c].values],
+                 cmap=cmap,
+                 vmin=0,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax4.set_yticks([])
+    ax4.set_xticks([0.])
+    ax4.set_xticklabels(['Prediction'],
+                        rotation=90)
+    
+    ax=plt.subplot2grid((grid_height, grid_length),
+                        (0, 0),
+                        colspan=5,
+                        rowspan=len(tree.get_terminals()),
+                        axisbg='white')
+
+    fig.subplots_adjust(wspace=0, hspace=0)
+    
+    labels = {}
+    for x, i in zip(tree.get_terminals(),
+                    range(len(tree.get_terminals()))):
+        if x.name not in strains:
+            continue
+        labels[x.name] = i
+    
+    color_strains = set()
+    
+    def _label(x, strains):
+        if x.name in strains:
+            return x.name
+        
+    suptitle = ''
+    Phylo.draw(tree, axes=ax, 
+               show_confidence=False,
+               label_func=lambda x: _label(x, color_strains),
+               xticks=([],),
+               yticks=([],),
+               ylabel=('',), suptitle=(suptitle,),
+               xlim=(-0.01, mdist+0.01+mdist_offset),
+               axis=('off',),
+               do_show=False,)
+    
+    plt.suptitle('Condition: %s' % cname, fontsize=11)
+
+    plt.savefig(outfile,
+                dpi=dpi)
+
+def plot_condition_roc(c,
+                   cname,
+                   tree,
+                   phenotypes,
+                   mdist,
+                   m,
+                   score,
+                   genes,
+                   height, width,
+                   outfile,
+                   dpi,
+                   mdist_offset=0):
+    sorder = score.T.loc[phenotypes[c].dropna().index,
+                         c].sort_values(ascending=False).index
+
+    p_vector = phenotypes.loc[sorder,
+                              c]
+    
+    grid_length = len([x for x in genes[c]
+                            if x in m.index]) + 1 + 1 + 1
+
+    grid_height = len(tree.get_terminals())
+    
+    fig = plt.figure(figsize=(grid_length/float(width), height))
+
+    cmap = cmap = truncate_colormap(plt.cm.plasma, 0, 0.8)
+    cmap.set_bad('grey', 0.2)
+    cmap.set_under('red', 1)
+
+    ax3=plt.subplot2grid((grid_height, grid_length),
+                         (0, 0),
+                         colspan=len([x for x in genes[c]
+                                      if x in m.index]),
+                         rowspan=len(tree.get_terminals()))
+    a=ax3.imshow(m.loc[[x for x in
+                        m.loc[
+                        genes[c]
+                        ].T.mad().sort_values(ascending=False).index
+                       if x in m.index],
+                       sorder].T,
+                 cmap=cmap,
+                 vmin=0, vmax=1,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax3.set_yticks([])
+    ax3.set_xticks([])
+    for i  in range(len([x for x in genes[c]
+                         if x in m.index])):
+        ax3.axvline(i+0.5,
+                    color='k')
+    ax3.set_xticks([x for x in range(len([x for x in genes[c]
+                                               if x in m.index]))])
+    ax3.set_xticklabels([en.get(x, '') for x in genes[c]
+                         if x in m.index],
+                        rotation=90)
+    ax3.set_xlabel('Sickness score')
+    ax3.set_ylabel('Strains')
+    
+    cmap = plt.cm.Reds
+    cmap.set_bad('grey', 0.2)
+
+    ax1=plt.subplot2grid((grid_height, grid_length),
+                         (0, 2 + len([x for x in genes[c]
+                                       if x in m.index])),
+                         colspan=1,
+                         rowspan=len(tree.get_terminals()))
+    a=ax1.imshow([[x] for x in p_vector],
+                 cmap=cmap,
+                 vmin=0, vmax=1,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax1.set_yticks([])
+    ax1.set_xticks([0.])
+    ax1.set_xticklabels(['Phenotype'],
+                        rotation=90)
+    
+    cmap = plt.cm.Reds
+    cmap.set_bad('grey', 0.2)
+    
+    ax4=plt.subplot2grid((grid_height, grid_length),
+                         (0, 1 + len([x for x in genes[c]
+                                     if x in m.index])),
+                         colspan=1,
+                         rowspan=len(tree.get_terminals()))
+    a=ax4.imshow([[x] for x in score.T.loc[sorder,
+                  c].values],
+                 cmap=cmap,
+                 vmin=0,
+                 aspect='auto',
+                 interpolation='none',
+                )
+    a.set_rasterized(True)
+    ax4.set_yticks([])
+    ax4.set_xticks([0.])
+    ax4.set_xticklabels(['Prediction'],
+                        rotation=90)
+    
+    #ax=plt.subplot2grid((grid_height, grid_length),
+    #                    (0, 4 + len([x for x in genes[c]
+    #                                 if x in m.index])),
+    #                    colspan=11,
+    #                    rowspan=len(tree.get_terminals()),
+    #                    axisbg='white')
+
+    #fig.subplots_adjust(wspace=0, hspace=0)
+    
+    #df = pd.DataFrame([p_vector.values,
+    #                   score.T.loc[sorder, c].values]).T
+    
+    #fpr, tpr, thresholds = roc_curve(df.dropna()[0], df.dropna()[1])
+
+    #ax.plot(fpr, tpr,
+    #        'r-',
+    #        linewidth=3,
+    #        label='AUC: %.2f' % auc(fpr, tpr))
+    #ax.plot([0, 1],
+    #        [0, 1],
+    #        '--',
+    #        color=sns.xkcd_rgb['grey'],
+    #        zorder=0)
+    #plt.legend(loc='lower right')
+    #ax.set_xlabel('False positive rate')
+    #ax.set_ylabel('True positive rate')
+    #ax.yaxis.tick_right()
+    #ax.yaxis.set_label_position('right')
+
+    plt.suptitle('Condition: %s' % cname, fontsize=11)
+    
+    plt.savefig(outfile,
+                dpi=dpi)
+
+
+if __name__ == "__main__":
+    import os
+    import numpy as np
+    import pandas as pd
+    from Bio import Phylo
+    from Bio import SeqIO
+    from sklearn.metrics import roc_curve, auc, f1_score
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+    import matplotlib.colors as colors
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    conversion = {x.split('\t')[0]:x.rstrip().split()[1]
+                  for x in open(options.eck)}
+    # Which functions are those?
+    ep = {}
+    en = {}
+    for s in SeqIO.parse(options.gbk, 'genbank'):
+        for f in s.features:
+            if 'gene_synonym' not in f.qualifiers or f.type != 'CDS':
+                continue
+            loc = filter(lambda x: x.strip().startswith('ECK'),
+                         f.qualifiers['gene_synonym'][0].split(';'))[0].strip()
+            loc = conversion.get(loc, loc)
+            en[loc] = f.qualifiers.get('gene', [''])[0]
+            ep[loc] = f.qualifiers.get('product', [''])[0]
+
+    genes = {x.split('\t')[0]: {conversion.get(y.split('-')[0],
+                                               y.split('-')[0])
+                                for y in x.rstrip().split('\t')[1].split()}
+             for x in open(options.deletion)
+             if len(x.split()) > 1}
+
+    m = pd.read_table(options.sickness)
+    m.set_index(m.columns[0], inplace=True)
+    m[np.isnan(m)] = 0
+    m1 = m / -m.apply(expected, pseudo=0.0)
+    m.T.loc['NT12001'] = [0 for x in range(m.shape[0])]
+    m1.T.loc['NT12001'] = [0 for x in range(m.shape[0])]
+
+    score = pd.read_table(options.predictions)
+    score.set_index(score.columns[0], inplace=True)
+    score[np.isnan(score)] = 0.
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0], inplace=True)
+    v = a[f < 0.05]
+    v = v[v < 0]
+
+    phenotypes = f.copy(deep=True)
+    phenotypes[(a < 0) & (f < 0.05)] = 1
+    phenotypes[(a >= 0) & (f < 0.05)] = 0
+    phenotypes[f >= 0.05] = 0
+
+    tree = Phylo.read(options.tree,
+                      'newick')
+    strains = {}
+    for x in tree.get_terminals():
+        sid = x.name.split('.')[0].split('_')[0]
+        if sid == 'genome':
+            sid = 'NT12001'
+        strains[sid] = strains.get(sid, [])
+        strains[sid].append(x.name)
+    for k, v in strains.items():
+        strains[k] = sorted(v)
+    rename = {}
+    for k, v in strains.items():
+        rename[v[0]] = k
+        if len(v) > 1:
+            for x in v[1:]:
+                rename[x] = ''
+    for x in tree.get_terminals():
+        if rename[x.name] == '':
+            tree.prune(x)
+            continue
+        x.name = rename[x.name]
+    tree.ladderize()
+    mdist = max([tree.distance(tree.root, x) for x in tree.get_terminals()])
+
+    if options.notree:
+        plot_condition_roc(options.condition,
+               options.cname,
+               tree,
+               phenotypes,
+               mdist,
+               m1,
+               score,
+               genes,
+               options.height,
+               options.width,
+               options.outfile,
+               options.dpi)
+    else:
+        plot_condition(options.condition,
+               options.cname,
+               tree,
+               phenotypes,
+               mdist,
+               m1,
+               score,
+               genes,
+               options.height,
+               options.width,
+               options.outfile,
+               options.dpi)
