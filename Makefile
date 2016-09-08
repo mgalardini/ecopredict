@@ -459,7 +459,7 @@ $(OVERALLPLOT): $(BOOTSTRAPSDATA) $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3)
 	$(SRCDIR)/run_overall_roc $(SICKNESSDIR)/123456/overall_auc_score.2.txt $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3) $@ --size 3.5 --dpi 90
 
 $(CONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
-	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/16 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 4 --dpi 90
+	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/1236 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 4 --dpi 90
 
 $(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
 	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90

@@ -104,7 +104,7 @@ if __name__ == "__main__":
                 linestyle='dashed')
     plt.yticks([])
     plt.xticks([])
-    plt.ylabel('SNPs\n(SIFT)',
+    plt.ylabel('SNPs\n(SIFT + FoldX)',
                rotation=0,
                horizontalalignment='right')
 
