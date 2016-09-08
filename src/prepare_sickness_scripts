@@ -189,7 +189,7 @@ if __name__ == "__main__":
 
     for a, b, c, d in itertools.combinations(c1, 4):
         name = ''.join( (a[0], b[0], c[0], d[0]) )
-        if name not in ['2356',]:
+        if name not in ['2356', '1236', ]:
             continue
         names = (a[1], b[1], c[1], d[1])
         f = open('%s/%s.sh' % (options.outdir, name), 'w')
