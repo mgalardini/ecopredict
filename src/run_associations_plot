@@ -139,7 +139,7 @@ if __name__ == "__main__":
     plt.axhline(4,
                 color=sns.xkcd_rgb['pale red'],
                 linestyle='dashed')
-    plt.xlim(0.2, 0.8)
+    plt.xlim(0.2, 0.9)
     plt.ylim(0, 7.2)
     plt.ylabel('conditional genes\nenrichment')
     plt.xlabel('condition\'s AUC')

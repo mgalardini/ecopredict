@@ -21,6 +21,13 @@ def get_options():
     parser.add_argument('matrix', action='store',
                         help='EMAP matrix')
 
+    parser.add_argument('--fdr', action='store',
+                        default=None,
+                        help='FDR correction matrix (triggers weighted scoring)')
+    parser.add_argument('--conditions', action='store',
+                        default=None,
+                        help='Conditions conversion (might be necessary if --fdr called)')
+
     parser.add_argument('--conversion', action='store',
                         default=None,
                         help='ECK to uniprot identifiers')
@@ -48,6 +55,12 @@ def expected(values, pseudo):
 def score(values, genes, pseudo):
     return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
                pseudo))
+               
+def weighted_score(values, genes, pvals, gsum, gmax, pseudo):
+    corr = -(np.log10(pvals.dropna()).replace([np.inf, -np.inf], np.nan).dropna() * gsum) / gmax
+    logvalues = (np.log(1 - values.loc[genes].dropna() + 0.0).dropna().T * corr).dropna().T
+    return sum(logvalues/expected(values,
+                                  pseudo))
 
 if __name__ == "__main__":
     import sys
@@ -88,6 +101,34 @@ if __name__ == "__main__":
                   for x in dm.index
                   if conversion.get(x.split('-')[0], x.split('-')[0]) not in uncommon})
 
+    if options.fdr is not None:
+        f = pd.read_table(options.fdr)
+        f.set_index(f.columns[0], inplace=True)
+        g = pd.read_table(options.fdr)
+        g.set_index(g.columns[0], inplace=True)
+        g[g > 0.05] = 9999
+        g[g <= 0.05] = 1
+        g[g == 9999] = 0
+
+        f.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in f.index]
+        g.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in g.index]
+
+        g = g.T.sum() / g.shape[1]
+
+        gmax = pd.Series(
+                -np.log10(f.values.flatten())
+                ).replace([np.inf,
+                           -np.inf],
+                           np.nan).dropna().max() * g.max()
+
+        conditions = {x.rstrip().split()[0]: x.rstrip().split()[1]
+                      for x in open(options.conditions)}
+
+    
     m = pd.read_table(options.probabilities)
     m.set_index(m.columns[0], inplace=True)
     m[np.isnan(m)] = 0.
@@ -104,11 +145,22 @@ if __name__ == "__main__":
             continue
         rsets[c] = {d[x] for x in deletion[c]
                     if x in d}
-
+                    
     ps = []
     for k, genes in rsets.items():
         try:
-            p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+            if options.fdr is None:
+                p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+            else:
+                if conditions.get(k, None) is None:
+                    continue
+                k1 = conditions[k]
+                p = m.apply(weighted_score,
+                            genes=genes,
+                            pvals=f[k1].loc[genes],
+                            gsum=g.loc[genes],
+                            gmax=gmax,
+                            pseudo=options.pseudocount)
             p = pd.DataFrame(p).T
             p.index = [k]
             ps.append(p)

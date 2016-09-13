@@ -31,6 +31,13 @@ def get_options():
                         default=0.01,
                         help='Pseudocount [Default: 0.01]')
 
+    parser.add_argument('--fdr', action='store',
+                        default=None,
+                        help='FDR correction matrix (triggers weighted scoring)')
+    parser.add_argument('--conditions', action='store',
+                        default=None,
+                        help='Conditions conversion (might be necessary if --fdr called)')
+    
     parser.add_argument('--linear', action='store_true',
                         default=False,
                         help='Linear addition of P(AF), instead of logaritmic')
@@ -81,6 +88,12 @@ def score_mean_linear(values, genes, pseudo):
 
 def score_uncorrected(values, genes, pseudo):
     return -sum(np.log(1 - values.loc[genes].dropna() + pseudo))
+
+def weighted_score(values, genes, pvals, gsum, gmax, pseudo):
+    corr = -(np.log10(pvals.dropna()).replace([np.inf, -np.inf], np.nan).dropna() * gsum) / gmax
+    logvalues = (np.log(1 - values.loc[genes].dropna() + 0.0).dropna().T * corr).dropna().T
+    return sum(logvalues/expected(values,
+                                  pseudo))
 
 if __name__ == "__main__":
     import sys
@@ -155,6 +168,33 @@ if __name__ == "__main__":
     m.set_index('prot', inplace=True)
     m[np.isnan(m)] = 0.
 
+    if options.fdr is not None:
+        f = pd.read_table(options.fdr)
+        f.set_index(f.columns[0], inplace=True)
+        g = pd.read_table(options.fdr)
+        g.set_index(g.columns[0], inplace=True)
+        g[g > 0.05] = 9999
+        g[g <= 0.05] = 1
+        g[g == 9999] = 0
+
+        f.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in f.index]
+        g.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in g.index]
+
+        g = g.T.sum() / g.shape[1]
+
+        gmax = pd.Series(
+                -np.log10(f.values.flatten())
+                ).replace([np.inf,
+                           -np.inf],
+                           np.nan).dropna().max() * g.max()
+
+        conditions = {x.rstrip().split()[0]: x.rstrip().split()[1]
+                      for x in open(options.conditions)}
+
     ps = []
     for k in sorted(deletion):
         genes = deletion[k]
@@ -165,8 +205,18 @@ if __name__ == "__main__":
             if len(genes) > options.maximum:
                 continue
         try:
-            if not options.linear and not options.uncorrected and not options.mean:
+            if not options.linear and not options.uncorrected and not options.mean and not options.fdr:
                 p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+            elif options.fdr is not None:
+                if conditions.get(k, None) is None:
+                    continue
+                k1 = conditions[k]
+                p = m.apply(weighted_score,
+                            genes=genes,
+                            pvals=f[k1].loc[genes],
+                            gsum=g.loc[genes],
+                            gmax=gmax,
+                            pseudo=options.pseudocount)
             elif options.linear and options.mean:
                 p = m.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
             elif options.linear:

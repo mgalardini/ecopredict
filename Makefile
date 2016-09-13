@@ -118,6 +118,7 @@ REPLICATES2 = $(CHEMICAL)/matrixB.txt
 REPLICATES3 = $(CHEMICAL)/matrixC.txt
 SHARED = $(CHEMICAL)/shared_conditions.txt
 DELETION = $(CHEMICAL)/all_genes_matched_and_joined_New_NT.txt
+DELETIONFDR = $(CHEMICAL)/deletion.all.fdr.txt
 
 # Sickness files
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
@@ -315,23 +316,29 @@ $(SICKNESS): $(CONVERSION) $(UNCOMMON) $(OUTGROUPS)
 ## Conditional score ##
 #######################
 
-$(SCORE): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON)
+$(SCORE): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETIONFDR) $(SHARED)
 	for g in $$(find $(CHEMICAL) -type f -name 'deletion.all*.genes.*'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  for d in $$(find $(SICKNESSDIR)/* -maxdepth 0 -type d); do \
 	    $(SUBMIT) "$(SRCDIR)/get_score $$d/all.txt $$g --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$d/score.$$gf.txt"; \
+	    $(SUBMIT) "$(SRCDIR)/get_score $$d/all.txt $$g --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$d/weighted_score.$$gf.txt"; \
 	  done; \
 	done && touch $@
 
 $(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
-	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_score.$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_score.$$gf.txt"; \
+	done && \
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_weighted_score.$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_weighted_score.$$gf.txt"; \
 	done && touch $@
 	
-$(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION)
-	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+$(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION) $(DELETIONFDR) $(SHARED)
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
@@ -352,18 +359,48 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
+	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
 	  done; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
+	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
 	  done; \
-	done && touch $@
+	done && \
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  mkdir -p $$(dirname $$g)/weighted_bootstrap1_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_bootstrap1_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/weighted_bootstrap2_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_bootstrap2_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf; \
+	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf; \
+	  mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/; \
+	    mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/; \
+	    mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/; \
+	    for sround in $$(seq 1 10); do \
+	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/$$sround"; \
+	    done; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
+	  done; \
+	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap2_$$gf; \
+	  for round in $$(seq 1 100); do \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
+	  done; \
+	done &&touch $@
 
 $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
-	for g in $$(find $(SICKNESSDIR) -type f -name 'score.*.txt'); do \
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap1_$$gf.10.txt"; \
@@ -374,7 +411,19 @@ $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap1_$$gf/ > $$(dirname $$g)/overall_bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap2_$$gf/ > $$(dirname $$g)/overall_bootstrap2_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
-	done && touch $@
+	done && \
+	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
+	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap1_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap2_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap3_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap3_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf.txt"; \
+	done &&touch $@
 
 ##################
 ## Associations ##
@@ -456,28 +505,28 @@ $(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(AS
 	$(SRCDIR)/run_phenotypes_plot $(PLOTDIR) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION) $(PURITYDATA1) $(PURITYDATA2) --dpi 90
 
 $(OVERALLPLOT): $(BOOTSTRAPSDATA) $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3)
-	$(SRCDIR)/run_overall_roc $(SICKNESSDIR)/123456/overall_auc_score.2.txt $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3) $@ --size 3.5 --dpi 90
+	$(SRCDIR)/run_overall_roc $(SICKNESSDIR)/123456/overall_auc_score.2.txt $(SICKNESSDIR)/123456/overall_auc_weighted_score.2.txt $(BOOTSTRAP1) $(BOOTSTRAP2) $(BOOTSTRAP3) $@ --size 3.5 --dpi 90
 
 $(CONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
 	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/1236 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 4 --dpi 90
 
 $(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
-	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90
+	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90
 
 $(ASSOCIATIONPLOT): $(AUCDATA) $(ASSOCIATIONDATA) $(ECKFILE) $(CONVERSION) $(FIXEDPANGENOME) $(DELETION)
-	$(SRCDIR)/run_associations_plot $(ECKFILE) $(CONVERSION) $(DELETION) $(CHEMICAL)/deletion.all.genes.2.txt $(FIXEDPANGENOME) $(SICKNESSDIR)/123456/auc_score.2.txt $(ASSOCIATIONDIR) $@ --height 2 --width 4 --dpi 300
+	$(SRCDIR)/run_associations_plot $(ECKFILE) $(CONVERSION) $(DELETION) $(CHEMICAL)/deletion.all.genes.2.txt $(FIXEDPANGENOME) $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(ASSOCIATIONDIR) $@ --height 2 --width 4 --dpi 300
 
 $(EXAMPLE1PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3 --dpi 300 --notree
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3 --dpi 300 --notree
 $(EXAMPLE1APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3.5 --dpi 300
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3.5 --dpi 300
 $(EXAMPLE2PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3 --dpi 300 --notree
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3 --dpi 300 --notree
 $(EXAMPLE2APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3.5 --dpi 300
+	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3.5 --dpi 300
 
 $(EXAMPLEROCPLOT): $(AUCDATA)
-	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_score.2.txt $@ --condition OXACILLIN.5UM PSEUDOMONICACID.2 --cname "Oxacillin 5 uM" "Pseudomonic acid 2 ug/ml" --size 3.5 --dpi 90
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition OXACILLIN.5UM PSEUDOMONICACID.2 --cname "Oxacillin 5 uM" "Pseudomonic acid 2 ug/ml" --size 3.5 --dpi 90
 
 #############
 ## Figures ##

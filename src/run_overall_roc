@@ -12,7 +12,8 @@ def get_options():
     parser = argparse.ArgumentParser(description=description,
                                      prog='run_overall_roc')
 
-    parser.add_argument('overall')
+    parser.add_argument('overall1')
+    parser.add_argument('overall2')
     parser.add_argument('bootstrap1')
     parser.add_argument('bootstrap2')
     parser.add_argument('bootstrap3')
@@ -59,9 +60,12 @@ if __name__ == "__main__":
 
     plt.figure(figsize=(options.size, options.size))
 
-    auc = pd.read_table(options.overall,
-                        header=None)
-    auc.columns = ['auc', 'tpr', 'fpr']
+    auc1 = pd.read_table(options.overall1,
+                         header=None)
+    auc1.columns = ['auc', 'tpr', 'fpr']
+    auc2 = pd.read_table(options.overall2,
+                         header=None)
+    auc2.columns = ['auc', 'tpr', 'fpr']
 
     b1 = pd.read_table(options.bootstrap1,
                        header=None)
@@ -73,12 +77,21 @@ if __name__ == "__main__":
                        header=None)
     b3.columns = ['fpr', 'tpr', 'mad']
 
-    plt.plot(auc.fpr,
-             auc.tpr,
-             'r-',
+    colors = sns.color_palette('Reds_r', 3)
+    plt.plot(auc1.fpr,
+             auc1.tpr,
+             '-',
+             color=colors[1],
              linewidth=2.5,
-             label='Overall (%.2f)' % auc.auc.values[0],
+             label='Simple (%.2f)' % auc1.auc.values[0],
              zorder=10)
+    plt.plot(auc2.fpr,
+             auc2.tpr,
+             '-',
+             color=colors[0],
+             linewidth=2.5,
+             label='Weighted (%.2f)' % auc2.auc.values[0],
+             zorder=9)
     for color, marker, df, name in zip(sns.color_palette('Greys_r', 3),
                                        ('o', '^', 'D'),
                                        (b1, b2, b3),

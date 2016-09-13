@@ -67,7 +67,11 @@ if __name__ == "__main__":
 
     fig.subplots_adjust(hspace=0)
 
+    color1 = sns.color_palette('Reds_r', 3)[1]
+    color2 = sns.color_palette('Reds_r', 3)[0]
+    
     transFigure = fig.transFigure.inverted()
+    transFigure1 = fig.transFigure.inverted()
 
     ax1 = plt.subplot(4, 1, 1)
     ax1.patch.set_alpha(0)
@@ -76,6 +80,9 @@ if __name__ == "__main__":
     auc = pd.read_table(os.path.join(options.directory1, 'auc_score.2.txt'),
                         header=None)
     auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    wauc = pd.read_table(os.path.join(options.directory1, 'auc_weighted_score.2.txt'),
+                        header=None)
+    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
     for boot, color, name in zip([1, 2, 3],
                                   sns.color_palette('Greys_r', 4),
                                   ('Strains shuffling',
@@ -92,12 +99,20 @@ if __name__ == "__main__":
     plt.plot(np.median([auc[auc.condition == c].auc.values[0]
                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                  max(mkde)/2.,
-            'ro',
+            'o',
+            color=color1,
             markersize=10,
-            label='Predictions')
+            label='Simple')
+    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
+                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+            'o',
+            color=color2,
+            markersize=10,
+            label='Weighted')
     plt.legend(loc=(0.6, 0.2),
                frameon=True)
-    plt.xlim(0.45, 0.65)
+    plt.xlim(0.45, 0.67)
     plt.ylim(0, max(mkde))
     plt.axvline(0.5,
                 color=sns.xkcd_rgb['grey'],
@@ -111,6 +126,9 @@ if __name__ == "__main__":
     coord1 = transFigure.transform(ax1.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
                                                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                                                             max(mkde)/2.]))
+    coord1a = transFigure1.transform(ax1.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
+                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
 
     sns.despine(left=True, bottom=True,
                 ax=ax1)
@@ -122,6 +140,9 @@ if __name__ == "__main__":
     auc = pd.read_table(os.path.join(options.directory2, 'auc_score.2.txt'),
                         header=None)
     auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    wauc = pd.read_table(os.path.join(options.directory2, 'auc_weighted_score.2.txt'),
+                        header=None)
+    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
     for boot, color, name in zip([1, 2, 3],
                            sns.color_palette('Greys_r', 4),
                            ('Strains shuffling',
@@ -138,11 +159,19 @@ if __name__ == "__main__":
     plt.plot(np.median([auc[auc.condition == c].auc.values[0]
                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                  max(mkde)/2.,
-                 'ro',
+                 'o',
+                 color=color1,
                  markersize=10,
-                 label='Predictions')
+                 label='Simple')
+    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
+                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+                 'o',
+                 color=color2,
+                 markersize=10,
+                 label='Weighted')
     plt.legend([])
-    plt.xlim(0.45, 0.65)
+    plt.xlim(0.45, 0.67)
     plt.ylim(0, max(mkde))
     plt.axvline(0.5,
                 color=sns.xkcd_rgb['grey'],
@@ -156,6 +185,9 @@ if __name__ == "__main__":
     coord2 = transFigure.transform(ax2.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
                                                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                                                             max(mkde)/2.]))
+    coord2a = transFigure1.transform(ax2.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
+                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
 
     sns.despine(left=True, bottom=True,
                 ax=ax2)
@@ -167,6 +199,9 @@ if __name__ == "__main__":
     auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
                         header=None)
     auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    wauc = pd.read_table(os.path.join(options.directory3, 'auc_weighted_score.2.txt'),
+                        header=None)
+    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
     for boot, color in zip([1, 2, 3],
                            sns.color_palette('Greys_r', 4)):
         boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.txt' % boot),
@@ -180,10 +215,17 @@ if __name__ == "__main__":
     plt.plot(np.median([auc[auc.condition == c].auc.values[0]
                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                  max(mkde)/2.,
-                 'ro',
+                 'o',
+                 color=color1,
+                 markersize=10)
+    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
+                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                 max(mkde)/2.,
+                 'o',
+                 color=color2,
                  markersize=10)
     plt.legend([])
-    plt.xlim(0.45, 0.65)
+    plt.xlim(0.45, 0.67)
     plt.ylim(0, max(mkde))
     plt.axvline(0.5,
                 color=sns.xkcd_rgb['grey'],
@@ -197,6 +239,9 @@ if __name__ == "__main__":
     coord3 = transFigure.transform(ax3.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
                                                             for c in set(auc[auc.phenotypes >= 0].condition)]),
                                                             max(mkde)/2.]))
+    coord3a = transFigure1.transform(ax3.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
+                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
+                                                            max(mkde)/2.]))
 
     sns.despine(left=True, bottom=True,
                 ax=ax3)
@@ -208,6 +253,9 @@ if __name__ == "__main__":
     auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
                         header=None)
     auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    wauc = pd.read_table(os.path.join(options.directory3, 'auc_weighted_score.2.txt'),
+                        header=None)
+    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
     for boot, color in zip([1, 2, 3],
                            sns.color_palette('Greys_r', 4)):
         boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.10.txt' % boot),
@@ -221,10 +269,17 @@ if __name__ == "__main__":
     plt.plot(np.median([auc[auc.condition == c].auc.values[0]
                             for c in set(auc[auc.phenotypes >= 10].condition)]),
                  max(mkde)/2.,
-                 'ro',
+                 'o',
+                 color=color1,
+                 markersize=10)
+    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
+                            for c in set(wauc[wauc.phenotypes >= 10].condition)]),
+                 max(mkde)/2.,
+                 'o',
+                 color=color2,
                  markersize=10)
     plt.legend([])
-    plt.xlim(0.45, 0.65)
+    plt.xlim(0.45, 0.67)
     plt.ylim(0, max(mkde))
     plt.axvline(0.5,
                 color=sns.xkcd_rgb['grey'],
@@ -238,14 +293,21 @@ if __name__ == "__main__":
     coord4 = transFigure.transform(ax4.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
                                                             for c in set(auc[auc.phenotypes >= 10].condition)]),
                                                             max(mkde)/2.]))
+    coord4a = transFigure1.transform(ax4.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
+                                                            for c in set(wauc[wauc.phenotypes >= 10].condition)]),
+                                                            max(mkde)/2.]))
 
     plt.xlabel('Median AUC')
 
     line = matplotlib.lines.Line2D((coord1[0],coord2[0],coord3[0],coord4[0]),
                                    (coord1[1],coord2[1],coord3[1],coord4[1]),
                                    transform=fig.transFigure,
-                                   color='r')
-    fig.lines = line,
+                                   color=color1)
+    line1 = matplotlib.lines.Line2D((coord1a[0],coord2a[0],coord3a[0],coord4a[0]),
+                                   (coord1a[1],coord2a[1],coord3a[1],coord4a[1]),
+                                   transform=fig.transFigure,
+                                   color=color2)
+    fig.lines = line, line1
 
     sns.despine(left=True,
                 ax=ax4)
