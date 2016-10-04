@@ -1,0 +1,215 @@
+Label	Chemical 1	Concentration for chemical 1	Chemical 2	Concentration for chemical 2	Incubation temperature	Aerobiosis	Type of stress	Background media
+A22.0P5UM	A22	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+A22.1UM	A22	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+A22.2P5UM	A22	2.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+A22.5UM	A22	5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+A22.0P5	A22	0.5 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+A22.2	A22	2 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+A22.CCCP	A22	0.5 ug/ml	CCCP	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+A22.CEFSULODIN	A22	0.5 ug/ml	Cefsulodin	12 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+A22.CEPHALEXIN	A22	0.5 ug/ml	Cephalexin	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+A22.CHIR090	A22	0.5 ug/ml	CHIR-090	0.04 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+A22.EDTA	A22	0.5 ug/ml	EDTA	0.5mM	RT	Aerobic	Drug Combo	LB lennox
+A22.FOSFOMYCIN	A22	0.5 ug/ml	Fosfomycin	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+A22.PYOCYANIN	A22	0.5 ug/ml	Pyocyanin	2.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+AHASBTB06584.0P5	BTB06584 (AHAS inhibitor)	0.5 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+AMIKACIN.PROCAINE	Amikacin	1 ug/ml	Procaine	100 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+AMOXICILLIN.0P25UM	Amoxicillin	0.025 uM	-	-	RT	Aerobic	Single stress	LB lennox
+AMOXICILLIN.0P5UM	Amoxicillin	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+AMOXICILLIN.1UM	Amoxicillin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+BERBERINE.200	Berberine	200 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+BILESALTS.0P05	Bile salts	5%	-	-	RT	Aerobic	Single stress	LB lennox
+BIPYRIDYL.40C	Bipyridyl	75uM	-	-	40	Aerobic	Stress Combo	LB lennox
+BIPYRIDYL.A22	Bipyridyl	75uM	A22	0.5 ug/ml	RT	Aerobic	Stress Combo	LB lennox
+BIPYRIDYL.CEFSULODIN	Bipyridyl	75uM	Cefsulodin	12 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+BIPYRIDYL.TOBRAMYCIN	Bipyridyl	75uM	Tobramycin	1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+BOVINESERUM.0P1	Bovine serum	10%	-	-	RT	Aerobic	Single stress	LB lennox
+BENZALKONIUM.CHLORHEXIDINE	Benzalkonium	15 ug/ml	Chlorhexidine	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+BENZALKONIUM.POLYMIXINB	Benzalkonium	7.5 ug/ml	Polymixin B	0.075 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+BENZALKONIUM.PROCAINE	Benzalkonium	2 ug/ml	Procaine	1364 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+BLEOMYCIN.0P1UM	Bleomycin	0.1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+BLEOMYCIN.0P5UM	Bleomycin	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+BLEOMYCIN.1UM	Bleomycin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CEFSULODIN.AMOXICILLIN	Cefsulodin	15 ug/ml	Amoxicillin	1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CEFSULODIN.CEFACLOR	Cefsulodin	15 ug/ml	Cefaclor	0.25 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CEFSULODIN.MECILLINAM	Cefsulodin	7.5 ug/ml	Mecillinam	0.01 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CEFSULODIN.PIPERACILLIN	Cefsulodin	7.5 ug/ml	Piperacillin	0.15 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CERULENIN.1UM	Cerulenin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CERULENIN.2UM	Cerulenin	2 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CERULENIN.6UM	Cerulenin	6 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CHIR090.CCCP	CHIR-090	0.04 ug/ml	CCCP	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CHIR090.CEFSULODIN	CHIR-090	0.04 ug/ml	Cefsulodin	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CHIR090.CEPHALEXIN	CHIR-090	0.04 ug/ml	Cephalexin	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CHIR090.MECILLINAM	CHIR-090	0.04 ug/ml	Mecillinam	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CIPROFLOXACIN.0P001UM	Ciprofloxacin	0.001 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CIPROFLOXACIN.0P004UM	Ciprofloxacin	0.004 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CIPROFLOXACIN.0P01UM	Ciprofloxacin	0.01 uM	-	-	RT	Aerobic	Single stress	LB lennox
+CIPROFLOXACIN.SPECTINOMYCIN	Ciprofloxacin	0.006 ug/ml	Spectinomycin	2 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CHLORAMPHENICOL.ERYTHROMYCIN	Chloramphenicol	0.25 ug/ml	Erythromycin	2 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CHLORAMPHENICOL.RIFAMPICIN	Chloramphenicol	0.25 ug/ml	Rifampicin	2 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+CONMEDIAECOLI.NA	Escherichia coli BW25113 conditioned media	25%	-	-	RT	Aerobic	Condition media	LB lennox
+CURCUMIN.50	Curcumin	50 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CYCLOSERINED.CEFSULODIN	Cycloserine-D	2 ug/ml	Cefsulodin	15 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+DIACEREIN.20UM	Diacerein	20uM	-	-	RT	Aerobic	Single stress	LB lennox
+DLSERINEHYDROXAMATE.0P25	DL-serine hydroxamate	0.25 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+DM.GLUCOSE25MM	Glucose as carbon source	25mM	-	-	RT	Aerobic	Nutrient source	DM media
+DM.MALTOSE	Maltose as carbon source	10 mM	-	-	RT	Aerobic	Nutrient source	DM media
+DM.MELIBIOSE	Melibiose as carbon source	10 mM	-	-	RT	Aerobic	Nutrient source	DM media
+DOXYCYCLINE.PMS	Doxycycline	0.25 ug/ml	Pms	2.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+DOXYCYCLINE.PARAQUAT	Doxycycline	0.25 ug/ml	Paraquat	1.3 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+DOXYCYCLINE.PYOCYANIN	Doxycycline	0.25 ug/ml	Pyocyanin	2.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+DOXYCYCLINE.VANILLIN	Doxycycline	0.25 ug/ml	Vanillin	200 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+EZ.MEDIA	-	-	-	-	RT	Aerobic	Nutrient source	EZ media
+FLUOROCYTOSINE5.1P25	5-Fluorocytosine	1.25 ug/ml	1.25	-	RT	Aerobic	Single stress	LB lennox
+FLUORODEOXYURIDINE5.1P25	5-Fluorodeoxyuridine	1.25 ug/ml	1.25	-	RT	Aerobic	Single stress	LB lennox
+FLUOROURIDINE5.1P25	5-Fluorouridine	1.25 ug/ml	1.25	-	RT	Aerobic	Single stress	LB lennox
+FUSIDICACID.VANILLIN	Fusidicacid	50 ug/ml	Vanillin	200 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+FUMARATE.40C	Fumarate	40 mM	-	-	40	Anaerobic	Anaerobic	LB lennox
+FUMARATE.40MM	Fumarate	40 mM	-	-	RT	Anaerobic	Anaerobic	LB lennox
+FUMARATE.PARAQUAT	Fumarate	40mM	Paraquat	10uM	RT	Anaerobic	Anaerobic	LB lennox
+FUMARATE.A22	Fumarate	40mM	A22	0.5 ug/ml	RT	Anaerobic	Anaerobic	LB lennox
+FUMARATE.CEFSULODIN	Fumarate	40mM	Cefsulodin	12	RT	Anaerobic	Anaerobic	GAM modified
+FUMARATE.TOBRAMYCIN	Fumarate	40 mM	Tobramycin	2 ug/ml	37	Anaerobic	Anaerobic	-
+GAM.BFRAGILIS	Bacteroided fragilis nontoxigenix condition media	0.25 ug/ml	Bfragilis	-	RT	Aerobic	Condition media	GAM modified
+GAM.BIFILONINFANTIS	Bifidobacterium longum subsp. Infantis condition media	0.25 ug/ml	Bifiloninfantis	-	RT	Aerobic	Condition media	GAM modified
+GAM.BTHETAIOTAOMICRON	Bacteroides thetaiotaomicron condition media	0.25 ug/ml	Bthetaiotaomicron	-	RT	Aerobic	Condition media	GAM modified
+GAM.CPERFRINGENS	Clostridium perfringes condition media	0.25 ug/ml	Cperfringens	-	RT	Aerobic	Condition media	GAM modified
+GAM.LACIDOPHILUS	Lactobacillus acidophilus condition media	0.25 ug/ml	Lacidophilus	-	RT	Aerobic	Condition media	GAM modified
+GELLAN.0P01	Agar was replaced with Gellan	0.01 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+HEXESTROL.20UM	Hexestrol	20uM	-	-	RT	Aerobic	Single stress	LB lennox
+INDOLE.40C	Indole	2mM	-	-	40	Aerobic	Stress Combo	LB lennox
+INDOLE.A22	Indole	2mM	A22	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+INDOLE.CEFSULODIN	Indole	2mM	Cefsulodin	12 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+INDOLE.TOBRAMYCIN	Indole	2mM	Tobramycin	1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+KCHROMATE.250UM	Potassium chromate	250uM	-	-	RT	Aerobic	Single stress	LB lennox
+LAMOTRIGINE.3	Lamotrigine	3 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+M9.3HYDROXYCINNAMICACID13P3MM	3-hydroxycinnamic acid	13.3 mM	-	-	RT	Aerobic	Nutrient source	M9 minimal
+AMINOSALICILICACID.100	4-Aminosalicylic acid	100 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+BROMODEOXYURIDINE.200	Bromodeoxyuridine	200 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+SULFOSALICYLICACID.150	5-Sulfosalicylic acid dihydrate	150 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+A22.1	A22	1 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+ARTICAINE.100	Articaine	100 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+BERBERINE.50	Berberine	50 ug/ml	50	-	RT	Aerobic	Single stress	LB lennox
+BLEACH.0P01	Bleach	1%	-	-	RT	Aerobic	Single stress	LB lennox
+BIPYRIDYL.200	Bipyridyl	200uM	200	-	RT	Aerobic	Single stress	LB lennox
+BENZALKONIUM.25	Benzalkonium	25 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CARBAMAZEPINE.100	Carbamazepine	100 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CCCP.2	CCCP	2 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CEFSULODIN.24	Cefsulodin	24 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CHIR.0P05	CHIR-090	0.05 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CLINDAMYCIN.3	Clindamycin	3 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CHLORHEXIDINE.0P8	Chlorhexidine	0.8 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+COLICINM.0P4	Colicinm	0.4 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CEPHALEXIN.16	Cephalexin	16 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+CUMENE.25	Cumene	25 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+DOXORUBICIN.20	Doxorubicin	20 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PENTAACETICACID.15	Diethylenetriaminepentaacetic acid	15 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+GRAMIDICIN.20	Gramidicin	20 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+IMIPENEM.0P4	Imipenem	0.4 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+LIDOCAINE.100	Lidocaine	100 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+METFORMIN.12MM	Metformin	12 mM	-	-	RT	Aerobic	Single stress	LB lennox
+METFORMIN.25MM	Metformin	25 mM	-	-	RT	Aerobic	Single stress	LB lennox
+METFORMIN.3MM	Metformin	3 mM	-	-	RT	Aerobic	Single stress	LB lennox
+METFORMIN.6MM	Metformin	6 mM	-	-	RT	Aerobic	Single stress	LB lennox
+METFORMIN.40MM	Metformin	40mM	-	-	RT	Aerobic	Single stress	LB lennox
+MITOMYCINC.0P1UM	Mitomycin C	0.1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+MITOMYCINC.0P5UM	Mitomycin C	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+MGCL2.300UM	MgCl2	300uM	-	-	RT	Aerobic	Single stress	LB lennox
+MEROPENEM.0P03	Meropenem	0.03 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+NONACTIN.30	Nonactin	30 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PHENFORMIN.2P5MM	Phenformin	2.5mM	-	-	RT	Aerobic	Single stress	LB lennox
+PIERICIDIN.20	Piericidin	20 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PARAQUAT.10UM	Paraquat	10uM	-	-	RT	Aerobic	Single stress	LB lennox
+PARAMOMYCIN.3P1	Paramomycin	3.1 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PSEUDOMONICACID.2	Pseudomonic acid	2 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PENTAMIDINE.15	Pentamidine	15 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PVP.0P04	Pvp	0.04 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PYOCYANIN.10	Pyocyanin	10 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+RAMOPLANIN.150	Ramoplanin	150 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+SPECTINOMYCIN.1P5	Spectinomycin	1.5 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+TEICOPLANIN.10	Teicoplanin	10 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+TIGECYCLINE.10	Tigecycline	10 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+THIOSTREPTON.0P8	Thiostrepton	0.8 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+THIOLUTIN.10	Thiolutin	10 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+TOBRAMYCIN.0P05	Tobramycin	0.05 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+TYLOSIN.50	Tylosin	50 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+VANCOMYCIN.40	Vancomycin	40 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+VANILLIN.200	Vanillin	200 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+LOPERAMIDE.128	Loperamide	128 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+MAC13243.3	Mac13243	3 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+MECILLINAM.CEPHALEXIN	Mecillinam	0.01 ug/ml	Cephalexin	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+MOPS.AAFB	amino acid solutions F and B	aaFB	Aafb	-	37	Aerobic	Nutrient source	MOPS minimal
+MOPS.GLUCOSE	-	-	-	-	37	Aerobic	Nutrient source	MOPS minimal
+MOPS.NACL	NaCl	200mM	-	-	37	Aerobic	Stress Combo	MOPS minimal
+MOPS.PH9	pH9	100mM	-	-	37	Aerobic	Stress Combo	MOPS minimal
+MOPSC.FUMARICACID	Fumaric acid as carbon source	30mM	Fumaricacid	-	37	Aerobic	Nutrient source	MOPS minimal
+MOPSN.LGLUTAMINE	L-Glutamine as nitrogen source	4.6mM	Lglutamine	-	37	Aerobic	Nutrient source	MOPS minimal
+MOPSP.GLUCOSE6PO4	Glucose-6-Phosphate as phosphate source	1.32mM	Glucose6Po4	-	37	Aerobic	Nutrient source	MOPS minimal
+MOPS.XANTHOSINE2P38MM	Xanthosine	2.38 mM	-	-	37	Aerobic	Nutrient source	MOPS minimal
+N4.T37	-	-	-	-	37	Aerobic	Single stress	LB lennox 400 mM NaCl
+NACL.BIPYRIDYL	Nacl	400mM	Bipyridyl	200mM	RT	Aerobic	Stress Combo	LB lennox
+NACL.PARAQUAT	Nacl	400mM	Paraquat	10uM	RT	Aerobic	Stress Combo	LB lennox
+NACL.RT	Nacl	400mM	Rt	-	RT	Aerobic	Single stress	LB lennox
+NACL.UV	Nacl	400mM	UV	6seg	RT	Aerobic	Stress Combo	LB lennox
+NIFURTIMOX.12P5	Nifurtimox	12.5 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+NOSALT.BIPYRIDYL	Nosalt	-	Bipyridyl	200 mM	RT	Aerobic	Stress Combo	LB no salt
+NOSALT.BILESALTS	Nosalt	-	Bile salts	5%	RT	Aerobic	Stress Combo	LB no salt
+NOSALT.CEFSULODIN	Nosalt	-	Cefsulodin	10 ug/ml	RT	Aerobic	Stress Combo	LB no salt
+NOSALT.FUMARATE	Nosalt	-	Fumarate	40mM	RT	Anaerobic	Stress Combo	LB no salt
+NOSALT.PH5	Nosalt	-	pH5	100mM	RT	Aerobic	Stress Combo	LB no salt
+NOSALT.PARAQUAT	Nosalt	-	Paraquat	10uM	RT	Aerobic	Stress Combo	LB no salt
+NOSALT.RT	Nosalt	-	-	-	RT	Aerobic	Single stress	LB no salt
+NOSALT.UV	Nosalt	-	UV	6seg	RT	Aerobic	Stress Combo	LB no salt
+OXACILLIN.0P5UM	Oxacillin	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+OXACILLIN.40UM	Oxacillin	40 uM	-	-	RT	Aerobic	Single stress	LB lennox
+OXACILLIN.5UM	Oxacillin	5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+PH5.FUMARATE	pH5	100mM	Fumarate	40mM	RT	Anaerobic	Anaerobic	LB lennox
+PH5.RT	pH5	100mM	Rt	-	RT	Aerobic	Single stress	LB lennox
+PH5.T37C	pH5	100mM	-	-	37	Aerobic	Stress Combo	LB lennox
+PH5.T40C	pH5	100mM	-	-	40	Aerobic	Stress Combo	LB lennox
+PH5.UV	pH5	100mM	UV	-	RT	Aerobic	Stress Combo	LB lennox
+PH5.BILESALTS	pH5	100 mM	Bile salts	5%	RT	Aerobic	Stress Combo	LB lennox
+PH9.BILESALTS	pH9	100 mM	Bile salts	5%	RT	Aerobic	Stress Combo	LB lennox
+PH9.A22	pH9	100mM	A22	0.5 ug/ml	RT	Aerobic	Stress Combo	LB lennox
+PH9.CEFSULODIN	pH9	100mM	Cefsulodin	10 ug/ml	RT	Aerobic	Stress Combo	LB lennox
+PH9.NITRATEK	pH9	100mM	Nitratek	40mM	RT	Anaerobic	Anaerobic	LB lennox
+PH9.RT	pH9	100mM	-	-	RT	Aerobic	Single stress	LB lennox
+PH9.T40C	pH9	100mM	-	-	40	Aerobic	Stress Combo	LB lennox
+PH9.T37C	pH9	100mM	-	-	37	Aerobic	Stress Combo	LB lennox
+PH9.TOBRAMYCIN	pH9	100mM	Tobramycin	0.1 ug/ml	RT	Aerobic	Stress Combo	LB lennox
+PH9C.BP	pH9	1 M	Bipyridil	200 mM	RT	Aerobic	Stress Combo	LB lennox
+PH9C.PQ	pH9	1 M	Paraquat	5 mg/ml	RT	Aerobic	Stress Combo	LB lennox
+PH9C.UV	pH9	1 M	UV	-	RT	Aerobic	Stress Combo	LB lennox
+PLUMBAGIN.12	Plumbagin	12 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+PMS.PROCAINE	Pms	5 ug/ml	Procaine	1364 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+PROCAINE.RIFAMPICIN	Procaine	1364 ug/ml	Rifampicin	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+PROCAINE.TRIMETHOPRIM	Procaine	1364 ug/ml	Trimethoprim	0.1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+PROLINE.500MM	Proline	500mM	-	-	RT	Aerobic	Single stress	LB lennox
+PYOCYANIN.0P2UM	Pyocianin	0.2 uM	-	-	RT	Aerobic	Single stress	LB lennox
+PYOCYANIN.10UM	Pyocianin	10 uM	-	-	RT	Aerobic	Single stress	LB lennox
+PYOCYANIN.1UM	Pyocianin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+RAMOPLANIN.CEFSULODIN	Ramoplanin	105 ug/ml	Cefsulodin	8.4 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+RIFAMPICIN.1UM	Rifampicin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+RIFAMPICIN.2UM	Rifampicin	2 uM	-	-	RT	Aerobic	Single stress	LB lennox
+SORBITOL.500MM	Sorbitol	500mM	-	-	RT	Aerobic	Single stress	LB lennox
+SPECTINOMYCIN.FOSFOMYCIN	Spectinomycin	1.5 ug/ml	Fosfomycin	0.025 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+SPECTINOMYCIN.NITROFURANTOIN	Spectinomycin	1.5 ug/ml	Nitrofurantoin	1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+SPECTINOMYCIN.VANILLIN	Spectinomycin	1.5 ug/ml	Vanillin	100 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+SPIRAMYCIN.1UM	Spiramycin	1 uM	-	-	RT	Aerobic	Single stress	LB lennox
+SPIRAMYCIN.20UM	Spiramycin	20 uM	-	-	RT	Aerobic	Single stress	LB lennox
+SPIRAMYCIN.5UM	Spiramycin	5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+STREPTOZOCIN.1P25	Streptozocin	1.25 ug/ml	-	-	RT	Aerobic	Single stress	LB lennox
+SULFAMONOMETHOXINE.RIFAMPICIN	Sulfamonomethoxine	10 ug/ml	Rifampicin	1 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.A22	Trimethoprim	0.125 ug/ml	-	0.15 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.CHLORAMPHENICOL	Trimethoprim	0.125 ug/ml	Chloramphenicol	0.5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.CEPHALEXIN	Trimethoprim	0.125 ug/ml	Cephalexin	5 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.FOSFOMYCIN	Trimethoprim	0.125 ug/ml	Fosfomycin	0.05 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.IMIPENEM	Trimethoprim	0.125 ug/ml	Imipenem	0.0625 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TRIMETHOPRIM.PYOCYANIN	Trimethoprim	0.125 ug/ml	Pyocyanin	1.25 ug/ml	RT	Aerobic	Drug Combo	LB lennox
+TETRACYCLINE.0P25UM	Tetracycline	0.25 uM	-	-	RT	Aerobic	Single stress	LB lennox
+TETRACYCLINE.0P5UM	Tetracycline	0.5 uM	-	-	RT	Aerobic	Single stress	LB lennox
+TOBRAMYCIN.0P0125UM	Tobramycin	0.0125 uM	-	-	RT	Aerobic	Single stress	LB lennox
+TOBRAMYCIN.0P05UM	Tobramycin	0.05 uM	-	-	RT	Aerobic	Single stress	LB lennox
+TOBRAMYCIN.0P2UM	Tobramycin	0.2 uM	-	-	RT	Aerobic	Single stress	LB lennox
+TOBRAMYCIN.0P8UM	Tobramycin	0.8 uM	-	-	RT	Aerobic	Single stress	LB lennox
+UREA.50MM	Urea	50mM	-	-	RT	Aerobic	Single stress	LB lennox
