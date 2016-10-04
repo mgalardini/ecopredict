@@ -1,0 +1,98 @@
+screen conditions	general activity	specific activity	general target	specific target	molecular class
+bromodeoxyuridine	Others
+a22	Stress		Cytoskeleton	MreB	Isothiourea compound
+btb06584 (ahas inhibitor)	Others
+amikacin	Antibiotic	Bactericidal	Protein synthesis	30S ribosomal subunit
+4-aminosalicylic acid	Antibiotic		Others
+amoxicillin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Penicillin
+articaine	Human targeted drug	Local anesthetic
+benzalkonium	Stress	Envelope stress	Envelope integrity	Membrane
+berberine	Others
+bile salts	Host environment	Envelope stress	Envelope integrity	Membrane	Bile acid
+bipyridyl	Stress	Iron starvation
+bleach	Stress
+bleomycin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Glycopeptide
+carbamazepine	Human targeted drug	Anticonvulsant
+cccp	Stress	Oxidative stress	Proton motive force		Protonophore
+cefaclor	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Cephalosporin
+cefsulodin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Cephalosporin
+cephalexin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Cephalosporin
+cerulenin	Antifungal	Antifungal	Fatty acid biosynthesis	Others
+chir-090	Antimicrobial		LPS biosynthesis	LpxC	N-aroyl-l-threonine hydroxamic acid
+chloramphenicol	Antibiotic	Bactericidal	Protein synthesis	50S ribosomal subunit
+chlorhexidine	Antimicrobial	Antiseptic
+ciprofloxacin	Antibiotic	Bactericidal	DNA dependent processes	DNA gyrase
+clindamycin	Antibiotic	Bacteriostatic	Protein synthesis	50S ribosomal subunit	Lincosamide
+colicinm	Antimicrobial	Antimicrobial enzyme
+curcumin	Antimicrobial	Envelope stress	Envelope integrity	Membrane
+cumene	Others
+cycloserine-d	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	D-alanine analogue
+diacerein	Human targeted drug
+dl-serine hydroxamate	Nutrient limitation	Amino acid starvation
+doxycycline	Antibiotic		Protein synthesis	30S ribosomal subunit	Tetracyclin
+doxorubicin	Human targeted drug
+edta	Stress	Envelope stress	Envelope integrity	Outer membrane	Chelator
+erythromycin	Antibiotic	Bacteriostatic	Protein synthesis	50S ribosomal subunit
+5-fluorocytosine	Antifungal	Multiple targets
+5-fluorodeoxyuridine	Human targeted drug	Antimetabolite
+5-fluorouridine	Human targeted drug
+fosfomycin	Antibiotic	Bactericidal	Cell wall synthesis	Others	Phosphonic acid
+fusidicacid	Antibiotic	Bacteriostatic	Protein synthesis	EF-G turnover	Fusidane
+fumarate	Others
+agar was replaced with gellan	Others
+gramidicin	Antibiotic		Envelope integrity	Membrane	Antimicrobial peptide
+hexestrol	Others
+imipenem	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Carbapenem
+indole	Stress
+potassium chromate	Stress
+lamotrigine	Human targeted drug	Anticonvulsant
+lidocaine	Human targeted drug	Local anesthetic
+loperamide	Human targeted drug	Antidiarrheal	Others	Opioid receptors	Opioid
+mac13243	Antibiotic		Fatty acid biosynthesis	LolA
+mecillinam	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Penicillin
+meropenem	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Carbapenem
+metformin	Human targeted drug	Antidiabetic
+mgcl2	Stress
+mitomycin c	Antibiotic		DNA dependent processes	DNA intercalation	Aziridine
+nacl	Stress	Osmotic stress
+nifurtimox	Antitrypanosoma
+nitratek	Others
+nitrofurantoin	Antibiotic	Bactericidal	Multiple targets	Multiple targets	Furane
+nonactin	Antibiotic		Ion transport		Ionophore
+nosalt	Stress	Osmotic stress
+oxacillin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Penicillin
+paraquat	Stress	Oxidative stress
+paramomycin	Antibiotic	Bactericidal	Protein synthesis	30S ribosomal subunit
+diethylenetriaminepentaacetic acid	Stress	Envelope stress	Envelope integrity	Outer membrane	Chelator
+pentamidine	Others
+phenformin	Human targeted drug	Antidiabetic
+ph5	Stress	pH stress	Stress response		n/a
+ph9	Stress	pH stress	Stress response		n/a
+piericidin	Antibiotic		Metabolism	NADH metabolism
+piperacillin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Penicillin
+plumbagin	Others
+pms	Microbial product	Oxidative stress			Phenazine
+procaine	Human targeted drug	Local anesthetic	Ion transport	Sodium channel
+pseudomonic acid	Others		Protein synthesis	Isoleucyl-tRNA-synthetase
+pvp	Antimicrobial	Antiseptic
+pyocianin	Microbial product	Oxidative stress			Phenazine
+pyocyanin	Microbial product	Oxidative stress			Phenazine
+ramoplanin	Antibiotic	Bactericidal	Cell wall synthesis	Transglycosylation
+rifampicin	Antibiotic	Depending on target organism	Transcription	RNA Polymerase	Ansamycin
+spectinomycin	Antibiotic	Bacteriostatic	Protein synthesis	30S ribosomal subunit
+spiramycin	Antibiotic	Bacteriostatic	Protein synthesis	50S ribosomal subunit
+streptozocin	Antibiotic		DNA dependent processes
+sulfamonomethoxine	Antibiotic	Bacteriostatic	Folic acid biosynthesis	Others
+5-sulfosalicylic acid dihydrate	Others
+teicoplanin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Glycopeptide
+tetracycline	Antibiotic	Bacteriostatic	Protein synthesis	30S ribosomal subunit
+thiolutin	Antibiotic		Transcription	RNA Polymerase
+thiostrepton	Antibiotic		Others		Cyclic Oligopeptide
+tigecycline	Antibiotic	Bacteriostatic	Protein synthesis	30S ribosomal subunit	Glycylcycline
+tobramycin	Antibiotic	Bactericidal	Protein synthesis	30S ribosomal subunit
+trimethoprim	Antibiotic	Bacteriostatic	Folic acid biosynthesis	Dihydrofolatreductase
+tylosin	Antibiotic	Bacteriostatic	Protein synthesis	50S ribosomal subunit
+urea	Stress
+uv	Stress	DNA damage stress	DNA dependent processes	DNA damage	n/a
+vancomycin	Antibiotic	Bactericidal	Cell wall synthesis	Transpeptidation	Glycopeptide
+vanillin	Others
