@@ -88,20 +88,23 @@ if __name__ == "__main__":
         if x not in cond:
             continue
         phen1.append(int(v1.loc[x].T.dropna().shape[0] * 1000 / float(cond[x])))
-    mconditions = int(max(conditions))*2 
-    mphen = int(max(phen))
+    mconditions = int(max(conditions)) * 2 * 100
+    z = v[f < 0.05]
+    z[np.invert(np.isnan(z))] = 1
+    z[np.isnan(z)] = 0
+    mphen = int(z.T.sum().sort_values(ascending=False).max())
     mphen1 = int(max(phen1))
 
     plt.figure(figsize=(options.width, options.height))
 
     plt.subplot(121)
-    gradient = np.linspace(0, int(max(conditions)/2.), int(max(conditions)/2.))
+    gradient = np.linspace(0, int(max(conditions) * 100), int(max(conditions) * 100))
     gradient = np.vstack((gradient, gradient))
     plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Greys'),
                vmax=mconditions)
 
-    plt.xticks(range(0, int(max(conditions)/2.), int(max(conditions)/2.)/6),
-               [str(x) for x in range(0, int(max(conditions)/2.), int(max(conditions)/2.)/6)])
+    plt.xticks(range(0, int(max(conditions) * 100), int(max(conditions) * 100)/7),
+               [str(x) for x in range(0, int(max(conditions)), int(max(conditions))/7)])
     plt.yticks([])
     plt.title('Tested conditions')
 

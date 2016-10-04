@@ -79,7 +79,7 @@ if __name__ == "__main__":
     plt.errorbar(0, m1[m1.set == 'real'].variability.median(),
                  yerr=m1[m1.set == 'real'].variability.mad(),
                  fmt='o', ms=7,
-                 color=sns.xkcd_rgb['light blue'],
+                 color=sns.xkcd_rgb['yellow orange'],
                  mec='k', mew=1,
                  label='E. coli')
     sns.stripplot(data=m1[m1['set'] == 'random'].groupby('round').median()['variability'],
@@ -89,9 +89,9 @@ if __name__ == "__main__":
                   label='Permutations',
                   zorder=0)
 
-    plt.legend(loc=(0.1, 0.8))
+    plt.legend(loc=(0.1, 0.8), frameon=True)
 
-    plt.ylabel('log$_2$(non-syn. ratio)')
+    plt.ylabel('log$_2$(Nonsynonymous ratio)')
     plt.ylim(-2.5, 2.5)
     plt.xticks([])
     plt.axhline(0,
@@ -105,7 +105,7 @@ if __name__ == "__main__":
     plt.plot((data.start+data.stop)/2.,
              data.variability,
              'o', ms=7,
-             color=sns.xkcd_rgb['mint green'],
+             color=sns.xkcd_rgb['deep orange'],
              mec='k', mew=1,
              label='E. coli')
 
@@ -128,14 +128,15 @@ if __name__ == "__main__":
             if y == 'E. coli'][0]]
     plt.legend([x[0] for x in objs],
                [x[1] for x in objs],
-               loc=(0.05, 0.8))
+               loc=(0.05, 0.8),
+               frameon=True)
 
     plt.ylim(-2.5, 2.5)
     plt.axhline(0,
                 color='r',
                 linestyle='dashed')
-    plt.ylabel('log$_2$(non-syn. ratio)')
-    plt.xlabel('accessibility')
+    plt.ylabel('log$_2$(Nonsynonymous ratio)')
+    plt.xlabel('Accessibility')
     sns.despine(ax=ax2)
 
     ax3 = plt.subplot2grid((20, 7), (12, 0), rowspan=8, colspan=3)
@@ -144,7 +145,7 @@ if __name__ == "__main__":
                         (m2['set'] == 'others')],
                 x='set',
                 y='score',
-                palette=[sns.xkcd_rgb['light blue'],
+                palette=[sns.xkcd_rgb['yellow orange'],
                          sns.xkcd_rgb['light grey']])
     tmp = sns.stripplot(data=m2.groupby(('set', 'round')).median().dropna().reset_index(),
                   jitter=0.3,
@@ -154,19 +155,20 @@ if __name__ == "__main__":
                   y='score',
                   order=['all features',
                          'all others'],
-                  label='All possible non-syn.')
+                  label='All possible nonsynonymous')
     tmp.set_rasterized(True)
     handles, labels = ax3.get_legend_handles_labels()
     objs = [[(x, y)
             for x,y in zip(handles, labels)][0]]
     plt.legend([x[0] for x in objs],
                [x[1] for x in objs],
-               loc=(0.1, 1))
+               loc=(0.1, 1),
+               frameon=True)
     plt.ylim(0, 10)
-    plt.ylabel('-log(SIFT p-value)')
+    plt.ylabel('-log$_{10}$(SIFT p-value)')
     plt.xlabel('')
     plt.xticks(range(2),
-               ['features', 'others'])
+               ['Features', 'Others'])
     sns.despine(bottom=True, ax=ax3)
 
     ax4 = plt.subplot2grid((20, 7), (12, 4), rowspan=8, colspan=3)
@@ -175,7 +177,7 @@ if __name__ == "__main__":
                         (m4['set'] == 'others')],
                 x='set',
                 y='score',
-                palette=[sns.xkcd_rgb['mint green'],
+                palette=[sns.xkcd_rgb['deep orange'],
                          sns.xkcd_rgb['light grey']])
     tmp = sns.stripplot(data=m4.groupby(('set', 'round')).median().dropna().reset_index(),
                   jitter=0.3,
@@ -185,18 +187,19 @@ if __name__ == "__main__":
                   y='score',
                   order=['all buried',
                          'all others'],
-                  label='All possible non-syn.')
+                  label='All possible nonsynonymous')
     tmp.set_rasterized(True)
     handles, labels = ax4.get_legend_handles_labels()
     objs = [[(x, y)
             for x,y in zip(handles, labels)][0]]
     plt.legend([x[0] for x in objs],
                [x[1] for x in objs],
-               loc=(0.1, 1))
+               loc=(0.1, 1),
+               frameon=True)
     plt.ylabel('FoldX ddG')
     plt.xlabel('')
     plt.xticks(range(2),
-               ['buried', 'exposed'])
+               ['Buried', 'Exposed'])
     plt.ylim(-5, 10)
     sns.despine(bottom=True, ax=ax4)
 
