@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+'''
+From an annotated GenBank file
+output the list of unique Uniprot identifiers
+'''
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get all the Uniprot IDs from a GenBank file and gene names"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'gbk2geneuniprot')
+    parser.add_argument('genbank', action='store',
+                        help='GenBank file to be mutated')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import sys
+    import os
+    from Bio import SeqIO
+
+    options = get_options()
+
+    already = set()
+
+    for s in SeqIO.parse(options.genbank, 'genbank'):
+        # Only CDS, no pseudogenes
+        for f in filter(lambda x: x.type == 'CDS' and
+                'pseudo' not in x.qualifiers, s.features):
+            try:
+                uniprot = list(filter(lambda x: x.startswith('UniProtKB/Swiss-Prot:'),
+                               f.qualifiers['db_xref']))[0].replace('UniProtKB/Swiss-Prot:',
+                               '')
+
+                gene = f.qualifiers.get('gene', ['',])[0]
+                if gene == '':
+                    pass
+                if gene in already:
+                    raise ValueError('Gene name %s already observed!' % gene)
+                print('%s\t%s' % (gene, uniprot))
+            except:
+                pass
