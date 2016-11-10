@@ -188,6 +188,9 @@ FIGURE4 = $(FIGUREDIR)/figure_4.svg
 ## Non-synonymous mutations ##
 ##############################
 
+$(ALLNONSYN):
+	cat $(VEPDIR)/*/nonsynmuts.tsv > $@
+
 $(ALLNONSYNBED): $(ALLNONSYN)
 	$(SRCDIR)/nonsyn2bed $(ALLNONSYN) > $@
 
@@ -225,6 +228,8 @@ $(TOLMUTATIONS): $(ANNMUTATIONS) $(ALLESSENTIALMUTS)
 ## SIFT data ##
 ###############
 
+$(OBSSIFT):
+	cat $(VEPDIR)/*.sift.* | sort | uniq > $@
 $(ALLSIFTBED): $(ALLSIFT)
 	$(SRCDIR)/sift2bed $< > $@
 $(OBSSIFTBED): $(OBSSIFT)
@@ -243,6 +248,8 @@ $(SIFTOTHERS): $(FEATURESBED) $(OBSSIFTBED)
 ## FOLDX data ##
 ################
 
+$(OBSFOLDX):
+	cat $(VEPDIR)/*.foldx.*  $(VEPDIR)/*.models.* | sort | uniq > $@
 $(ALLFOLDXBED): $(ALLFOLDX)
 	$(SRCDIR)/sift2bed $< > $@
 $(OBSFOLDXBED): $(OBSFOLDX)
@@ -359,13 +366,13 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
-	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
 	  done; \
-	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap2_$$gf; \
+	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
