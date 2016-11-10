@@ -100,10 +100,16 @@ if __name__ == "__main__":
             pass
     phen = {}
     for x in v.index:
-        phen[x] = v.loc[x].T.dropna().shape[0] / float(conditions[x])
+        try:
+            phen[x] = v.loc[x].T.dropna().shape[0] / float(conditions[x])
+        except:
+            pass
     phen1 = {}
     for x in v1.index:
-        phen1[x] = v1.loc[x].T.dropna().shape[0] / float(conditions[x])
+        try:
+            phen1[x] = v1.loc[x].T.dropna().shape[0] / float(conditions[x])
+        except:
+            pass
  
     pcolor = {x:y                                                                                                                                      
               for x,y in zip(range((int(max(conditions.values())*100)*2)),
@@ -148,7 +154,7 @@ if __name__ == "__main__":
 
     circular_style = TreeStyle()
     circular_style.mode = "c"
-    circular_style.scale = 525
+    circular_style.scale = 1275
     circular_style.show_leaf_name = False
     tree.render(options.outfile, h=options.height,
                 units="in",

@@ -402,6 +402,7 @@ if __name__ == "__main__":
     phenotypes[(a < 0) & (f < 0.05)] = 1
     phenotypes[(a >= 0) & (f < 0.05)] = 0
     phenotypes[f >= 0.05] = 0
+    phenotypes = phenotypes.loc[score.T.index]
 
     tree = Phylo.read(options.tree,
                       'newick')
