@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Convert STOP table to BED format"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='stop2bed')
+    parser.add_argument('stop', action='store',
+                        help='STOP table')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import re
+    options = get_options()
+
+    for l in open(options.stop):
+        uniprot, mut, score = l.rstrip().split('\t')
+        m = re.search('[0-9]{1,4}', mut)
+        pos = int(m.group())
+        print('\t'.join((uniprot,
+                         str(pos),
+                         str(pos+1),
+                         '%s -> %s' % (mut[m.start() - 1],
+                                       mut[m.end()]),
+                         str(score))))
