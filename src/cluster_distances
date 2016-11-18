@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+if __name__ == "__main__":
+    import sys
+    import numpy as np
+    import fastcluster as fst
+    import pandas as pd
+    from scipy import cluster
+    from sklearn import preprocessing
+
+    ifile = sys.argv[1]
+
+    m = pd.read_table(ifile)
+    m.set_index(m.columns[0], inplace=True)
+
+    c = preprocessing.MinMaxScaler().fit_transform(1 - m.values.reshape(-1, 1))
+    c = pd.DataFrame(c.reshape(m.shape[0], m.shape[1]))
+    c.columns = m.columns
+    c.index = m.index
+
+    linkage = fst.linkage(c, method='average')
+
+    t = max(cluster.hierarchy.maxdists(linkage)) * 0.015
+
+    # Extract the clusters
+    clusters = cluster.hierarchy.fcluster(linkage, t, 'distance')
+    for cl in set(clusters):
+        print('\t'.join(sorted(c.index[clusters == cl])))
