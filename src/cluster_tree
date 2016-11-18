@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+if __name__ == "__main__":
+    import sys
+    import pandas as pd
+    import itertools
+    from Bio import Phylo
+
+    ifile, ofile = sys.argv[1:3]
+    
+    t = Phylo.read(ifile, 'newick')
+    for x in t.get_terminals():
+        if x.name == 'genome.fasta.ref':
+            x.name = 'NT12001'
+            wt = x
+        else:
+            x.name = x.name.split('_')[0]
+    t.root_at_midpoint()
+
+    d = {}
+    for x, y in itertools.combinations(t.get_terminals(), 2):
+        v = t.distance(x, y)
+        d[x.name] = d.get(x.name, {})
+        d[x.name][y.name] = v
+        d[y.name] = d.get(y.name, {})
+        d[y.name][x.name] = v
+    for x in t.get_terminals():
+        d[x.name][x.name] = 0
+
+    m = pd.DataFrame(d)
+    m.to_csv(ofile, sep='\t')
