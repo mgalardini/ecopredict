@@ -121,6 +121,10 @@ DELETION = $(CHEMICAL)/all_genes_matched_and_joined_New_NT.txt
 DELETIONFDR = $(CHEMICAL)/deletion.all.fdr.txt
 
 # Sickness files
+CLUSTERS = $(SICKNESSDIR)/clusters.tsv
+COMMONPROP = 0.05
+UNCOMMONPROP= 0.05
+COMMON = $(SICKNESSDIR)/common.txt 
 UNCOMMON = $(SICKNESSDIR)/uncommon.txt
 SICKNESS = $(SICKNESSDIR)/123456/all.txt
 SCORE = $(SICKNESSDIR)/scores.done
@@ -312,11 +316,18 @@ $(CONSERVATION):
 ## Sickness data ##
 ###################
 
-$(UNCOMMON): $(OUTGROUPS)
-	$(SRCDIR)/uncommon_genes $(VEPDIR) --exclude $(OUTGROUPS) --proportion 0.7 > $@
+$(CLUSTERS): $(TREE)
+	$(SRCDIR)/cluster_tree $(TREE) $(SICKNESSDIR)/tmp_strains_matrix.tsv
+	$(SRCDIR)/cluster_distances $(SICKNESSDIR)/tmp_strains_matrix.tsv > $@
 
-$(SICKNESS): $(CONVERSION) $(UNCOMMON) $(OUTGROUPS)
-	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude-genes $(UNCOMMON) --outgroups $(OUTGROUPS) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
+$(COMMON): $(CLUSTERS)
+	$(SRCDIR)/common_mutations $(VEPDIR) --proportion $(COMMONPROP) --clusters $(CLUSTERS) > $@
+
+$(UNCOMMON): $(CLUSTERS)
+	$(SRCDIR)/uncommon_genes $(VEPDIR) --clusters $(CLUSTERS) --proportion $(UNCOMMONPROP) > $@
+
+$(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON) $(OUTGROUPS)
+	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --outgroups $(OUTGROUPS) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
 #######################
@@ -363,7 +374,7 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	    mkdir -p $$(dirname $$g)/bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/; \
 	    for sround in $$(seq 1 10); do \
-	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
+	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
@@ -393,7 +404,7 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	    mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/; \
 	    for sround in $$(seq 1 10); do \
-	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/$$sround"; \
+	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \

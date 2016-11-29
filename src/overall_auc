@@ -23,74 +23,64 @@ def get_options():
                         type=float,
                         default=0.05,
                         help='FDR threshold [Default: 0.05]')
-    parser.add_argument('--phenotypes', action='store',
-                        type=int,
-                        default=0,
-                        help='Minimum number of phenotypes [Default: 0]')
-    parser.add_argument('--exclude', action='store',
+    parser.add_argument('--comparison-matrix', action='store',
                         default=None,
-                        help='Excluded conditions [Default: all]')
-    parser.add_argument('--exclude-strains', action='store',
-                        default=None,
-                        help='Excluded strains [Default: all]')
+                        help='MCC comparison matrix [Default: the same one]')
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
 
     return parser.parse_args()
 
+def transform_matrices(a, z, m):
+    y_pred = m[np.invert(np.isnan(a))]
+    y_true = z.loc[m.index, m.columns].copy(deep=True)
+    y_true[np.invert(np.isnan(a))] = 0
+    y_true[np.invert(np.isnan(z))] = 1
+    y_true[np.isnan(a)] = np.nan
+    y_true[np.isnan(m)] = np.nan
+    
+    return y_true, y_pred
 
-def compute_auc(a, v, m,
-                phenotypes=0,
-                exclude=None,
-                sexclude=None):
-    from sklearn.metrics import roc_curve, auc
+def get_data(a, z, m):
+    y_true, y_pred = transform_matrices(a, z, m)
+    
+    y = pd.DataFrame([y_true.values.flatten(),
+                      y_pred.values.flatten()]).T.dropna()
+    return y[0], y[1]
 
-    if exclude is None:
-        exclude = set()
-    if sexclude is None:
-        sexclude = set()
+def evaluate(y_true, y_pred):
+    prec, rec, pthresholds = precision_recall_curve(y_true, y_pred)
+    prec_auc = auc(rec, prec)
 
-    z = v[v < 0]
-
-    conditions = set()
-    for c in m.columns:
-        if c in a.columns:
-            if c in exclude:
-                continue
-            if z[c].dropna().shape[0] < phenotypes:
-                continue
-            conditions.add(c)
-    strains = {}
-    mstrains = set(m.index)
-    for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains
-                      and x not in sexclude}
-
-    true_values = []
-    scores = []
-    for c in sorted(conditions):
-        for s in strains[c]:
-            vvalue = v.loc[s][c]
-            if vvalue < 0:
-                t = True
-            else:
-                t = False
-            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
-            for x in mscore:
-                if np.isnan(x):
-                    continue
-                true_values.append(t)
-                scores.append(x)
-
-    fpr, tpr, thresholds = roc_curve(true_values, scores)
+    fpr, tpr, rthresholds = roc_curve(y_true, y_pred)
     roc_auc = auc(fpr, tpr)
 
-    return roc_auc, tpr, fpr
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    
+    return (rec, prec, prec_auc, pthresholds), (fpr, tpr, roc_auc, rthresholds), (x_mcc, y_mcc, f1s)
 
 if __name__ == "__main__":
     import pandas as pd
     import numpy as np
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
 
     options = get_options()
 
@@ -103,25 +93,33 @@ if __name__ == "__main__":
 
     # Apply the FDR correction
     v = a[f < options.fdr_threshold]
+    v = v[v < 0]
 
     m = pd.read_table(options.predictions)
     m.set_index(m.columns[0], inplace=True)
     m.index.name = 'condition'
     m = m.T
 
-    exclude = set()
-    if options.exclude is not None:
-        exclude = {x.rstrip()
-                   for x in open(options.exclude)}
+    minmax = preprocessing.MinMaxScaler()
 
-    sexclude = set()
-    if options.exclude_strains is not None:
-        sexclude = {x.rstrip()
-                   for x in open(options.exclude_strains)}
+    if options.comparison_matrix is not None:
+        m1 = pd.read_table(options.comparison_matrix)
+        m1.set_index(m1.columns[0], inplace=True)
+        m1.index.name = 'condition'
+        m1 = m1.T
+        y_true, y_pred = get_data(a, v, m1)
+        y_pred = minmax.fit_transform(y_pred.reshape(-1, 1))
+    y_true, y_pred = get_data(a, v, m)
+    if options.comparison_matrix is not None:
+        y_pred = minmax.transform(y_pred.reshape(-1, 1)).reshape(-1, 1)
+    else:
+        y_pred = minmax.fit_transform(y_pred.reshape(-1, 1)).reshape(-1, 1)
+    (rec, prec, prec_auc, pt), (fpr, tpr, roc_auc, rt), (x_mcc, y_mcc, f1s) = evaluate(y_true, y_pred)
 
-    sauc, tpr, fpr = compute_auc(a, v, m,
-                                 options.phenotypes,
-                                 exclude,
-                                 sexclude)
-    for x, y in zip(tpr, fpr):
-        print('%.5f\t%.5f\t%.5f' % (sauc, x, y))
+    for x, y, z in zip(fpr, tpr, rt):
+        print('%.5f\t%.5f\t%.5f\t%.5f\troc' % (roc_auc, z, x, y))
+    for x, y, z in zip(x_mcc, y_mcc, f1s):
+        print('%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (z, x, x, y))
+    for x, y, z in zip(rec, prec, pt):
+        print('%.5f\t%.5f\t%.5f\t%.5f\tprec' % (prec_auc, z, x, y))
+

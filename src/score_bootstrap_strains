@@ -33,47 +33,51 @@ def get_options():
 
     return parser.parse_args()
 
-def strains_bootstrap(a, v, m, repetitions=1000):
-    import random
-    from sklearn.metrics import roc_curve, auc
+def get_phenotypes(data, a, z):
+    if data.name not in a.columns:
+        return np.nan, np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    return z.loc[strains, data.name].dropna().shape[0], a.loc[strains, data.name].dropna().shape[0]
 
-    conditions = set()
-    for c in m.columns:
-        if c in a.columns:
-            conditions.add(c)
-    strains = {}
-    mstrains = set(m.index)
-    for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-            
-    for i in range(repetitions):
-        for c in conditions:
-            true_values = []
-            scores = []
-            for s in strains[c]:
-                vvalue = v.loc[s][c]
-                if vvalue < 0:
-                    t = True
-                else:
-                    t = False 
-                mscore = m.loc[s][c]
-                if np.isnan(mscore):
-                    continue
-                true_values.append( t )
-                scores.append( mscore )
-            if len(set(true_values)) < 2 or len(true_values) < 1:
-                continue
-
-            random.shuffle(true_values)
-            fpr, tpr, thresholds = roc_curve(true_values, scores)
-            roc_auc = auc(fpr, tpr)
-
-            yield i, c, roc_auc, tpr, fpr
+def evaluate(data, a, z):
+    if data.name not in a.columns:
+        return np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    y_true = z[data.name].loc[strains]
+    y_true[np.invert(np.isnan(y_true))] = 1
+    y_true[np.isnan(y_true)] = 0
+    if y_true.shape[0] == 0:
+        return np.nan
+    minmax = preprocessing.MinMaxScaler()
+    y_pred = minmax.fit_transform(data.loc[strains].copy(deep=True).reshape(-1, 1)).reshape(-1, 1)
+    np.random.shuffle(y_pred)
+    fpr, tpr, rt = roc_curve(y_true, y_pred)
+    prec, rec, pt = precision_recall_curve(y_true, y_pred)
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    return (auc(fpr, tpr), fpr, tpr, rt), (auc(rec, prec), rec, prec, pt), (f1s, x_mcc, y_mcc)
 
 if __name__ == "__main__":
     import sys
     import numpy as np
     import pandas as pd
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
 
     options = get_options()
     
@@ -92,8 +96,18 @@ if __name__ == "__main__":
     m.index.name = 'condition'
     m = m.T
 
-    for i, c, sauc, tpr, fpr in strains_bootstrap(a, v, m, options.bootstraps):
-        for x, y in zip(tpr, fpr):
-            print('%s\t%s\t%.5f\t%.5f\t%.5f' % (i, c,
-                                                sauc,
-                                                x, y))
+    phenotypes = m.apply(get_phenotypes, a=a, z=v).dropna()
+    for i in range(options.bootstraps):
+        res = m.apply(evaluate, a=a, z=v).dropna()
+
+        conditions = set(phenotypes.index).intersection(res.index)
+        for c in conditions:
+            (roc_auc, fpr, tpr, rt), (prec_auc, rec, prec, pt), (f1s, x_mcc, y_mcc) = res[c]
+            nsick, nall = phenotypes[c]
+            
+            for x, y, z in zip(fpr, tpr, rt):
+                print('%d\t%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\troc' % (i, c, nsick, nall, roc_auc, z, x, y))
+            for x, y, z in zip(x_mcc, y_mcc, f1s):
+                    print('%d\t%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (i, c, nsick, nall, z, x, x, y))
+            for x, y, z in zip(rec, prec, pt):
+                print('%d\t%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tprec' % (i, c, nsick, nall, prec_auc, z, x, y))

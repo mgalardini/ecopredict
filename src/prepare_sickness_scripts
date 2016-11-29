@@ -46,6 +46,9 @@ def get_options():
                         type=float,
                         default=-2.123,
                         help='Foldx model intercept [Default: 1.201]')
+    parser.add_argument('--exclude', action='store',
+                        default=None,
+                        help='Variants to exclude')
 
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
@@ -85,6 +88,9 @@ if __name__ == "__main__":
     done
     src/merge_tables {9}/{10}/NT* --exclude {11} > {9}/{10}/all.txt
     '''
+
+    if options.exclude is not None:
+        finish = '--exclude ' + options.exclude + ' ' + finish
 
     for a in c1:
         name = a[0]

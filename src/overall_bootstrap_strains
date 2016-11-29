@@ -3,12 +3,12 @@
 __author__ = "Marco Galardini"
 __version__ = '0.1.0'
 
+
 def get_options():
     import argparse
-    import sys
 
     # create the top-level parser
-    description = "Bootstrap the score by permutating strains"
+    description = "Get the AUC for the predictions"
     parser = argparse.ArgumentParser(description=description,
                                      prog='overall_bootstrap_strains')
 
@@ -22,59 +22,70 @@ def get_options():
     parser.add_argument('--bootstraps', action='store',
                         type=int,
                         default=1000,
-                        help='Bootstraps [Default: 1000]')
+                        help='Number of bootstraps [Default: 1000]')
     parser.add_argument('--fdr-threshold', action='store',
                         type=float,
                         default=0.05,
                         help='FDR threshold [Default: 0.05]')
 
     parser.add_argument('--version', action='version',
-                         version='%(prog)s '+__version__)
+                        version='%(prog)s '+__version__)
 
     return parser.parse_args()
 
-def strains_bootstrap(a, v, m, repetitions=1000):
-    import random
-    from sklearn.metrics import roc_curve, auc
+def transform_matrices(a, z, m):
+    y_pred = m[np.invert(np.isnan(a))]
+    y_true = z.loc[m.index, m.columns].copy(deep=True)
+    y_true[np.invert(np.isnan(a))] = 0
+    y_true[np.invert(np.isnan(z))] = 1
+    y_true[np.isnan(a)] = np.nan
+    y_true[np.isnan(m)] = np.nan
+    
+    return y_true, y_pred
 
-    conditions = set()
-    for c in m.columns:
-        if c in a.columns:
-            conditions.add(c)
-    strains = {}
-    mstrains = set(m.index)
-    for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-            
-    true_values = []
-    scores = []
-    for c in conditions:
-        for s in strains[c]:
-            vvalue = v.loc[s][c]
-            if vvalue < 0:
-                t = True
-            else:
-                t = False
-            mscore = m.loc[s][c]
-            if np.isnan(mscore):
-                continue
-            true_values.append(t)
-            scores.append(mscore)
-   
-    for i in range(repetitions):
-        random.shuffle(true_values)
-        fpr, tpr, thresholds = roc_curve(true_values, scores)
-        roc_auc = auc(fpr, tpr)
+def get_data(a, z, m):
+    y_true, y_pred = transform_matrices(a, z, m)
+    
+    y = pd.DataFrame([y_true.values.flatten(),
+                      y_pred.values.flatten()]).T.dropna()
+    return y[0], y[1]
 
-        yield i, roc_auc, tpr, fpr
+def evaluate(y_true, y_pred):
+    prec, rec, pthresholds = precision_recall_curve(y_true, y_pred)
+    prec_auc = auc(rec, prec)
+
+    fpr, tpr, rthresholds = roc_curve(y_true, y_pred)
+    roc_auc = auc(fpr, tpr)
+
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    
+    return (rec, prec, prec_auc, rthresholds), (fpr, tpr, roc_auc, pthresholds), (x_mcc, y_mcc, f1s)
 
 if __name__ == "__main__":
-    import sys
-    import numpy as np
     import pandas as pd
+    import numpy as np
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
+    import random
 
     options = get_options()
-    
+
     # Read strains data
     a = pd.read_table(options.matrix)
     a.set_index(a.columns[0], inplace=True)
@@ -84,14 +95,24 @@ if __name__ == "__main__":
 
     # Apply the FDR correction
     v = a[f < options.fdr_threshold]
+    v = v[v < 0]
 
     m = pd.read_table(options.predictions)
     m.set_index(m.columns[0], inplace=True)
     m.index.name = 'condition'
     m = m.T
 
-    for i, sauc, tpr, fpr in strains_bootstrap(a, v, m, options.bootstraps):
-        for x, y in zip(tpr, fpr):
-            print('%s\t%.5f\t%.5f\t%.5f' % (i,
-                                            sauc,
-                                            x, y))
+    minmax = preprocessing.MinMaxScaler()
+    
+    y_true, y_pred = get_data(a, v, m)
+    y_pred = minmax.fit_transform(y_pred.reshape(-1, 1)).reshape(-1, 1)
+
+    for i in range(options.bootstraps):
+        y_true = y_true.sample(frac=1)
+        (rec, prec, prec_auc, pt), (fpr, tpr, roc_auc, rt), (x_mcc, y_mcc, f1s) = evaluate(y_true, y_pred)
+        for x, y, z in zip(fpr, tpr, rt):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\troc' % (i, roc_auc, z, x, y))
+        for x, y, z in zip(x_mcc, y_mcc, f1s):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (i, z, x, x, y))
+        for x, y, z in zip(rec, prec, pt):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\tprec' % (i, prec_auc, z, x, y))

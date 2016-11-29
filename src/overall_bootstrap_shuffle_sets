@@ -33,43 +33,57 @@ def get_options():
 
     return parser.parse_args()
 
-def prediction_auc(a, v, m):
-    from sklearn.metrics import roc_curve, auc
-
-    conditions = set()
-    for c in m.columns:
-        if c in a.columns:
-            conditions.add(c)
-    strains = {}
-    mstrains = set(m.index)
-    for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
+def transform_matrices(a, z, m):
+    y_pred = m[np.invert(np.isnan(a))]
+    y_true = z.loc[m.index, m.columns].copy(deep=True)
+    y_true[np.invert(np.isnan(a))] = 0
+    y_true[np.invert(np.isnan(z))] = 1
+    y_true[np.isnan(a)] = np.nan
+    y_true[np.isnan(m)] = np.nan
     
-    true_values = []
-    scores = []
-    for c in conditions:
-        for s in strains[c]:
-            vvalue = v.loc[s][c]
-            if vvalue < 0:
-                t = True
-            else:
-                t = False 
-            mscore = m.loc[s][c]
-            if np.isnan(mscore):
-                continue
-            true_values.append( t )
-            scores.append( mscore )
+    return y_true, y_pred
 
-    fpr, tpr, thresholds = roc_curve(true_values, scores)
+def get_data(a, z, m):
+    y_true, y_pred = transform_matrices(a, z, m)
+    
+    y = pd.DataFrame([y_true.values.flatten(),
+                      y_pred.values.flatten()]).T.dropna()
+    return y[0], y[1]
+
+def evaluate(y_true, y_pred):
+    prec, rec, pt = precision_recall_curve(y_true, y_pred)
+    prec_auc = auc(rec, prec)
+
+    fpr, tpr, rt = roc_curve(y_true, y_pred)
     roc_auc = auc(fpr, tpr)
 
-    return roc_auc, tpr, fpr
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    
+    return (rec, prec, prec_auc, pt), (fpr, tpr, roc_auc, rt), (x_mcc, y_mcc, f1s)
 
 if __name__ == "__main__":
     import sys
     import random
     import numpy as np
     import pandas as pd
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
 
     options = get_options()
 
@@ -97,8 +111,15 @@ if __name__ == "__main__":
         for c1, c2 in zip(conditions, m.columns):
             s[c2] = c1
 
-        sauc, tpr, fpr = prediction_auc(a, v, s)
-        for x, y in zip(tpr, fpr):
-            print('%s\t%.5f\t%.5f\t%.5f' % (i,
-                                            sauc,
-                                            x, y))
+        minmax = preprocessing.MinMaxScaler()
+
+        y_true, y_pred = get_data(a, v, s)
+        y_pred = minmax.fit_transform(y_pred.reshape(-1, 1)).reshape(-1, 1)
+        (rec, prec, prec_auc, pt), (fpr, tpr, roc_auc, rt), (x_mcc, y_mcc, f1s) = evaluate(y_true, y_pred)
+
+        for x, y, z in zip(fpr, tpr, rt):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\troc' % (i, roc_auc, z, x, y))
+        for x, y, z in zip(x_mcc, y_mcc, f1s):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (i, z, x, x, y))
+        for x, y, z in zip(rec, prec, pt):
+            print('%d\t%.5f\t%.5f\t%.5f\t%.5f\tprec' % (i, prec_auc, z, x, y))

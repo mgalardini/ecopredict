@@ -23,52 +23,67 @@ def get_options():
                         type=float,
                         default=0.05,
                         help='FDR threshold [Default: 0.05]')
+    parser.add_argument('--comparison-matrix', action='store',
+                        default=None,
+                        help='FDR threshold [Default: 0.05]')
     
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
 
     return parser.parse_args()
 
-def compute_auc(a, v, m):
-    import random
-    from sklearn.metrics import roc_curve, auc
+def get_phenotypes(data, a, z):
+    if data.name not in a.columns:
+        return np.nan, np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    return z.loc[strains, data.name].dropna().shape[0], a.loc[strains, data.name].dropna().shape[0]
 
-    conditions = set()
-    for c in m.columns:
-        if c in a.columns:
-            conditions.add(c)
-    strains = {}
-    mstrains = set(m.index)
-    for c in conditions:
-        strains[c] = {x for x in a[c].dropna().index if x in mstrains}
-        
-    for c in sorted(conditions):
-        true_values = []
-        scores = []
-        for s in strains[c]:
-            vvalue = v.loc[s][c]
-            if vvalue < 0:
-                t = True
-            else:
-                t = False 
-            mscore = m.loc[[x for x in m.index if x.startswith(s)]][c]
-            for x in mscore:
-                if np.isnan(x):
-                    continue
-                true_values.append( t )
-                scores.append( x )
-        if len(set(true_values)) < 2 or len(true_values) < 1:
-            continue
-
-        fpr, tpr, thresholds = roc_curve(true_values, scores)
-        roc_auc = auc(fpr, tpr)
-
-        yield c, roc_auc, tpr, fpr
+def evaluate(data, a, z, pred=None):
+    if data.name not in a.columns:
+        return np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    if pred is not None and data.name not in pred.columns:
+        return np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    y_true = z[data.name].loc[strains]
+    y_true[np.invert(np.isnan(y_true))] = 1
+    y_true[np.isnan(y_true)] = 0
+    if y_true.shape[0] == 0:
+        return np.nan
+    minmax = preprocessing.MinMaxScaler()
+    if pred is None:
+        y_pred = minmax.fit_transform(data.loc[strains].copy(deep=True).reshape(-1, 1)).reshape(-1, 1)
+    else:
+        minmax.fit(pred.loc[strains,
+                            data.name].reshape(-1, 1))
+        y_pred = minmax.transform(data.loc[strains].copy(deep=True).reshape(-1, 1)).reshape(-1, 1)
+    fpr, tpr, rt = roc_curve(y_true, y_pred)
+    prec, rec, pt = precision_recall_curve(y_true, y_pred)
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    return (auc(fpr, tpr), fpr, tpr, rt), (auc(rec, prec), rec, prec, pt), (f1s, x_mcc, y_mcc)
 
 if __name__ == "__main__":
     import sys
     import numpy as np
     import pandas as pd
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
 
     options = get_options()
     
@@ -81,15 +96,32 @@ if __name__ == "__main__":
 
     # Apply the FDR correction
     v = a[f < options.fdr_threshold]
+    v = v[v < 0]
 
     m = pd.read_table(options.predictions)
     m.set_index(m.columns[0], inplace=True)
     m.index.name = 'condition'
     m = m.T
+    if options.comparison_matrix is not None:
+        m1 = pd.read_table(options.comparison_matrix)
+        m1.set_index(m1.columns[0], inplace=True)
+        m1.index.name = 'condition'
+        m1 = m1.T
 
-    for i, sauc, tpr, fpr in compute_auc(a, v, m):
-        for x, y in zip(tpr, fpr):
-            print('%s\t%.5f\t%.5f\t%.5f\t%d' % (i,
-                                                sauc,
-                                                x, y,
-                                                v[v < 0][i].dropna().shape[0]))
+    phenotypes = m.apply(get_phenotypes, a=a, z=v).dropna()
+    if options.comparison_matrix is None:
+        res = m.apply(evaluate, a=a, z=v).dropna()
+    else:
+        res = m.apply(evaluate, a=a, z=v).dropna()
+
+    conditions = set(phenotypes.index).intersection(res.index)
+    for c in conditions:
+        (roc_auc, fpr, tpr, rt), (prec_auc, rec, prec, pt), (f1s, x_mcc, y_mcc) = res[c]
+        nsick, nall = phenotypes[c]
+        
+        for x, y, z in zip(fpr, tpr, rt):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\troc' % (c, nsick, nall, roc_auc, z, x, y))
+        for x, y, z in zip(x_mcc, y_mcc, f1s):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (c, nsick, nall, z, x, x, y))
+        for x, y, z in zip(rec, prec, pt):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tprec' % (c, nsick, nall, prec_auc, z, x, y))

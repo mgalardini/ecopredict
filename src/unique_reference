@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+'''Output the unique reference genes from a pangenome file'''
+
+def parse_orthologs(f):
+    d = {}
+    for l in open(f):
+        if l.startswith('#'):
+            continue
+        o, p, i = l.rstrip().split('\t')
+        d[o] = d.get(o, set())
+        d[o].add( (p, i) )
+    return d
+
+if __name__ == "__main__":
+    import sys
+    
+    d = parse_orthologs(sys.argv[1])
+    for k in d:
+        if 'target' not in {x[1] for x in d[k]}:
+            for prot in {x[0] for x in d[k]}:
+                print(prot)

@@ -22,6 +22,12 @@ def get_options():
     parser.add_argument('--exclude', action='store',
                         default=None,
                         help='Strains to be excluded [Default: consider all]')
+    parser.add_argument('--clusters', action='store',
+                        default=None,
+                        help='Strains clusters [Default: consider them separately]')
+    parser.add_argument('--matrix', action='store',
+                        default=None,
+                        help='Save gene counts')
     
     parser.add_argument('--version', action='version',
                          version='%(prog)s '+__version__)
@@ -53,6 +59,17 @@ if __name__ == "__main__":
     except:
         pass
 
+    cl = {}
+    rcl = {}
+    i = 0
+    if options.clusters is not None:
+        for l in open(options.clusters):
+            for strain in l.rstrip().split():
+                cl[strain] = i
+                rcl[i] = rcl.get(i, set())
+                rcl[i].add(strain)
+            i += 1
+
     d = {}
     files = [x for x in os.listdir(options.orthdir)
              if x.endswith('.pangenome.tsv')]
@@ -65,17 +82,39 @@ if __name__ == "__main__":
     for k in d:
         d[k] = sorted(d[k])[0]
 
+    prefreq = {}
     freq = {}
     for k, infile in d.items():
+        k = cl.get(k, k)
+        prefreq[k] = {}
         orth = parse_orthologs(os.path.join(options.orthdir, infile))
         for group, genes in orth.items():
             if 'target' not in {x[1] for x in genes}:
                 for gene in {x[0] for x in genes}:
-                    freq[gene] = freq.get(gene, 0)
-                    freq[gene] += 1
-    for k in freq:
-        freq[k] = freq[k]/float(len(d))
+                    if options.clusters is not None:
+                        if gene in prefreq[k]:
+                            continue
+                        prefreq[k][gene] = 1
+                    else:
+                        freq[gene] = freq.get(gene, 0)
+                        freq[gene] += 1
+    if options.clusters is not None:
+        for k, genes in prefreq.items():
+            for gene in genes:
+                freq[gene] = freq.get(gene, 0)
+                freq[gene] += 1
+        for k in freq:
+            freq[k] = freq[k]/float(len(rcl))
+    else:
+        for k in freq:
+            freq[k] = freq[k]/float(len(d))
 
     for k, v in freq.items():
         if v >= options.proportion:
             print(k)
+
+    if options.matrix is not None:
+        o = open(options.matrix, 'w')
+        for k, v in freq.items():
+            o.write('%s\t%.5f\n' % (k, v))
+        o.close()
