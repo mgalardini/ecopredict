@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for strain in $(find strains-scores -type f -name '*.pangenome.*');
+do
+  echo $(echo $strain | awk -F'/' '{print $2}' | awk -F'.' '{print $1}') $(src/get_pangenome $strain);
+done

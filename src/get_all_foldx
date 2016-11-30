@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+# Copyright (C) <2015> EMBL-European Bioinformatics Institute
+
+__author__ = "Marco Galardini"
+__version__ = "0.0.1"
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get foldx scores"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'get_all_foldx')
+    parser.add_argument('pdb', action='store',
+                        help='All pdb scores')
+    parser.add_argument('mod', action='store',
+                        help='All mod scores')
+
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import pandas as pd
+    import os
+    import sys
+    options = get_options()
+
+    pdb = pd.read_table(options.pdb,
+                        header=None)
+    pdb.columns = ['prot', 'mut', 'ddG']
+    pdb.set_index(['prot', 'mut'], inplace=True)
+    pidx = set(pdb.index)
+    pdb.reset_index(inplace=True)
+    mod = pd.read_table(options.mod,
+                        header=None)
+    mod.columns = ['prot', 'mut', 'ddG']
+    mod.set_index(['prot', 'mut'], inplace=True)
+    midx = set(mod.index)
+    mod.reset_index(inplace=True)
+
+    for p, m, v in pdb.values:
+        print('%s\t%s\t%f' % (p, m, v))
+    for p, m, v in mod.values:
+        if (p, m) in midx:
+            continue
+        print('%s\t%s\t%f' % (p, m, v))

@@ -53,6 +53,8 @@ ALLSIFTBED = $(MUTATION)/all_sift.bed
 OBSSIFT = $(INPUT)/all_sift_nonsyn.tsv
 OBSSIFTBED = $(MUTATION)/all_sift_nonsyn.bed
 # All foldx scores for the mutations
+EXPFOLDX = $(INPUT)/exp.tab
+EXPFOLDXMOD = $(INPUT)/mod.tab
 ALLFOLDX = $(INPUT)/all_foldx.tsv
 ALLFOLDXBED = $(MUTATION)/all_foldx.bed
 OBSFOLDX = $(INPUT)/all_foldx_nonsyn.tsv
@@ -188,6 +190,16 @@ FIGURE2 = $(FIGUREDIR)/figure_2.svg
 FIGURE3 = $(FIGUREDIR)/figure_3.svg
 FIGURE4 = $(FIGUREDIR)/figure_4.svg
 
+###################################
+## Variants and pangenome counts ##
+###################################
+
+$(NONSYNCOUNT):
+	$(SRCDIR)/get_nonsyn > $@
+
+$(PANGENOMECOUNT):
+	$(SRCDIR)/get_all_pangenomes > $@
+
 ##############################
 ## Non-synonymous mutations ##
 ##############################
@@ -232,6 +244,7 @@ $(TOLMUTATIONS): $(ANNMUTATIONS) $(ALLESSENTIALMUTS)
 ## SIFT data ##
 ###############
 
+
 $(OBSSIFT):
 	cat $(VEPDIR)/*.sift.* | sort | uniq > $@
 $(ALLSIFTBED): $(ALLSIFT)
@@ -252,6 +265,8 @@ $(SIFTOTHERS): $(FEATURESBED) $(OBSSIFTBED)
 ## FOLDX data ##
 ################
 
+$(ALLFOLDX): $(EXPFOLDX) $(EXPFOLDXMOD)
+	$(SRCDIR)/get_all_foldx $(EXPFOLDX) $(EXPFOLDXMOD) > $@
 $(OBSFOLDX):
 	cat $(VEPDIR)/*.foldx.*  $(VEPDIR)/*.models.* | sort | uniq > $@
 $(ALLFOLDXBED): $(ALLFOLDX)

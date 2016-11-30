@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for strain in $(find strains-scores -type f -name nonsynmuts.tsv);
+do
+  echo $(echo $strain | awk -F'/' '{print $2}') $(cat $strain | wc -l);
+done

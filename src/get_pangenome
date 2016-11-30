@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+# Copyright (C) <2015> EMBL-European Bioinformatics Institute
+
+__author__ = "Marco Galardini"
+__version__ = "0.0.1"
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Get pangenome details"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'get_pangenome')
+    parser.add_argument('infile', action='store',
+                        help='OMA output')
+
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def parse_orthologs(infile):
+    d = {}
+    for l in open(infile):
+        if l.strip().startswith('#'):
+            continue
+        orth, prot, org = l.strip().split()
+        d[orth] = d.get(orth, set())
+        d[orth].add( (prot, org) )
+    return d
+
+if __name__ == "__main__":
+    options = get_options()
+
+    orth = parse_orthologs(options.infile)
+
+    core = len({x for x,v in orth.items()
+                if 'target' in {y[1] for y in v}
+                and 'reference' in {y[1] for y in v}})
+    reference = len({x for x,v in orth.items()
+                if 'target' not in {y[1] for y in v}
+                and 'reference' in {y[1] for y in v}})
+    target = len({x for x,v in orth.items()
+                if 'target' in {y[1] for y in v}
+                and 'reference' not in {y[1] for y in v}})
+
+    print('%d\t%d\t%d' % (core, reference, target))
