@@ -121,6 +121,8 @@ REPLICATES3 = $(CHEMICAL)/matrixC.txt
 SHARED = $(CHEMICAL)/shared_conditions.txt
 DELETION = $(CHEMICAL)/all_genes_matched_and_joined_New_NT.txt
 DELETIONFDR = $(CHEMICAL)/deletion.all.fdr.txt
+PHENOTYPEDIRDONE = $(CHEMICAL)/.phenotypes.done
+SEQUENCED = $(INPUT)/sequenced.txt
 
 # Sickness files
 CLUSTERS = $(SICKNESSDIR)/clusters.tsv
@@ -465,7 +467,15 @@ $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
 $(FIXEDPANGENOME): $(PANGENOME)
 	$(SRCDIR)/fix_roary $< > $@
 
-$(ASSOCIATIONDATA): $(FIXEDPANGENOME)
+$(SEQUENCED):
+	find $(VEPDIR)/* -type d -exec basename {} \; | awk -F '_' '{print $$1}' > $@
+
+$(PHENOTYPEDIRDONE): $(SCREENING) $(SCREENINGFDR) $(SEQUENCED)
+	$(SRCDIR)/get_phenotypes $(SCREENING) $(SCREENINGFDR) $(PHENOTYPEDIR) --binary --separator "," --table --allowed $(SEQUENCED) && \
+	$(SRCDIR)/get_phenotypes $(SCREENING) $(SCREENINGFDR) $(PHENOTYPESTRAINSDIR) --binary --separator "," --strains --allowed $(SEQUENCED) && \
+	touch $@
+
+$(ASSOCIATIONDATA): $(FIXEDPANGENOME) $(PHENOTYPEDIRDONE)
 	cd $(ASSOCIATIONDIR) && \
 	for i in $$(find $(PHENOTYPEDIR) -type f); do \
 	  $(SUBMIT) "python ../Scoary/scoary.py -t $$i -g $(FIXEDPANGENOME) -r $(PHENOTYPESTRAINSDIR)/$$(basename $$i) --no-time -c I"; \
