@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+
+# Copyright (C) <2015> EMBL-European Bioinformatics Institute
+
+# This program is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# Neither the institution name nor the name screenings can
+# be used to endorse or promote products derived from this
+# software without prior written permission. For written
+# permission, please contact <marco@ebi.ac.uk>.
+
+# Products derived from this software may not be called
+# screenings nor may screenings appear in their names
+# without prior written permission of the developers.
+# You should have received a copy of the GNU General Public
+# License along with this program. If not, see
+# <http://www.gnu.org/licenses/>.
+
+__author__ = "Marco Galardini"
+__version__ = "0.0.1"
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Output the significant genes for each condition"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'get_phenotypes')
+    parser.add_argument('inmatrix', action='store',
+                        help='Input matrix file')
+    parser.add_argument('fdrmatrix', action='store',
+                        help='FDR matrix file')
+    parser.add_argument('outdir', action='store',
+                        help='Output directory')
+    
+    parser.add_argument('--threshold', action='store',
+                        type=float,
+                        default=0.05,
+                        help='FDR threshold [Default: 0.05]')
+    parser.add_argument('--binary', action='store_true',
+                        default=False,
+                        help='Get phenotypes in binary format [Default: S-scores]')
+    parser.add_argument('--allowed', action='store',
+                        default=None,
+                        help='Allowed samples [Default: all]')
+    parser.add_argument('--separator', action='store',
+                        default='\t',
+                        help='Field separator [Default: tab]')
+    parser.add_argument('--table', action='store_true',
+                        default=False,
+                        help='Table format [Default: plink format]')
+    parser.add_argument('--strains', action='store_true',
+                        default=False,
+                        help='Strains format [Default: plink format]')
+    parser.add_argument('--sick', action='store_true',
+                        default=False,
+                        help='Only sick phenotypes [Default: all phenotypes]')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import os
+    import numpy as np
+    import pandas as pd
+    options = get_options()
+    
+    # Read the input matrix
+    m = pd.read_table(options.inmatrix)
+    m.set_index(m.columns[0], inplace=True)
+    
+    # Read the FDR
+    f = pd.read_table(options.fdrmatrix)
+    f.set_index(f.columns[0], inplace=True)
+
+    # Apply the FDR filter
+    v = m[f < options.threshold]
+    if options.sick:
+        v = v[v < 0]
+    v[np.invert(np.isnan(v))] = 1
+    v[np.isnan(v)] = 0
+
+    if options.allowed is not None:
+        allowed = {x.rstrip()
+                   for x in open(options.allowed)}
+    else:
+        allowed = set(m.index)
+
+    for c in m.columns:
+        if not options.binary:
+            matrix = m.loc[sorted(allowed),
+                           c].dropna()
+        else:
+            matrix = v.loc[sorted(allowed.intersection(m[c].dropna().index)),
+                           c].dropna()
+        outfile = open(os.path.join(options.outdir,
+                                    '%s'%c),
+                       'w')
+        if options.strains:
+            outfile.write(options.separator.join(matrix.index) + '\n')
+        else:
+            if options.table:
+                outfile.write(options.separator.join( ('', c) ) + '\n' )
+            for sample, score in zip(matrix.index,
+                                     matrix.as_matrix()):
+                if not options.binary:
+                    if options.table:
+                        outfile.write( options.separator.join( (sample, str(score)) ) + '\n' )
+                    else:
+                        outfile.write( options.separator.join( (sample, sample, str(score)) ) + '\n' )
+                else:
+                    if options.table:
+                        outfile.write( options.separator.join( (sample, str(int(score))) ) + '\n' )
+                    else:
+                        outfile.write( options.separator.join( (sample, sample, str(int(score))) ) + '\n' )
+        outfile.close()
