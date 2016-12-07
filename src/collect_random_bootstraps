@@ -10,15 +10,10 @@ def get_options():
     # create the top-level parser
     description = "Collect bootstraps"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='collect_bootstraps')
+                                     prog='collect_overall_bootstraps')
 
     parser.add_argument('folder', action='store',
                         help='bootstraps folder')
-
-    parser.add_argument('--phenotypes', action='store',
-                        type=int,
-                        default=0,
-                        help='Minimum number of phenotypes [Default: 0]')
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -26,24 +21,71 @@ def get_options():
     return parser.parse_args()
 
 def mad(data, axis=None):
-        return np.median(np.absolute(data - np.median(data, axis)), axis)
+    return np.median(np.absolute(data - np.median(data, axis)), axis)
 
 if __name__ == "__main__":
     import os
+    import sys
     import pandas as pd
     import numpy as np
 
     options = get_options()
 
-    folders = os.listdir(options.folder)
-    for d in folders:
-        boots = os.listdir(os.path.join(options.folder, d))
-        for b in boots:
-            bootstrap = pd.read_table(os.path.join(options.folder, d, b),
-                                      header=None)
-            bootstrap.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-            boot = bootstrap[bootstrap.phenotypes >= options.phenotypes]
-            values = [boot[boot.condition == c].auc.values[0]
-                      for c in set(boot.condition)]
-            print('\t'.join([str(x) for x in 
-                             (np.median(values), mad(values), np.mean(values), np.std(values))]))
+    roc = {}
+    prec = {}
+    mcc = {}
+    boots = os.listdir(options.folder)
+    px = np.linspace(0, 1, 15)
+    for b in boots:
+        for f in os.listdir(os.path.join(options.folder, b)):
+            d = pd.read_table(os.path.join(options.folder, b, f),
+                              header=None)
+            d.columns = ['condition', 'sick', 'strains',
+                         'stat', 'threshold',
+                         'x', 'y', 'kind']
+            for c in set(d['condition']):
+                roc[c] = roc.get(c, [])
+                prec[c] = prec.get(c, [])
+                mcc[c] = mcc.get(c, [])
+                k = d[d.condition == c]
+                py = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['threshold'])
+                roc[c].append((py, pt))
+                py = np.interp(px,
+                               k[k['kind'] == 'prec']['x'],
+                               k[k['kind'] == 'prec']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['threshold'])
+                prec[c].append((py, pt))
+                py = np.interp(px,
+                               k[k['kind'] == 'mcc']['x'],
+                               k[k['kind'] == 'mcc']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['threshold'])
+                mcc[c].append((py, pt))
+
+    for c in roc:
+        r = np.array(roc[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('roc', c, str(x), str(y), str(m), str(t))))
+        r = np.array(prec[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('prec', c, str(x), str(y), str(m), str(t))))
+        r = np.array(mcc[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('mcc', c, str(x), str(y), str(m), str(t))))

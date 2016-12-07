@@ -192,16 +192,6 @@ FIGURE2 = $(FIGUREDIR)/figure_2.svg
 FIGURE3 = $(FIGUREDIR)/figure_3.svg
 FIGURE4 = $(FIGUREDIR)/figure_4.svg
 
-###################################
-## Variants and pangenome counts ##
-###################################
-
-$(NONSYNCOUNT):
-	$(SRCDIR)/get_nonsyn > $@
-
-$(PANGENOMECOUNT):
-	$(SRCDIR)/get_all_pangenomes > $@
-
 ##############################
 ## Non-synonymous mutations ##
 ##############################
@@ -434,27 +424,21 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  done; \
 	done &&touch $@
 
-$(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA) $(SCREENING) $(SCREENINGFDR)
+$(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA)
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap1_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap1_$$gf.10.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/bootstrap2_$$gf.10.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ --phenotypes 0 > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ --phenotypes 10 > $$(dirname $$g)/bootstrap3_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ > $$(dirname $$g)/bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ > $$(dirname $$g)/bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap1_$$gf/ > $$(dirname $$g)/overall_bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap2_$$gf/ > $$(dirname $$g)/overall_bootstrap2_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
 	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap1_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap1_$$gf.10.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ $(SCREENING) $(SCREENINGFDR) --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap2_$$gf.10.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ --phenotypes 0 > $$(dirname $$g)/weighted_bootstrap3_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ --phenotypes 10 > $$(dirname $$g)/weighted_bootstrap3_$$gf.10.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ > $$(dirname $$g)/weighted_bootstrap1_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ > $$(dirname $$g)/weighted_bootstrap2_$$gf.txt"; \
+	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ > $$(dirname $$g)/weighted_bootstrap3_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf.txt"; \

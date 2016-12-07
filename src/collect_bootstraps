@@ -10,19 +10,10 @@ def get_options():
     # create the top-level parser
     description = "Collect bootstraps"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='collect_bootstraps')
+                                     prog='collect_overall_bootstraps')
 
     parser.add_argument('folder', action='store',
                         help='bootstraps folder')
-    parser.add_argument('matrix', action='store',
-                        help='EMAP matrix')
-    parser.add_argument('fdr', action='store',
-                        help='EMAP FDR matrix')
-
-    parser.add_argument('--phenotypes', action='store',
-                        type=int,
-                        default=0,
-                        help='Minimum number of phenotypes [Default: 0]')
 
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -30,37 +21,72 @@ def get_options():
     return parser.parse_args()
 
 def mad(data, axis=None):
-        return np.median(np.absolute(data - np.median(data, axis)), axis)
+    return np.median(np.absolute(data - np.median(data, axis)), axis)
 
 if __name__ == "__main__":
     import os
+    import sys
     import pandas as pd
     import numpy as np
 
     options = get_options()
 
-    a = pd.read_table(options.matrix)
-    a.set_index(a.columns[0],
-                        inplace=True)
-    f = pd.read_table(options.fdr)
-    f.set_index(f.columns[0],
-                        inplace=True)
-    v = a[f < 0.05]
-    v = v[v < 0]
-
-    conds = {x for x in v.columns
-             if v[x].dropna().shape[0] >= options.phenotypes}
-
+    roc = {}
+    prec = {}
+    mcc = {}
     boots = os.listdir(options.folder)
-    res = []
+    px = np.linspace(0, 1, 15)
     for b in boots:
-        bootstrap = pd.read_table(os.path.join(options.folder, b),
-                                  header=None)
-        bootstrap.columns = ['iteration', 'condition', 'auc', 'tpr', 'fpr']
-        for i in set(bootstrap.iteration):
-            conditions = set(bootstrap[bootstrap.iteration == i].condition).intersection(conds)
-            boot = bootstrap[bootstrap.iteration == i]
-            values = [boot[boot.condition == c].auc.values[0]
-                      for c in conditions]
-            print('\t'.join([str(x) for x in 
-                             (np.median(values), mad(values), np.mean(values), np.std(values))]))
+        d = pd.read_table(os.path.join(options.folder, b),
+                          header=None)
+        d.columns = ['iter', 'condition', 'sick', 'strains',
+                     'stat', 'threshold',
+                     'x', 'y', 'kind']
+        for c in set(d['condition']):
+            roc[c] = roc.get(c, [])
+            prec[c] = prec.get(c, [])
+            mcc[c] = mcc.get(c, [])
+            j = d[d.condition == c]
+            for i in set(j['iter']):
+                k = j[j['iter'] == i]
+                py = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'roc']['x'],
+                               k[k['kind'] == 'roc']['threshold'])
+                roc[c].append((py, pt))
+                py = np.interp(px,
+                               k[k['kind'] == 'prec']['x'],
+                               k[k['kind'] == 'prec']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'prec']['x'],
+                               k[k['kind'] == 'prec']['threshold'])
+                prec[c].append((py, pt))
+                py = np.interp(px,
+                               k[k['kind'] == 'mcc']['x'],
+                               k[k['kind'] == 'mcc']['y'])
+                pt = np.interp(px,
+                               k[k['kind'] == 'mcc']['x'],
+                               k[k['kind'] == 'mcc']['threshold'])
+                mcc[c].append((py, pt))
+
+    for c in roc:
+        r = np.array(roc[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('roc', c, str(x), str(y), str(m), str(t))))
+        r = np.array(prec[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('prec', c, str(x), str(y), str(m), str(t))))
+        r = np.array(mcc[c])
+        for x, y, m, t in zip(px,
+                np.median(r[:, 0], axis=0),
+                mad(r[:, 0], axis=0),
+                np.median(r[:, 1], axis=0)):
+            print('\t'.join(('mcc', c, str(x), str(y), str(m), str(t))))

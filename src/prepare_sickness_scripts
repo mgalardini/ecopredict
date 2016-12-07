@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
     for a, b in itertools.combinations(c1, 2):
         name = ''.join( (a[0], b[0]) )
-        if name not in ['16',]:
+        if name not in []:
             continue
         names = (a[1], b[1])
         f = open('%s/%s.sh' % (options.outdir, name), 'w')
@@ -162,7 +162,7 @@ if __name__ == "__main__":
 
     for a, b, c in itertools.combinations(c1, 3):
         name = ''.join( (a[0], b[0], c[0]) )
-        if name not in ['156', '236',]:
+        if name not in []:
             continue
         names = (a[1], b[1], c[1])
         f = open('%s/%s.sh' % (options.outdir, name), 'w')
@@ -195,7 +195,7 @@ if __name__ == "__main__":
 
     for a, b, c, d in itertools.combinations(c1, 4):
         name = ''.join( (a[0], b[0], c[0], d[0]) )
-        if name not in ['2356', '1236', ]:
+        if name not in ['1236', ]:
             continue
         names = (a[1], b[1], c[1], d[1])
         f = open('%s/%s.sh' % (options.outdir, name), 'w')
@@ -228,7 +228,7 @@ if __name__ == "__main__":
 
     for a, b, c, d, e in itertools.combinations(c1, 5):
         name = ''.join( (a[0], b[0], c[0], d[0], e[0]) )
-        if name not in ['12356',]:
+        if name not in []:
             continue
         names = (a[1], b[1], c[1], d[1], e[1])
         f = open('%s/%s.sh' % (options.outdir, name), 'w')

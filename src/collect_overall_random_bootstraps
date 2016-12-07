@@ -10,15 +10,11 @@ def get_options():
     # create the top-level parser
     description = "Collect bootstraps"
     parser = argparse.ArgumentParser(description=description,
-                                     prog='collect_overall_random_bootstraps')
+                                     prog='collect_overall_bootstraps')
 
     parser.add_argument('folder', action='store',
                         help='bootstraps folder')
 
-    parser.add_argument('--curve', action='store_true',
-                        default=False,
-                        help='Output representative curve [Default: auc only]')
-    
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
 
@@ -29,31 +25,60 @@ def mad(data, axis=None):
 
 if __name__ == "__main__":
     import os
+    import sys
     import pandas as pd
     import numpy as np
 
     options = get_options()
     
-    res = []
+    roc = []
+    prec = []
+    mcc = []
+    boots = os.listdir(options.folder)
     px = np.linspace(0, 1, 15)
-    folders = os.listdir(options.folder)
-    for d in folders:
-        boots = os.listdir(os.path.join(options.folder, d))
-        for b in boots:
-            bootstrap = pd.read_table(os.path.join(options.folder, d, b),
-                                      header=None)
-            bootstrap.columns = ['auc', 'tpr', 'fpr']
-            if not options.curve:
-                auc = bootstrap.auc.values[0]
-                print(auc)
-            else:
-                py = np.interp(px,
-                               bootstrap['fpr'],
-                               bootstrap['tpr'])
-                res.append(py)
-    if options.curve:
-        r = np.array(res)
-        for x, y, m in zip(px,
-                           np.median(r, axis=0),
-                           mad(r, axis=0)):
-            print('\t'.join((str(x), str(y), str(m))))
+    for b in boots:
+        for f in os.listdir(os.path.join(options.folder, b)):
+            k = pd.read_table(os.path.join(options.folder, b, f),
+                              header=None)
+            k.columns = ['stat', 'threshold',
+                         'x', 'y', 'kind']
+            py = np.interp(px,
+                           k[k['kind'] == 'roc']['x'],
+                           k[k['kind'] == 'roc']['y'])
+            pt = np.interp(px,
+                           k[k['kind'] == 'roc']['x'],
+                           k[k['kind'] == 'roc']['threshold'])
+            roc.append((py, pt))
+            py = np.interp(px,
+                           k[k['kind'] == 'prec']['x'],
+                           k[k['kind'] == 'prec']['y'])
+            pt = np.interp(px,
+                           k[k['kind'] == 'roc']['x'],
+                           k[k['kind'] == 'roc']['threshold'])
+            prec.append((py, pt))
+            py = np.interp(px,
+                           k[k['kind'] == 'mcc']['x'],
+                           k[k['kind'] == 'mcc']['y'])
+            pt = np.interp(px,
+                           k[k['kind'] == 'roc']['x'],
+                           k[k['kind'] == 'roc']['threshold'])
+            mcc.append((py, pt))
+
+    r = np.array(roc)
+    for x, y, m, t in zip(px,
+            np.median(r[:, 0], axis=0),
+            mad(r[:, 0], axis=0),
+            np.median(r[:, 1], axis=0)):
+        print('\t'.join(('roc', str(x), str(y), str(m), str(t))))
+    r = np.array(prec)
+    for x, y, m, t in zip(px,
+            np.median(r[:, 0], axis=0),
+            mad(r[:, 0], axis=0),
+            np.median(r[:, 1], axis=0)):
+        print('\t'.join(('prec', str(x), str(y), str(m), str(t))))
+    r = np.array(mcc)
+    for x, y, m, t in zip(px,
+            np.median(r[:, 0], axis=0),
+            mad(r[:, 0], axis=0),
+            np.median(r[:, 1], axis=0)):
+        print('\t'.join(('mcc', str(x), str(y), str(m), str(t))))

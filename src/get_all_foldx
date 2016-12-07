@@ -42,8 +42,10 @@ if __name__ == "__main__":
     mod.reset_index(inplace=True)
 
     for p, m, v in pdb.values:
+        if m[1:-1] == 'NA':
+            continue
         print('%s\t%s\t%f' % (p, m, v))
     for p, m, v in mod.values:
-        if (p, m) in midx:
+        if (p, m) in pidx:
             continue
         print('%s\t%s\t%f' % (p, m, v))
