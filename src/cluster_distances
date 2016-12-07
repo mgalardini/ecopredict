@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     linkage = fst.linkage(c, method='average')
 
-    t = max(cluster.hierarchy.maxdists(linkage)) * 0.015
+    t = max(cluster.hierarchy.maxdists(linkage)) * 0.037
 
     # Extract the clusters
     clusters = cluster.hierarchy.fcluster(linkage, t, 'distance')
