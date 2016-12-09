@@ -282,7 +282,7 @@ if __name__ == "__main__":
     p = pd.read_table(options.sickness)
     p.set_index(p.columns[0], inplace=True)
     p[np.isnan(p)] = 0
-    p = p / -p.apply(expected, pseudo=0.0)
+    #p = p / -p.apply(expected, pseudo=0.0)
     p = p.T
 
     pmean = p.mean().to_dict()
@@ -339,8 +339,8 @@ if __name__ == "__main__":
     ucore = {lconversion.get(x, x) for x in core}
     uaccessory = {lconversion.get(x, x) for x in accessory}
 
-    ess = p[[x for x in essential if x in p.columns and x in ucore]].median()
-    others = p[[x for x in p.columns if x not in essential and x in ucore]].median()
+    ess = p[[x for x in essential if x in p.columns and x in ucore]].mean()
+    others = p[[x for x in p.columns if x not in essential and x in ucore]].mean()
     ogenes = list(others.index)
     less = list(essential)
     res_ess = []
@@ -442,7 +442,67 @@ if __name__ == "__main__":
     results.columns = ['annotation',
                        'set',
                        'correlation']
+    results1 = []
 
+    annd = {
+        'complexes': options.complexes,
+        'pathways': options.pathways,
+        'operons': options.operons,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_sets(infile, pcorecorr):
+            r1 = pcorecorr[real[0]][real[1]]
+            r2 = pcorecorr[rand[0]][rand[1]]
+            results1.append( (name, 'annotation', r1) )
+            results1.append( (name, 'random', r2) )
+
+    annd = {
+        'ppi': options.ppi,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_interactions(infile, pcorecorr):
+            r1 = pcorecorr[real[0]][real[1]]
+            r2 = pcorecorr[rand[0]][rand[1]]
+            results1.append( (name, 'annotation', r1) )
+            results1.append( (name, 'random', r2) )
+
+    results1 = pd.DataFrame(results1)
+    results1.columns = ['annotation',
+                       'set',
+                       'correlation']
+
+    results2 = []
+
+    annd = {
+        'complexes': options.complexes,
+        'pathways': options.pathways,
+        'operons': options.operons,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_sets(infile, pacccorr):
+            r1 = pacccorr[real[0]][real[1]]
+            r2 = pacccorr[rand[0]][rand[1]]
+            results2.append( (name, 'annotation', r1) )
+            results2.append( (name, 'random', r2) )
+
+    annd = {
+        'ppi': options.ppi,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_interactions(infile, pacccorr):
+            r1 = pacccorr[real[0]][real[1]]
+            r2 = pacccorr[rand[0]][rand[1]]
+            results2.append( (name, 'annotation', r1) )
+            results2.append( (name, 'random', r2) )
+
+    results2 = pd.DataFrame(results2)
+    results2.columns = ['annotation',
+                       'set',
+                       'correlation']
     json.dump(res_ess,
               open('%s/res_ess.json' % options.outdir, 'w'))
 
@@ -456,6 +516,10 @@ if __name__ == "__main__":
               open('%s/res_rand.json' % options.outdir, 'w'))
 
     pcorr1.to_csv('%s/pcorr1.tsv' % options.outdir,
+                  sep='\t')
+    pcorecorr.to_csv('%s/pcorecorr.tsv' % options.outdir,
+                  sep='\t')
+    pacccorr.to_csv('%s/pacccorr.tsv' % options.outdir,
                   sep='\t')
 
     for key, value in bench.items():
@@ -485,4 +549,8 @@ if __name__ == "__main__":
               open('%s/bench2.json' % options.outdir, 'w'))
 
     results.to_csv('%s/results.tsv' % options.outdir,
+                  sep='\t')
+    results1.to_csv('%s/results1.tsv' % options.outdir,
+                  sep='\t')
+    results2.to_csv('%s/results2.tsv' % options.outdir,
                   sep='\t')

@@ -160,6 +160,12 @@ ESSENTIALPLOT = $(PLOTDIR)/sickness_essential.svg
 CORRELATIONPLOT = $(PLOTDIR)/sickness_correlation.svg
 ROCPLOT = $(PLOTDIR)/sickness_roc.svg
 ANNOTATIONPLOT = $(PLOTDIR)/sickness_annotation.svg
+CORRELATIONPLOT1 = $(PLOTDIR)/sickness_correlation_core.svg
+ROCPLOT1 = $(PLOTDIR)/sickness_roc_core.svg
+ANNOTATIONPLOT1 = $(PLOTDIR)/sickness_annotation_core.svg
+CORRELATIONPLOT2 = $(PLOTDIR)/sickness_correlation_accessory.svg
+ROCPLOT2 = $(PLOTDIR)/sickness_roc_accessory.svg
+ANNOTATIONPLOT2 = $(PLOTDIR)/sickness_annotation_accessory.svg
 PCHEMICAL = $(PLOTDIR)/p_chemical.svg
 PPURITY = $(PLOTDIR)/p_purity.svg
 PTARGETS = $(PLOTDIR)/p_targets.svg
@@ -521,6 +527,24 @@ $(ROCPLOT): $(PROFILEDATA)
 
 $(ANNOTATIONPLOT): $(PROFILEDATA)
 	$(SRCDIR)/run_sickness_annotations $(SICKNESSDIR)/results.tsv $@ --width 3.5 --height 3 --dpi 90
+
+$(CORRELATIONPLOT1): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_correlation $(SICKNESSDIR)/pcorecorr.tsv $@ --width 3.5 --height 3.5 --dpi 300
+
+$(ROCPLOT1): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_roc $(SICKNESSDIR)/bench1.json $@ --width 3.5 --height 3.5 --dpi 90
+
+$(ANNOTATIONPLOT1): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_annotations $(SICKNESSDIR)/results1.tsv $@ --width 3.5 --height 3 --dpi 90
+
+$(CORRELATIONPLOT2): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_correlation $(SICKNESSDIR)/pacccorr.tsv $@ --width 3.5 --height 3.5 --dpi 300
+
+$(ROCPLOT2): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_roc $(SICKNESSDIR)/bench2.json $@ --width 3.5 --height 3.5 --dpi 90
+
+$(ANNOTATIONPLOT2): $(PROFILEDATA)
+	$(SRCDIR)/run_sickness_annotations $(SICKNESSDIR)/results2.tsv $@ --width 3.5 --height 3 --dpi 90
 
 $(PTREEPLOT): $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR)
 	$(SRCDIR)/run_ptree_generation $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR) $@ --height 7 --dpi 90
