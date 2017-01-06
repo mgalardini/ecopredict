@@ -68,7 +68,8 @@ if __name__ == "__main__":
                 order=['operons', 
                        'complexes',
                        'pathways',
-                       'ppi',])
+                       'ppi',],
+                notch=True)
 
     l1, l2, l3, l4 = sns.color_palette()[:4]            
     for c, a in zip([l1, sns.xkcd_rgb['light grey'],

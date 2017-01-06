@@ -98,8 +98,10 @@ if __name__ == "__main__":
                     for x in
                     os.listdir(options.association)}.intersection(genes.keys())
 
-    auc = {x.split()[0]: float(x.split()[1])
-           for x in open(options.auc)}
+    auc = pd.read_table(options.auc,
+                        header=None)
+    auc.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    auc = auc[auc.kind == 'prec'].groupby('condition').max()['stat'].dropna().to_dict()
 
     res = []
     for c in associations:
@@ -133,16 +135,12 @@ if __name__ == "__main__":
     for t in tmp:
         t.set_rasterized(True)
 
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.axhline(4,
+    plt.axhline(2,
                 color=sns.xkcd_rgb['pale red'],
                 linestyle='dashed')
-    plt.xlim(0.2, 0.9)
     plt.ylim(0, 7.2)
-    plt.ylabel('conditional genes\nenrichment')
-    plt.xlabel('condition\'s AUC')
+    plt.ylabel('-log$_{10}$(Fisher\'s p-value)')
+    plt.xlabel('PR-AUC')
     sns.despine()
 
     plt.savefig(options.outfile,

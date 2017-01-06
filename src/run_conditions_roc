@@ -17,6 +17,12 @@ def get_options():
     parser.add_argument('directory3')
     parser.add_argument('outfile')
 
+    parser.add_argument('--only-all', action='store_true',
+                        default=False,
+                        help='Only all predictors')
+    parser.add_argument('--unweighted', action='store_true',
+                        default=False,
+                        help='Unweighted score [Default: weighted]')
     parser.add_argument('--height', action='store',
                         type=float,
                         default=1,
@@ -35,12 +41,52 @@ def get_options():
 
     return parser.parse_args()
 
+def get_boots(tag):
+    d = {}
+    d['normal'] = pd.read_table('%s/auc_score.2.txt' % tag, 
+                                              header=None)
+    d['normal'].columns = ['condition',
+                               'sick', 'strains',
+                               'stat', 'threshold',
+                               'x', 'y', 'kind']
+    d['strains'] = pd.read_table('%s/bootstrap1_2.txt' % tag,
+                                              header=None)
+    d['strains'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    d['sets'] = pd.read_table('%s/bootstrap2_2.txt' % tag,
+                                              header=None)
+    d['sets'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    d['random'] = pd.read_table('%s/bootstrap3_2.txt' % tag,
+                                              header=None)
+    d['random'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    return d
+
+def get_w_boots(tag):
+    d = {}
+    d['normal'] = pd.read_table('%s/auc_weighted_score.2.txt' % tag, 
+                                              header=None)
+    d['normal'].columns = ['condition',
+                               'sick', 'strains',
+                               'stat', 'threshold',
+                               'x', 'y', 'kind']
+    d['strains'] = pd.read_table('%s/weighted_bootstrap1_2.txt' % tag,
+                                              header=None)
+    d['strains'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    d['sets'] = pd.read_table('%s/weighted_bootstrap2_2.txt' % tag,
+                                              header=None)
+    d['sets'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    d['random'] = pd.read_table('%s/weighted_bootstrap3_2.txt' % tag,
+                                              header=None)
+    d['random'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
+    return d
+
+def compute_auc(group):
+    return auc(group['x'], group['y'])
 
 if __name__ == "__main__":
     import os
     import numpy as np
     import pandas as pd
-    from sklearn.metrics import auc as fauc
+    from sklearn.metrics import auc
 
     options = get_options()
 
@@ -65,252 +111,242 @@ if __name__ == "__main__":
 
     fig = plt.figure(figsize=(options.width, options.height))
 
-    fig.subplots_adjust(hspace=0)
+    if not options.unweighted:
+        w = {}
+        w['snps'] = get_w_boots(options.directory1)
+        w['accessory'] = get_w_boots(options.directory2)
+        w['all'] = get_w_boots(options.directory3)
+    else:
+        w = {}
+        w['snps'] = get_boots(options.directory1)
+        w['accessory'] = get_boots(options.directory2)
+        w['all'] = get_boots(options.directory3)
 
-    color1 = sns.color_palette('Reds_r', 3)[1]
-    color2 = sns.color_palette('Reds_r', 3)[0]
-    
-    transFigure = fig.transFigure.inverted()
-    transFigure1 = fig.transFigure.inverted()
+    k = 'snps'
+    m1 = w[k]['normal']
+    b1_1 = w[k]['strains']
+    b2_1 = w[k]['sets']
+    b3_1 = w[k]['random']
 
-    ax1 = plt.subplot(4, 1, 1)
-    ax1.patch.set_alpha(0)
+    k = 'accessory'
+    m2 = w[k]['normal']
+    b1_2 = w[k]['strains']
+    b2_2 = w[k]['sets']
+    b3_2 = w[k]['random']
 
-    mkde = []
-    auc = pd.read_table(os.path.join(options.directory1, 'auc_score.2.txt'),
-                        header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    wauc = pd.read_table(os.path.join(options.directory1, 'auc_weighted_score.2.txt'),
-                        header=None)
-    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    for boot, color, name in zip([1, 2, 3],
-                                  sns.color_palette('Greys_r', 4),
-                                  ('Strains shuffling',
-                                   'Gene sets shuffling',
-                                   'Random gene sets')):
-        boots = pd.read_table(os.path.join(options.directory1, 'bootstrap%s_2.txt' % boot),
-                                  header=None)
-        boots.columns = ['median', 'mad', 'mean', 'std']
-        kde = sns.kdeplot(boots['median'],
-                          color=color,
-                          shade=True,
-                          label=name)
-        mkde.append(kde.get_ylim()[1])
-    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
-                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-            'o',
-            color=color1,
-            markersize=10,
-            label='Simple')
-    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
-                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-            'o',
-            color=color2,
-            markersize=10,
-            label='Weighted')
-    plt.legend(loc=(0.6, 0.2),
-               frameon=True)
-    plt.xlim(0.45, 0.67)
-    plt.ylim(0, max(mkde))
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.yticks([])
-    plt.xticks([])
-    plt.ylabel('SNPs\n(SIFT + FoldX)',
-               rotation=0,
-               horizontalalignment='right')
+    k = 'all'
+    m3 = w[k]['normal']
+    b1_3 = w[k]['strains']
+    b2_3 = w[k]['sets']
+    b3_3 = w[k]['random']
 
-    coord1 = transFigure.transform(ax1.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
-                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
-    coord1a = transFigure1.transform(ax1.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
-                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
+    m4 = w[k]['normal']
+    m4 = m4[m4.sick / m4.strains >= 0.01]
+    b1_4 = w[k]['strains']
+    b1_4 = b1_4.set_index('condition').loc[set(m4.condition)].reset_index()
+    b2_4 = w[k]['sets']
+    b2_4 = b2_4.set_index('condition').loc[set(m4.condition)].reset_index()
+    b3_4 = w[k]['random']
+    b3_4 = b3_4.set_index('condition').loc[set(m4.condition)].reset_index()
 
-    sns.despine(left=True, bottom=True,
-                ax=ax1)
+    m5 = w[k]['normal']
+    m5 = m5[m5.sick / m5.strains >= 0.03]
+    b1_5 = w[k]['strains']
+    b1_5 = b1_5.set_index('condition').loc[set(m5.condition)].reset_index()
+    b2_5 = w[k]['sets']
+    b2_5 = b2_5.set_index('condition').loc[set(m5.condition)].reset_index()
+    b3_5 = w[k]['random']
+    b3_5 = b3_5.set_index('condition').loc[set(m5.condition)].reset_index()
 
-    ax2 = plt.subplot(4, 1, 2)
-    ax2.patch.set_alpha(0)
+    m6 = w[k]['normal']
+    m6 = m6[m6.sick / m6.strains >= 0.05]
+    b1_6 = w[k]['strains']
+    b1_6 = b1_6.set_index('condition').loc[set(m6.condition)].reset_index()
+    b2_6 = w[k]['sets']
+    b2_6 = b2_6.set_index('condition').loc[set(m6.condition)].reset_index()
+    b3_6 = w[k]['random']
+    b3_6 = b3_6.set_index('condition').loc[set(m6.condition)].reset_index()
 
-    mkde = []
-    auc = pd.read_table(os.path.join(options.directory2, 'auc_score.2.txt'),
-                        header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    wauc = pd.read_table(os.path.join(options.directory2, 'auc_weighted_score.2.txt'),
-                        header=None)
-    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    for boot, color, name in zip([1, 2, 3],
-                           sns.color_palette('Greys_r', 4),
-                           ('Strains shuffling',
-                            'Gene sets shuffling',
-                            'Random gene sets')):
-        boots = pd.read_table(os.path.join(options.directory2, 'bootstrap%s_2.txt' % boot),
-                                  header=None)
-        boots.columns = ['median', 'mad', 'mean', 'std']
-        kde = sns.kdeplot(boots['median'],
-                          color=color,
-                          shade=True,
-                          label=name)
-        mkde.append(kde.get_ylim()[1])
-    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
-                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color1,
+    if not options.only_all:
+        data = [m1[m1.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m2[m2.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m3[m3.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m4[m4.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m5[m5.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m6[m6.kind == 'prec'].groupby('condition').max()['stat'].dropna(),]
+
+        data1 = [b1_1[b1_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_2[b1_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_3[b1_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_4[b1_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_5[b1_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_6[b1_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
+
+        data2 = [b2_1[b2_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_2[b2_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_3[b2_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_4[b2_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_5[b2_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_6[b2_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
+
+        data3 = [b3_1[b3_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_2[b3_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_3[b3_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_4[b3_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_5[b3_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_6[b3_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
+
+        plt.errorbar([x.median() for x in data1],
+                     [x+0.2 for x in range(6)],
+                     xerr=[x.mad() for x in data1],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[0],
+                     markersize=10,
+                     label='Shuffled strains')
+        plt.errorbar([x.median() for x in data2],
+                     [x for x in range(6)],
+                     xerr=[x.mad() for x in data2],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[1],
+                     markersize=10,
+                     label='Shuffled sets')
+        plt.errorbar([x.median() for x in data3],
+                     [x-0.2 for x in range(6)],
+                     xerr=[x.mad() for x in data3],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[2],
+                     markersize=10,
+                     label='Random sets')
+
+        sns.boxplot(data=data,
+                    orient='h',
+                    color=sns.xkcd_rgb['pale grey'],
+                    notch=True,
+                    fliersize=0,
+                    linewidth=2.5)
+        sns.swarmplot(data=data,
+                    orient='h',
+                    color=sns.xkcd_rgb['grey'],
+                    #palette=sns.color_palette('Greys', 8)[2:],
+                    alpha=0.5)
+
+        plt.plot([x.median() for x in data],
+                 range(6),
+                 'o-',
+                 color=sns.color_palette('Reds_r', 3)[0],
                  markersize=10,
-                 label='Simple')
-    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
-                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color2,
+                 label='Median',
+                 zorder=10)
+        plt.plot([x.mean() for x in data],
+                 range(6),
+                 'o-',
+                 color=sns.color_palette('Blues_r', 3)[0],
                  markersize=10,
-                 label='Weighted')
-    plt.legend([])
-    plt.xlim(0.45, 0.67)
-    plt.ylim(0, max(mkde))
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.yticks([])
-    plt.xticks([])
-    plt.ylabel('Accessory genome',
-               rotation=0,
-               horizontalalignment='right')
+                 label='Mean',
+                 zorder=10)
 
-    coord2 = transFigure.transform(ax2.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
-                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
-    coord2a = transFigure1.transform(ax2.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
-                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
+        plt.yticks(range(6),
+                   ['SNPs\n(SIFT + FoldX)',
+                    'Accessory genome',
+                    'All predictors',
+                    'All predictors\n(>= 1% phenotypes)',
+                    'All predictors\n(>= 3% phenotypes)',
+                    'All predictors\n(>= 5% phenotypes)'],
+                   rotation=0)
+        plt.legend(loc=(0.75, 0.025), frameon=True)
+        plt.xlim(-.01, 0.66)
+        plt.xlabel('PR-AUC')
+        sns.despine(left=True)
 
-    sns.despine(left=True, bottom=True,
-                ax=ax2)
+    else:
+        ax = plt.subplot(111)
 
-    ax3 = plt.subplot(4, 1, 3)
-    ax3.patch.set_alpha(0.)
+        data = [m3[m3.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m4[m4.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m5[m5.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
+                m6[m6.kind == 'prec'].groupby('condition').max()['stat'].dropna(),]
 
-    mkde = []
-    auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
-                        header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    wauc = pd.read_table(os.path.join(options.directory3, 'auc_weighted_score.2.txt'),
-                        header=None)
-    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    for boot, color in zip([1, 2, 3],
-                           sns.color_palette('Greys_r', 4)):
-        boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.txt' % boot),
-                                  header=None)
-        boots.columns = ['median', 'mad', 'mean', 'std']
-        kde = sns.kdeplot(boots['median'],
-                          color=color,
-                          shade=True,
-                          label='_')
-        mkde.append(kde.get_ylim()[1])
-    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
-                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color1,
-                 markersize=10)
-    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
-                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color2,
-                 markersize=10)
-    plt.legend([])
-    plt.xlim(0.45, 0.67)
-    plt.ylim(0, max(mkde))
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.yticks([])
-    plt.xticks([])
-    plt.ylabel('All predictors',
-               rotation=0,
-               horizontalalignment='right')
+        data1 = [b1_3[b1_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_4[b1_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_5[b1_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b1_6[b1_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
 
-    coord3 = transFigure.transform(ax3.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
-                                                            for c in set(auc[auc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
-    coord3a = transFigure1.transform(ax3.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
-                                                            for c in set(wauc[wauc.phenotypes >= 0].condition)]),
-                                                            max(mkde)/2.]))
+        data2 = [b2_3[b2_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_4[b2_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_5[b2_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b2_6[b2_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
 
-    sns.despine(left=True, bottom=True,
-                ax=ax3)
+        data3 = [b3_3[b3_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_4[b3_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_5[b3_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
+                 b3_6[b3_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
 
-    ax4 = plt.subplot(4, 1, 4)
-    ax4.patch.set_alpha(0.)
+        sns.boxplot(data=data,
+                    orient='h',
+                    color=sns.xkcd_rgb['pale grey'],
+                    notch=True,
+                    fliersize=0,
+                    linewidth=2.5)
+        sns.swarmplot(data=data,
+                    orient='h',
+                    color=sns.xkcd_rgb['grey'],
+                    #palette=sns.color_palette('Greys', 6)[2:],
+                    alpha=0.5)
 
-    mkde = []
-    auc = pd.read_table(os.path.join(options.directory3, 'auc_score.2.txt'),
-                        header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    wauc = pd.read_table(os.path.join(options.directory3, 'auc_weighted_score.2.txt'),
-                        header=None)
-    wauc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    for boot, color in zip([1, 2, 3],
-                           sns.color_palette('Greys_r', 4)):
-        boots = pd.read_table(os.path.join(options.directory3, 'bootstrap%s_2.10.txt' % boot),
-                                  header=None)
-        boots.columns = ['median', 'mad', 'mean', 'std']
-        kde = sns.kdeplot(boots['median'],
-                          color=color,
-                          shade=True,
-                          label='_')
-        mkde.append(kde.get_ylim()[1])
-    plt.plot(np.median([auc[auc.condition == c].auc.values[0]
-                            for c in set(auc[auc.phenotypes >= 10].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color1,
-                 markersize=10)
-    plt.plot(np.median([wauc[wauc.condition == c].auc.values[0]
-                            for c in set(wauc[wauc.phenotypes >= 10].condition)]),
-                 max(mkde)/2.,
-                 'o',
-                 color=color2,
-                 markersize=10)
-    plt.legend([])
-    plt.xlim(0.45, 0.67)
-    plt.ylim(0, max(mkde))
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.yticks([])
-    plt.xticks([0.45, 0.5, 0.55, 0.6, 0.65])
-    plt.ylabel('All predictors\n(>= 10 phenotypes)',
-               rotation=0,
-               horizontalalignment='right')
+        line1, = plt.plot([x.median() for x in data],
+                 range(4),
+                 'o-',
+                 color=sns.color_palette('Reds_r', 3)[0],
+                 markersize=10,
+                 label='Median',
+                 zorder=10)
+        line2, = plt.plot([x.mean() for x in data],
+                 range(4),
+                 'o-',
+                 color=sns.color_palette('Blues_r', 3)[0],
+                 markersize=10,
+                 label='Mean',
+                 zorder=10)
 
-    coord4 = transFigure.transform(ax4.transData.transform([np.median([auc[auc.condition == c].auc.values[0]
-                                                            for c in set(auc[auc.phenotypes >= 10].condition)]),
-                                                            max(mkde)/2.]))
-    coord4a = transFigure1.transform(ax4.transData.transform([np.median([wauc[wauc.condition == c].auc.values[0]
-                                                            for c in set(wauc[wauc.phenotypes >= 10].condition)]),
-                                                            max(mkde)/2.]))
+        line3 = plt.errorbar([x.median() for x in data1],
+                     [x+0.2 for x in range(4)],
+                     xerr=[x.mad() for x in data1],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[0],
+                     markersize=10,
+                     label='Shuffled strains')
+        line4 = plt.errorbar([x.median() for x in data2],
+                     [x for x in range(4)],
+                     xerr=[x.mad() for x in data2],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[1],
+                     markersize=10,
+                     label='Shuffled sets')
+        line5 = plt.errorbar([x.median() for x in data3],
+                     [x-0.2 for x in range(4)],
+                     xerr=[x.mad() for x in data3],
+                     fmt='o',
+                     color=sns.color_palette('Greys', 3)[2],
+                     markersize=10,
+                     label='Random sets')
 
-    plt.xlabel('Median AUC')
-
-    line = matplotlib.lines.Line2D((coord1[0],coord2[0],coord3[0],coord4[0]),
-                                   (coord1[1],coord2[1],coord3[1],coord4[1]),
-                                   transform=fig.transFigure,
-                                   color=color1)
-    line1 = matplotlib.lines.Line2D((coord1a[0],coord2a[0],coord3a[0],coord4a[0]),
-                                   (coord1a[1],coord2a[1],coord3a[1],coord4a[1]),
-                                   transform=fig.transFigure,
-                                   color=color2)
-    fig.lines = line, line1
-
-    sns.despine(left=True,
-                ax=ax4)
+        plt.yticks(range(4),
+                   ['All conditions\n(N={0})'.format(data[0].shape[0]),
+                    '>= 1% phenotypes\n(N={0})'.format(data[1].shape[0]),
+                    '>= 3% phenotypes\n(N={0})'.format(data[2].shape[0]),
+                    '>= 5% phenotypes\n(N={0})'.format(data[3].shape[0])],
+                   rotation=0)
+        h, l = ax.get_legend_handles_labels()
+        h = h[2:] + h[:2]
+        l = l[2:] + l[:2]
+        plt.legend(handles=h,
+                   labels=l,
+                   loc=(0, 1),
+                   frameon=True,
+                   ncol=2)
+        plt.xlim(-0.008, 0.515)
+        plt.xlabel('PR-AUC')
+        sns.despine(left=True)
 
     plt.savefig(options.outfile,
                 dpi=options.dpi)

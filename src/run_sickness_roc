@@ -82,7 +82,8 @@ if __name__ == "__main__":
              label='random (0.50)',
              zorder=-1)
 
-    plt.legend(loc='lower right', prop={'size':8})
+    plt.legend(loc='lower right', prop={'size':8},
+               frameon=True)
         
     plt.xlim(0, 1)
     plt.ylim(0, 1)

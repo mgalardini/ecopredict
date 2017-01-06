@@ -13,6 +13,8 @@ def get_options():
 
     parser.add_argument('--sickness', action='store',
                         help='Sickness scores file')
+    parser.add_argument('--sickness1', action='store',
+                        help='Sickness scores file [snps only]')
     
     parser.add_argument('--pangenome', action='store',
                         help='Roary pangenome file')
@@ -284,6 +286,12 @@ if __name__ == "__main__":
     p[np.isnan(p)] = 0
     #p = p / -p.apply(expected, pseudo=0.0)
     p = p.T
+    
+    p1 = pd.read_table(options.sickness1)
+    p1.set_index(p1.columns[0], inplace=True)
+    p1[np.isnan(p1)] = 0
+    #p = p / -p.apply(expected, pseudo=0.0)
+    p1 = p1.T
 
     pmean = p.mean().to_dict()
 
@@ -356,6 +364,8 @@ if __name__ == "__main__":
                if x in p.columns]]
     paccessory = p[[x for x in uaccessory
                     if x in p.columns]]
+    paccessory1 = p1[[x for x in uaccessory
+                    if x in p1.columns]]
 
     pcorr = p.corr()
 
@@ -366,6 +376,8 @@ if __name__ == "__main__":
 
     pacccorr = paccessory.corr()
     pacccorr = pacccorr.dropna(thresh=1).T.dropna(thresh=1).T
+    pacccorr1 = paccessory1.corr()
+    pacccorr1 = pacccorr1.dropna(thresh=1).T.dropna(thresh=1).T
 
     bench = {}
     bench['complexes'] = ROC(pcorr1,
@@ -409,6 +421,21 @@ if __name__ == "__main__":
                                          'corr_cpx', index=0, negative=False,
                                          ppi=True)
     bench2['operons'] = ROC(pacccorr,
+                            options.operons,
+                            'corr_cpx', index=0, negative=False)
+    
+    bench3 = {}
+    bench3['complexes'] = ROC(pacccorr1,
+                              options.complexes,
+                              'corr_cpx', index=0, negative=False)
+    bench3['pathways'] = ROC(pacccorr1,
+                             options.pathways,
+                             'corr_cpx', index=0, negative=False)
+    bench3['protein interactions'] = ROC(pacccorr1,
+                                         options.ppi,
+                                         'corr_cpx', index=0, negative=False,
+                                         ppi=True)
+    bench3['operons'] = ROC(pacccorr1,
                             options.operons,
                             'corr_cpx', index=0, negative=False)
 
@@ -503,6 +530,37 @@ if __name__ == "__main__":
     results2.columns = ['annotation',
                        'set',
                        'correlation']
+    
+    results3 = []
+
+    annd = {
+        'complexes': options.complexes,
+        'pathways': options.pathways,
+        'operons': options.operons,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_sets(infile, pacccorr1):
+            r1 = pacccorr1[real[0]][real[1]]
+            r2 = pacccorr1[rand[0]][rand[1]]
+            results3.append( (name, 'annotation', r1) )
+            results3.append( (name, 'random', r2) )
+
+    annd = {
+        'ppi': options.ppi,
+    }
+
+    for name, infile in annd.items():
+        for real, rand in get_interactions(infile, pacccorr1):
+            r1 = pacccorr1[real[0]][real[1]]
+            r2 = pacccorr1[rand[0]][rand[1]]
+            results3.append( (name, 'annotation', r1) )
+            results3.append( (name, 'random', r2) )
+
+    results3 = pd.DataFrame(results3)
+    results3.columns = ['annotation',
+                       'set',
+                       'correlation']
     json.dump(res_ess,
               open('%s/res_ess.json' % options.outdir, 'w'))
 
@@ -520,6 +578,8 @@ if __name__ == "__main__":
     pcorecorr.to_csv('%s/pcorecorr.tsv' % options.outdir,
                   sep='\t')
     pacccorr.to_csv('%s/pacccorr.tsv' % options.outdir,
+                  sep='\t')
+    pacccorr1.to_csv('%s/pacccorr1.tsv' % options.outdir,
                   sep='\t')
 
     for key, value in bench.items():
@@ -543,14 +603,24 @@ if __name__ == "__main__":
         value2 = list(value[2])
         bench2[key] = (value0, value1, value2, value[3])
 
+    for key, value in bench3.items():
+        value0 = list(value[0])
+        value1 = list(value[1])
+        value2 = list(value[2])
+        bench3[key] = (value0, value1, value2, value[3])
+    
     json.dump(bench1,
               open('%s/bench1.json' % options.outdir, 'w'))
     json.dump(bench2,
               open('%s/bench2.json' % options.outdir, 'w'))
+    json.dump(bench3,
+              open('%s/bench3.json' % options.outdir, 'w'))
 
     results.to_csv('%s/results.tsv' % options.outdir,
                   sep='\t')
     results1.to_csv('%s/results1.tsv' % options.outdir,
                   sep='\t')
     results2.to_csv('%s/results2.tsv' % options.outdir,
+                  sep='\t')
+    results3.to_csv('%s/results3.tsv' % options.outdir,
                   sep='\t')

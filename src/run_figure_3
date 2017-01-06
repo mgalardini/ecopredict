@@ -22,7 +22,7 @@ def get_options():
     parser.add_argument('treecolorbar', action='store')
     parser.add_argument('purity', action='store')
     parser.add_argument('chemical', action='store')
-    parser.add_argument('target', action='store')
+    parser.add_argument('arrow', action='store')
     parser.add_argument('outfile', action='store',
                         help='output (including extension)')
 
@@ -47,8 +47,8 @@ if __name__ == "__main__":
     fig8 = sg.fromfile(options.treecolorbar)
     fig9 = sg.fromfile(options.purity)
     fig10 = sg.fromfile(options.chemical)
-    fig11 = sg.fromfile(options.target)
-
+    fig11 = sg.fromfile(options.arrow)
+    
     plot1 = fig1.getroot()
     plot1.moveto(25, 25, scale=0.39)
     plot2 = fig2.getroot()
@@ -60,45 +60,46 @@ if __name__ == "__main__":
     plot5 = fig5.getroot()
     plot5.moveto(140, 920, scale=1)
     plot6 = fig6.getroot()
-    plot6.moveto(575, 25, scale=0.55)
+    plot6.moveto(565, 25, scale=0.6)
     plot7 = fig7.getroot()
-    plot7.moveto(800, 320, scale=1)
+    plot7.moveto(800, 385, scale=1)
     plot8 = fig8.getroot()
-    plot8.moveto(535, 370, scale=1)
+    plot8.moveto(535, 440, scale=1)
     plot9 = fig9.getroot()
-    plot9.moveto(570, 430, scale=1)
+    plot9.moveto(570, 570, scale=1)
     plot10 = fig10.getroot()
-    plot10.moveto(570, 590, scale=1)
+    plot10.moveto(570, 760, scale=1)
     plot11 = fig11.getroot()
-    plot11.moveto(570, 725, scale=1)
+    plot11.moveto(540, 252, scale=0.5)
+    plot11.rotate(-15)
 
     txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(560, 25, "B)", size=12, weight="bold")
-    txt3 = sg.TextElement(25, 250, "C)", size=12, weight="bold")
-    txt4 = sg.TextElement(25, 470, "D)", size=12, weight="bold")
-    txt5 = sg.TextElement(560, 430, "E)", size=12, weight="bold")
-    txt6 = sg.TextElement(560, 590, "F)", size=12, weight="bold")
-    txt7 = sg.TextElement(560, 735, "G)", size=12, weight="bold")
+    txt3 = sg.TextElement(25, 260, "C)", size=12, weight="bold")
+    txt3_1 = sg.TextElement(275, 260, "D)", size=12, weight="bold")
+    txt4 = sg.TextElement(25, 470, "E)", size=12, weight="bold")
+    txt5 = sg.TextElement(560, 570, "F)", size=12, weight="bold")
+    txt6 = sg.TextElement(560, 760, "G)", size=12, weight="bold")
 
-    fig.append([plot3,
+    fig.append([plot7,
+                plot3,
                 plot2,
                 plot1,
                 plot4,
                 plot5,
                 plot6,
-                plot7,
                 plot8,
                 plot9,
-                plot11,
                 plot10,
+                plot11,
                ])
     fig.append([txt1,
                 txt2,
                 txt3,
+                txt3_1,
                 txt4,
                 txt5,
                 txt6,
-                txt7,
                ])
 
     fig.save(options.outfile)

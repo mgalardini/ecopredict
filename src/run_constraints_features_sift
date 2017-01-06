@@ -85,5 +85,5 @@ if __name__ == "__main__":
         for score in c[:len(a)]:
             print('\t'.join(('all features', str(i), str(score))))
         random.shuffle(d)
-        for score in b[:len(a)]:
+        for score in d[:len(a)]:
             print('\t'.join(('all others', str(i), str(score))))

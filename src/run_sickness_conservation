@@ -77,13 +77,24 @@ if __name__ == "__main__":
                 palette=[sns.xkcd_rgb['azure'],
                          sns.xkcd_rgb['azure'],
                          sns.xkcd_rgb['grey'],
-                         sns.xkcd_rgb['grey']])
+                         sns.xkcd_rgb['grey']],
+                notch=True)
     plt.yticks(range(4),
                ['Essential',
                 'Highly conserved',
                 'Poorly conserved',
                 'Random',])
-    plt.xlabel('Median core genes P(AF) across strains')
+    plt.xlabel('Mean core genes P(AF) across strains')
+    
+    plt.xlim(0, 0.31)
+
+    c = 'grey'
+    plt.plot([0.18, 0.30, 0.30, 0.28], [-0.1, -0.1, 3, 3], lw=1.5, c=c)
+    plt.plot([0.18, 0.29, 0.29, 0.28], [0.1, 0.1, 2, 2], lw=1.5, c=c)
+
+    plt.plot([0.24, 0.27, 0.27, 0.25], [0.9, 0.9, 3, 3], lw=1.5, c=c)
+    plt.plot([0.24, 0.26, 0.26, 0.25], [1.1, 1.1, 2, 2], lw=1.5, c=c) 
+    
     sns.despine(left=True) 
 
     plt.savefig(options.outfile, dpi=options.dpi)

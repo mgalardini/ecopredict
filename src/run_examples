@@ -113,7 +113,7 @@ def plot_condition(c,
     ax3.set_xticklabels([en.get(x, '') for x in genes[c]
                          if x in m.index],
                         rotation=90)
-    ax3.set_xlabel('Sickness score')
+    ax3.set_xlabel('Disruption score')
     
     cmap = plt.cm.Reds
     cmap.set_bad('grey', 0.2)
@@ -188,7 +188,7 @@ def plot_condition(c,
                xlim=(-0.01, mdist+0.01+mdist_offset),
                axis=('off',),
                do_show=False,)
-    
+   
     plt.suptitle('Condition: %s' % cname, fontsize=11)
 
     plt.savefig(outfile,
@@ -251,7 +251,7 @@ def plot_condition_roc(c,
     ax3.set_xticklabels([en.get(x, '') for x in genes[c]
                          if x in m.index],
                         rotation=90)
-    ax3.set_xlabel('Sickness score')
+    ax3.set_xlabel('Disruption score')
     ax3.set_ylabel('Strains')
     
     cmap = plt.cm.Reds
@@ -429,13 +429,16 @@ if __name__ == "__main__":
     tree.ladderize()
     mdist = max([tree.distance(tree.root, x) for x in tree.get_terminals()])
 
+    # convert some chars to their greek counterpart
+    cname = options.cname.replace('uM', '$\mu$M').replace('ug', '$\mu$g')
+
     if options.notree:
         plot_condition_roc(options.condition,
-               options.cname,
+               cname,
                tree,
                phenotypes,
                mdist,
-               m1,
+               m,
                score,
                genes,
                options.height,
@@ -444,11 +447,11 @@ if __name__ == "__main__":
                options.dpi)
     else:
         plot_condition(options.condition,
-               options.cname,
+               cname,
                tree,
                phenotypes,
                mdist,
-               m1,
+               m,
                score,
                genes,
                options.height,

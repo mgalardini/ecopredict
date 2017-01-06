@@ -64,27 +64,26 @@ if __name__ == "__main__":
 
     auc = pd.read_table(options.roc,
                         header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
+    auc.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    auc = auc[auc.kind == 'prec']
 
     for c, cname, color in zip(options.condition,
                                options.cname,
-                               sns.color_palette('Reds_r', len(options.condition)+1)):
+                               sns.color_palette('Set2', len(options.condition)+1)):
+        cname = cname.replace('uM', '$\mu$M').replace('ug', '$\mu$g')
         df = auc[auc.condition == c]
-        plt.plot(df.fpr,
-                 df.tpr,
+        plt.plot(df.x,
+                 df.y,
                  '-',
                  color=color,
                  linewidth=2.5,
-                 label='%s (%.2f)' % (cname, df.auc.values[0]),
+                 #label='%s (%.2f)' % (cname, df.stat.values[0]),
+                 label='%s' % (cname),
                  zorder=10)
 
-    plt.legend(loc='lower right')
-    plt.plot([0, 1],
-             [0, 1],
-             '--',
-             color=sns.xkcd_rgb['grey'])
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate');
+    plt.legend(loc='upper right', frameon=True)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision');
 
     plt.savefig(options.outfile,
                 dpi=options.dpi)

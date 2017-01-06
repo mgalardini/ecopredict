@@ -156,12 +156,14 @@ if __name__ == "__main__":
                       a2.loc[list(s), list(c)].values.flatten()])
     v = v.T.dropna()
 
-    plt.plot(v[0],
+    tmp = plt.plot(v[0],
              v[1],
              'k.',
              alpha=0.3)
+    for t in tmp:
+        t.set_rasterized(True)
 
-    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+    plt.title('Pearson\'s r: %.3f' % stats.pearsonr(v[0], v[1])[0])
 
     plt.plot([-20, 15],
              [-20, 15],
@@ -191,12 +193,14 @@ if __name__ == "__main__":
                       a3.loc[list(s), list(c)].values.flatten()])
     v = v.T.dropna()
 
-    plt.plot(v[0],
+    tmp = plt.plot(v[0],
              v[1],
              'k.',
              alpha=0.3)
+    for t in tmp:
+        t.set_rasterized(True)
 
-    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+    plt.title('Pearson\'s r: %.3f' % stats.pearsonr(v[0], v[1])[0])
 
     plt.plot([-20, 15],
              [-20, 15],
@@ -226,12 +230,14 @@ if __name__ == "__main__":
                       a3.loc[list(s), list(c)].values.flatten()])
     v = v.T.dropna()
 
-    plt.plot(v[0],
+    tmp = plt.plot(v[0],
              v[1],
              'k.',
              alpha=0.3)
+    for t in tmp:
+        t.set_rasterized(True)
 
-    plt.title('r: %.3f' % stats.pearsonr(v[0], v[1])[0])
+    plt.title('Pearson\'s r: %.3f' % stats.pearsonr(v[0], v[1])[0])
 
     plt.plot([-20, 15],
              [-20, 15],
@@ -505,10 +511,13 @@ if __name__ == "__main__":
 
     # Extract the clusters
     clusters = hierarchy.fcluster(l, t, 'distance')
-    for c in set(clusters):
+    for c in sorted(set(clusters)):
         # Retrieve the position in the clustered matrix
         index = [x for x in range(acorr.shape[0])
                  if mclust.data2d.index[x] in acorr.index[clusters == c]]
+        # Print cluster memebers
+        print('\t'.join([str(c), ' '.join(acorr.index[clusters == c])]))
+        
         # No singletons, please
         if len(index) == 1:
             continue
@@ -525,6 +534,7 @@ if __name__ == "__main__":
                     lw=1)
             )
 
+    
     plt.title('Pearson\'s r')
 
     plt.savefig('%s/p_correlation.svg' % options.outdir)
@@ -672,7 +682,8 @@ if __name__ == "__main__":
                ['Drug target',
                 'Random clusters',
                 'Threshold'],
-               loc='best')
+               loc='best',
+               frameon=True)
 
     plt.ylim(0.2, 1.01)
 
@@ -744,11 +755,12 @@ if __name__ == "__main__":
                 x='correlation',
                 y='set',
                 palette=[sns.xkcd_rgb['pale red'],
-                         sns.xkcd_rgb['pale grey']])
+                         sns.xkcd_rgb['pale grey']],
+                notch=True)
 
     plt.xlabel('Pearson\'s r\n(chemical genomics)')
     plt.yticks(range(2),
-               ['Natural isolates',
+               ['Clustered conditions',
                 'Random conditions'])
     plt.ylabel('')
 

@@ -82,36 +82,30 @@ if __name__ == "__main__":
     res = []
     auc = pd.read_table(options.auc,
                         header=None)
-    auc.columns = ['condition', 'auc', 'tpr', 'fpr', 'phenotypes']
-    for c in set(auc.condition):
-        res.append((c, rconditions[c], auc[auc.condition == c].auc.values[0], 'all'))
-    for c in set(auc[auc.phenotypes >= 10].condition):
-        res.append((c, rconditions[c], auc[auc.condition == c].auc.values[0], '>= 10 phenotypes'))
+    auc.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    auc = auc[auc.kind == 'prec'].groupby('condition').max()['stat'].dropna()
+    for c in set(auc.index):
+        res.append((c, rconditions[c], auc.loc[c]))
     r = pd.DataFrame(res)
-    r.columns = ['condition', 'category', 'auc', 'phenotypes']
+    r.columns = ['condition', 'category', 'auc']
 
-    sns.boxplot(data=r[r.phenotypes == 'all'],
+    sns.boxplot(data=r,
                 x='auc',
                 y='category',
                 order=sorted(set(r.category),
-                             key=lambda x: r[(r.category == x) &
-                                             (r.phenotypes == 'all')].auc.median()),
+                             key=lambda x: r[r.category == x].auc.median()),
                 color=sns.xkcd_rgb['pale grey'])
-    sns.swarmplot(data=r[r.phenotypes == 'all'],
+    sns.swarmplot(data=r,
                 x='auc',
                 y='category',
                 order=sorted(set(r.category),
-                             key=lambda x: r[(r.category == x) &
-                                             (r.phenotypes == 'all')].auc.median()),
+                             key=lambda x: r[r.category == x].auc.median()),
                 color=sns.xkcd_rgb['dark grey'],
                 alpha=0.5)
     plt.legend([])
-    plt.axvline(0.5,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed')
-    plt.xlim(0, 1)
     plt.ylabel('Condition category')
-    plt.xlabel('AUC')
+    plt.xlabel('PR-AUC')
+    plt.xlim(-0.01)
     sns.despine(left=True);
 
     plt.savefig(options.outfile,

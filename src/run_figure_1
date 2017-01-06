@@ -19,6 +19,7 @@ def get_options():
                         help='treelegend plot')
     parser.add_argument('constraints', action='store',
                         help='constraints plot')
+    parser.add_argument('arrow', action='store')
     parser.add_argument('outfile', action='store',
                         help='output (including extension)')
 
@@ -37,15 +38,19 @@ if __name__ == "__main__":
     fig2 = sg.fromfile(options.constraints)
     fig3 = sg.fromfile(options.treebar)
     fig4 = sg.fromfile(options.treelegend)
-
+    arr = sg.fromfile(options.arrow)
+    
     plot1 = fig1.getroot()
-    plot1.moveto(25, 25, scale=0.77)
+    plot1.moveto(25, 25, scale=0.75)
     plot2 = fig2.getroot()
     plot2.moveto(475, 0, scale=1)
     plot3 = fig3.getroot()
     plot3.moveto(110, 500, scale=1)
     plot4 = fig4.getroot()
     plot4.moveto(0, 495, scale=1)
+    plot_arr = arr.getroot()
+    plot_arr.moveto(0, 303, scale=0.5)
+    plot_arr.rotate(-15)
 
     txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(490, 25, "B)", size=12, weight="bold")
@@ -53,7 +58,7 @@ if __name__ == "__main__":
     txt4 = sg.TextElement(490, 275, "D)", size=12, weight="bold")
     txt5 = sg.TextElement(720, 275, "E)", size=12, weight="bold")
 
-    fig.append([plot1, plot2, plot3, plot4])
+    fig.append([plot1, plot2, plot3, plot4, plot_arr])
     fig.append([txt1, txt2, txt3, txt4, txt5])
 
     fig.save(options.outfile)

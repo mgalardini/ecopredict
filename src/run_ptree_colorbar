@@ -82,7 +82,7 @@ if __name__ == "__main__":
     for x in v.index:
         if x not in cond:
             continue
-        phen.append(int(v.loc[x].T.dropna().shape[0] * 1000 / float(cond[x])))
+        phen.append(v.loc[x].T.dropna().shape[0] / float(cond[x]))
     phen1 = []
     for x in v1.index:
         if x not in cond:
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     z = v[f < 0.05]
     z[np.invert(np.isnan(z))] = 1
     z[np.isnan(z)] = 0
-    mphen = int(z.T.sum().sort_values(ascending=False).max())
+    mphen = max(phen)
     mphen1 = int(max(phen1))
 
     plt.figure(figsize=(options.width, options.height))
@@ -108,15 +108,15 @@ if __name__ == "__main__":
     plt.yticks([])
     plt.title('Tested conditions')
 
-    plt.subplot(122)
-    gradient = np.linspace(0, mphen, mphen)
+    ax = plt.subplot(122)
+    gradient = np.linspace(0, mphen)
     gradient = np.vstack((gradient, gradient))
     plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Reds'),
                vmax=mphen)
 
-    plt.xticks(range(0, mphen, mphen/6),
-               [str(x) for x in range(0, mphen, mphen/6)])
+    plt.xticks(np.linspace(ax.get_xlim()[0], ax.get_xlim()[1], 6),
+               ['%d%%' % int(x*100) for x in np.linspace(0, mphen, 6)])
     plt.yticks([])
-    plt.title('Sick phenotypes')
+    plt.title('Proportion of sick phenotypes')
 
     plt.savefig(options.outfile, dpi=options.dpi)

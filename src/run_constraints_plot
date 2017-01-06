@@ -22,6 +22,11 @@ def get_options():
     parser.add_argument('outfile', action='store',
                         help='Foldx accessibility file')
 
+    parser.add_argument('--sift-offset', action='store',
+                        type=float,
+                        default=1.527487632E-04,
+                        help='SIFT score offset [Default: 1.527487632E-04]')
+    
     parser.add_argument('--width', action='store',
                         type=int,
                         default=5,
@@ -66,12 +71,50 @@ if __name__ == "__main__":
 
     m2 = pd.read_table(options.siftfeatures, header=None)
     m2.columns = ['set', 'round', 'score']
+    s = []
+    for x in m2['set']:
+        if x == 'all features':
+            s.append('features')
+        elif x == 'all others':
+            s.append('others')
+        else:
+            s.append(x)
+    m2['set'] = s
+    r = []
+    for x in m2['round']:
+        if np.isnan(x):
+            r.append('Observed')
+        elif x == 1:
+            r.append('Expected')
+        else:
+            r.append(np.nan)
+    m2['round'] = r
+    m2 = m2.dropna()
 
     m3 = pd.read_table(options.accessibility, header=None)
     m3.columns = ['round', 'start', 'stop', 'variability']
 
     m4 = pd.read_table(options.foldxaccessibility, header=None)
     m4.columns = ['set', 'round', 'score']
+    s = []
+    for x in m4['set']:
+        if x == 'all buried':
+            s.append('buried')
+        elif x == 'all others':
+            s.append('others')
+        else:
+            s.append(x)
+    m4['set'] = s
+    r = []
+    for x in m4['round']:
+        if np.isnan(x):
+            r.append('Observed')
+        elif x == 1:
+            r.append('Expected')
+        else:
+            r.append(np.nan)
+    m4['round'] = r
+    m4 = m4.dropna()
 
     plt.figure(figsize=(options.width, options.height))
 
@@ -81,10 +124,10 @@ if __name__ == "__main__":
                  fmt='o', ms=7,
                  color=sns.xkcd_rgb['yellow orange'],
                  mec='k', mew=1,
-                 label='E. coli')
+                 label='Observed')
     sns.stripplot(data=m1[m1['set'] == 'random'].groupby('round').median()['variability'],
                   jitter=0.4,
-                  color='k',
+                  color=sns.xkcd_rgb['grey'],
                   alpha=0.33,
                   label='Permutations',
                   zorder=0)
@@ -107,7 +150,7 @@ if __name__ == "__main__":
              'o', ms=7,
              color=sns.xkcd_rgb['deep orange'],
              mec='k', mew=1,
-             label='E. coli')
+             label='Observed')
 
     tmp = plt.plot((m3.dropna().start+m3.dropna().stop)/2.,
              m3.dropna().variability,
@@ -125,7 +168,7 @@ if __name__ == "__main__":
             if y == 'Permutations'][0],
            [(x, y)
             for x,y in zip(handles, labels)
-            if y == 'E. coli'][0]]
+            if y == 'Observed'][0]]
     plt.legend([x[0] for x in objs],
                [x[1] for x in objs],
                loc=(0.05, 0.8),
@@ -136,33 +179,23 @@ if __name__ == "__main__":
                 color='r',
                 linestyle='dashed')
     plt.ylabel('log$_2$(Nonsynonymous ratio)')
-    plt.xlabel('Accessibility')
+    plt.xlabel('Solvent accessible surface area (A$^2$)')
     sns.despine(ax=ax2)
 
     ax3 = plt.subplot2grid((20, 7), (12, 0), rowspan=8, colspan=3)
 
-    sns.boxplot(data=m2[(m2['set'] == 'features') |
-                        (m2['set'] == 'others')],
+    sns.boxplot(data=m2,
                 x='set',
                 y='score',
+                hue='round',
                 palette=[sns.xkcd_rgb['yellow orange'],
-                         sns.xkcd_rgb['light grey']])
-    tmp = sns.stripplot(data=m2.groupby(('set', 'round')).median().dropna().reset_index(),
-                  jitter=0.3,
-                  color='k',
-                  alpha=0.33,
-                  x='set',
-                  y='score',
-                  order=['all features',
-                         'all others'],
-                  label='All possible nonsynonymous')
-    tmp.set_rasterized(True)
-    handles, labels = ax3.get_legend_handles_labels()
-    objs = [[(x, y)
-            for x,y in zip(handles, labels)][0]]
-    plt.legend([x[0] for x in objs],
-               [x[1] for x in objs],
-               loc=(0.1, 1),
+                         sns.xkcd_rgb['light grey']],
+                notch=True)
+    plt.axhline(-np.log10(0.05 + options.sift_offset),
+                color='r',
+                linestyle='dashed',
+                label='Predicted deleterious threshold')
+    plt.legend(loc=(0.1, 1),
                frameon=True)
     plt.ylim(0, 10)
     plt.ylabel('-log$_{10}$(SIFT p-value)')
@@ -173,34 +206,23 @@ if __name__ == "__main__":
 
     ax4 = plt.subplot2grid((20, 7), (12, 4), rowspan=8, colspan=3)
 
-    sns.boxplot(data=m4[(m4['set'] == 'buried') |
-                        (m4['set'] == 'others')],
+    sns.boxplot(data=m4,
                 x='set',
                 y='score',
+                hue='round',
                 palette=[sns.xkcd_rgb['deep orange'],
                          sns.xkcd_rgb['light grey']])
-    tmp = sns.stripplot(data=m4.groupby(('set', 'round')).median().dropna().reset_index(),
-                  jitter=0.3,
-                  color='k',
-                  alpha=0.33,
-                  x='set',
-                  y='score',
-                  order=['all buried',
-                         'all others'],
-                  label='All possible nonsynonymous')
-    tmp.set_rasterized(True)
-    handles, labels = ax4.get_legend_handles_labels()
-    objs = [[(x, y)
-            for x,y in zip(handles, labels)][0]]
-    plt.legend([x[0] for x in objs],
-               [x[1] for x in objs],
-               loc=(0.1, 1),
+    plt.axhline(2,
+                color='r',
+                linestyle='dashed',
+                label='Predicted deleterious threshold')
+    plt.legend(loc=(0.1, 1),
                frameon=True)
-    plt.ylabel('FoldX ddG')
+    plt.ylabel('FoldX $\Delta\Delta$G')
     plt.xlabel('')
     plt.xticks(range(2),
                ['Buried', 'Exposed'])
-    plt.ylim(-5, 10)
+    plt.ylim(-6, 12)
     sns.despine(bottom=True, ax=ax4)
 
     plt.savefig(options.outfile, dpi=options.dpi)
