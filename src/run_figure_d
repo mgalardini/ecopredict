@@ -87,7 +87,7 @@ if __name__ == "__main__":
     txt_ex = sg.TextElement(560, 480, "F)", size=12, weight="bold")
 
     plot_ex = ex2.getroot()
-    plot_ex.moveto(680, 450, scale=1)
+    plot_ex.moveto(680, 460, scale=1)
 
     fig.append([plot7,
                 plot3,
