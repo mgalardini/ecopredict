@@ -12,21 +12,22 @@ def get_options():
     parser = argparse.ArgumentParser(description=description,
                                      prog='run_examples')
 
+    parser.add_argument('strains')
     parser.add_argument('eck')
+    parser.add_argument('locus')
     parser.add_argument('gbk')
     parser.add_argument('deletion')
+    parser.add_argument('uncommon')
     parser.add_argument('sickness')
     parser.add_argument('predictions')
     parser.add_argument('matrix')
     parser.add_argument('fdr')
-    parser.add_argument('tree')
+    parser.add_argument('deletionfdr')
+    parser.add_argument('conditions')
     parser.add_argument('condition')
     parser.add_argument('cname')
     parser.add_argument('outfile')
 
-    parser.add_argument('--notree', action='store_true',
-                        default=False,
-                        help='Plot roc curve with no tree')
     parser.add_argument('--height', action='store',
                         type=float,
                         default=1,
@@ -39,6 +40,14 @@ def get_options():
                         type=int,
                         default=300,
                         help='DPI [Default: 300]')
+    parser.add_argument('--max-strains', action='store',
+                        type=int,
+                        default=18,
+                        help='Maximum number of strains [Default: 18]')
+    parser.add_argument('--max-genes', action='store',
+                        type=int,
+                        default=20,
+                        help='Maximum number of genes [Default: 20]')
     
     parser.add_argument('--version', action='version',
                         version='%(prog)s '+__version__)
@@ -55,277 +64,160 @@ def truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
 
 def expected(values, pseudo):
     return sum(np.log(1 - values + pseudo))/values.shape[0]
+                
 
-
-def plot_condition(c,
-                   cname,
-                   tree,
-                   phenotypes,
-                   mdist,
-                   m,
-                   score,
-                   genes,
-                   height, width,
-                   outfile,
-                   dpi,
-                   mdist_offset=0):
-    p_vector = phenotypes.loc[[x.name
-                              for x in tree.get_terminals()],
-                              c]
+def plot_details(c, c1, cname, width, height, outfile, dpi, max_strains=18, max_genes=20):
+    weights = -(np.log10(f[c1].loc[genes[c]].dropna()).replace([np.inf, -np.inf], np.nan).dropna() * g.loc[genes[c]]) / gmax
     
-    grid_length = 5 + len([x for x in genes[c]
-                            if x in m.index]) + 1 + 1 + 1
-
-    grid_height = len(tree.get_terminals())
+    weights = weights.sort_values(ascending=False).head(max_genes)
     
-    fig = plt.figure(figsize=(grid_length/float(width), height))
+    astrains = score[c].loc[
+                        z[c].dropna().index
+                        ].sort_values(ascending=False).dropna().index
+    pstrains = astrains[:max_strains]
+    
+    if max_strains > 30:
+        plt.figure(figsize=(weights.shape[0]*1.75/width, height))
+    else:
+        plt.figure(figsize=(weights.shape[0]*1.75/width, height))
 
-    cmap = cmap = truncate_colormap(plt.cm.plasma, 0, 0.8)
-    cmap.set_bad('grey', 0.2)
-    cmap.set_under('red', 1)
+    ws = max(6, weights.shape[0])
+    
+    gs = gridspec.GridSpec(len(astrains),
+                           ws*2 + 9,
+                           wspace=0.01,
+                           hspace=0.01)
 
-    ax3=plt.subplot2grid((grid_height, grid_length),
-                         (0, 5),
-                         colspan=len([x for x in genes[c]
-                                      if x in m.index]),
-                         rowspan=len(tree.get_terminals()))
-    a=ax3.imshow(m.loc[[x for x in
-                        m.loc[
-                        genes[c]
-                        ].T.mad().sort_values(ascending=False).index
-                       if x in m.index],
-                       [x.name
-                        for x in tree.get_terminals()]].T,
-                 cmap=cmap,
-                 vmin=0, vmax=1,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax3.set_yticks([])
-    ax3.set_xticks([])
-    for i  in range(len([x for x in genes[c]
-                         if x in m.index])):
-        ax3.axvline(i+0.5,
+    plt.subplot(gs[:, :ws])
+    im = plt.imshow(p.loc[astrains,
+                          weights.sort_values(ascending=False).index],
+                     cmap=cmap,
+                     vmin=0, vmax=1,
+                     aspect='auto',
+                     interpolation='none',
+                    )
+    im.set_rasterized(True)
+    plt.yticks([])
+    for i  in range(weights.shape[0]):
+        plt.axvline(i+0.5,
                     color='k')
-    ax3.set_xticks([x for x in range(len([x for x in genes[c]
-                                               if x in m.index]))])
-    ax3.set_xticklabels([en.get(x, '') for x in genes[c]
-                         if x in m.index],
-                        rotation=90)
-    ax3.set_xlabel('Disruption score')
-    
-    cmap = plt.cm.Reds
-    cmap.set_bad('grey', 0.2)
+    plt.xticks(range(weights.shape[0]),
+               [en.get(x, x) for x in weights.sort_values(ascending=False).index],
+               rotation=90)
+    plt.ylabel('Strains')
+    if weights.shape[0] > 7:
+        plt.xlabel('Disruption score')
+    else:
+        plt.xlabel('Disruption\nscore')
 
-    ax1=plt.subplot2grid((grid_height, grid_length),
-                         (0, 7 + len([x for x in genes[c]
-                                       if x in m.index])),
-                         colspan=1,
-                         rowspan=len(tree.get_terminals()))
-    a=ax1.imshow([[x] for x in p_vector],
-                 cmap=cmap,
-                 vmin=0, vmax=1,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax1.set_yticks([])
-    ax1.set_xticks([0.])
-    ax1.set_xticklabels(['Phenotype'],
-                        rotation=90)
-    
-    cmap = plt.cm.Reds
-    cmap.set_bad('grey', 0.2)
-    
-    ax4=plt.subplot2grid((grid_height, grid_length),
-                         (0, 6 + len([x for x in genes[c]
-                                     if x in m.index])),
-                         colspan=1,
-                         rowspan=len(tree.get_terminals()))
-    a=ax4.imshow([[x] for x in score.T.loc[[x.name
-                  for x in tree.get_terminals()],
-                  c].values],
-                 cmap=cmap,
-                 vmin=0,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax4.set_yticks([])
-    ax4.set_xticks([0.])
-    ax4.set_xticklabels(['Prediction'],
-                        rotation=90)
-    
-    ax=plt.subplot2grid((grid_height, grid_length),
-                        (0, 0),
-                        colspan=5,
-                        rowspan=len(tree.get_terminals()),
-                        axisbg='white')
+    plt.subplot(gs[:, ws + 1:ws + 2])
+    im = plt.imshow([[x]
+                     for x in score[c].loc[astrains]],
+                     cmap=plt.get_cmap('Reds'),
+                     vmin=0,
+                     aspect='auto',
+                     interpolation='none',
+                    )
+    im.set_rasterized(True)
+    plt.yticks([])
+    plt.xticks([0],
+               ['Prediction'],
+               rotation=90)
 
-    fig.subplots_adjust(wspace=0, hspace=0)
-    
-    labels = {}
-    for x, i in zip(tree.get_terminals(),
-                    range(len(tree.get_terminals()))):
-        if x.name not in strains:
-            continue
-        labels[x.name] = i
-    
-    color_strains = set()
-    
-    def _label(x, strains):
-        if x.name in strains:
-            return x.name
-        
-    suptitle = ''
-    Phylo.draw(tree, axes=ax, 
-               show_confidence=False,
-               label_func=lambda x: _label(x, color_strains),
-               xticks=([],),
-               yticks=([],),
-               ylabel=('',), suptitle=(suptitle,),
-               xlim=(-0.01, mdist+0.01+mdist_offset),
-               axis=('off',),
-               do_show=False,)
-   
-    plt.suptitle('Condition: %s' % cname, fontsize=11)
+    plt.subplot(gs[:, ws + 2:ws + 3])
+    im = plt.imshow([[x]
+                     for x in z[c].loc[astrains]],
+                     cmap=plt.get_cmap('Reds'),
+                     vmin=0,
+                     vmax=1,
+                     aspect='auto',
+                     interpolation='none',
+                    )
+    im.set_rasterized(True)
+    plt.yticks([])
+    plt.xticks([0],
+               ['Phenotype'],
+               rotation=90)
 
-    plt.savefig(outfile,
-                dpi=dpi)
-
-def plot_condition_roc(c,
-                   cname,
-                   tree,
-                   phenotypes,
-                   mdist,
-                   m,
-                   score,
-                   genes,
-                   height, width,
-                   outfile,
-                   dpi,
-                   mdist_offset=0):
-    sorder = score.T.loc[phenotypes[c].dropna().index,
-                         c].sort_values(ascending=False).index
-
-    p_vector = phenotypes.loc[sorder,
-                              c]
-    
-    grid_length = len([x for x in genes[c]
-                            if x in m.index]) + 1 + 1 + 1
-
-    grid_height = len(tree.get_terminals())
-    
-    fig = plt.figure(figsize=(grid_length/float(width), height))
-
-    cmap = cmap = truncate_colormap(plt.cm.plasma, 0, 0.8)
-    cmap.set_bad('grey', 0.2)
-    cmap.set_under('red', 1)
-
-    ax3=plt.subplot2grid((grid_height, grid_length),
-                         (0, 0),
-                         colspan=len([x for x in genes[c]
-                                      if x in m.index]),
-                         rowspan=len(tree.get_terminals()))
-    a=ax3.imshow(m.loc[[x for x in
-                        m.loc[
-                        genes[c]
-                        ].T.mad().sort_values(ascending=False).index
-                       if x in m.index],
-                       sorder].T,
-                 cmap=cmap,
-                 vmin=0, vmax=1,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax3.set_yticks([])
-    ax3.set_xticks([])
-    for i  in range(len([x for x in genes[c]
-                         if x in m.index])):
-        ax3.axvline(i+0.5,
+    plt.subplot(gs[:int(len(astrains) * 0.66),
+                   ws + 6:ws*2 + 6])
+    im = plt.imshow(p.loc[pstrains,
+                     weights.sort_values(ascending=False).index],
+                     cmap=cmap,
+                     vmin=0, vmax=1,
+                     aspect='auto',
+                     interpolation='none',
+                    )
+    im.set_rasterized(True)
+    plt.yticks([])
+    for i  in range(weights.shape[0]):
+        plt.axvline(i+0.5,
                     color='k')
-    ax3.set_xticks([x for x in range(len([x for x in genes[c]
-                                               if x in m.index]))])
-    ax3.set_xticklabels([en.get(x, '') for x in genes[c]
-                         if x in m.index],
-                        rotation=90)
-    ax3.set_xlabel('Disruption score')
-    ax3.set_ylabel('Strains')
-    
-    cmap = plt.cm.Reds
-    cmap.set_bad('grey', 0.2)
+    for i  in range(len(pstrains)):
+        plt.axhline(i+0.5,
+                    color='k')
+    plt.xticks(range(weights.shape[0]),
+               [en.get(x, x) for x in weights.sort_values(ascending=False).index],
+               rotation=90)
 
-    ax1=plt.subplot2grid((grid_height, grid_length),
-                         (0, 2 + len([x for x in genes[c]
-                                       if x in m.index])),
-                         colspan=1,
-                         rowspan=len(tree.get_terminals()))
-    a=ax1.imshow([[x] for x in p_vector],
-                 cmap=cmap,
-                 vmin=0, vmax=1,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax1.set_yticks([])
-    ax1.set_xticks([0.])
-    ax1.set_xticklabels(['Phenotype'],
-                        rotation=90)
-    
-    cmap = plt.cm.Reds
-    cmap.set_bad('grey', 0.2)
-    
-    ax4=plt.subplot2grid((grid_height, grid_length),
-                         (0, 1 + len([x for x in genes[c]
-                                     if x in m.index])),
-                         colspan=1,
-                         rowspan=len(tree.get_terminals()))
-    a=ax4.imshow([[x] for x in score.T.loc[sorder,
-                  c].values],
-                 cmap=cmap,
-                 vmin=0,
-                 aspect='auto',
-                 interpolation='none',
-                )
-    a.set_rasterized(True)
-    ax4.set_yticks([])
-    ax4.set_xticks([0.])
-    ax4.set_xticklabels(['Prediction'],
-                        rotation=90)
-    
-    #ax=plt.subplot2grid((grid_height, grid_length),
-    #                    (0, 4 + len([x for x in genes[c]
-    #                                 if x in m.index])),
-    #                    colspan=11,
-    #                    rowspan=len(tree.get_terminals()),
-    #                    axisbg='white')
+    ax = plt.subplot(gs[-int(len(astrains) * 0.17):,
+                   ws + 6:ws*2 + 6])
+    plt.bar(range(weights.shape[0]),
+            weights.sort_values(ascending=False),
+            width=1,
+            color=sns.xkcd_rgb['light grey'])
+    plt.xticks([x + 0.5 for x in range(weights.shape[0])],
+               [en.get(x, x) for x in weights.sort_values(ascending=False).index],
+               rotation=90)
+    plt.xlim(0, weights.shape[0])
+    for i  in range(weights.shape[0]):
+        plt.axvline(i,
+                    color='grey')
+    plt.yticks([])
+    if weights.shape[0] > 7:
+        plt.xlabel('Predictive model weights')
+    else:
+        plt.xlabel('Predictive\nmodel weights')
 
-    #fig.subplots_adjust(wspace=0, hspace=0)
-    
-    #df = pd.DataFrame([p_vector.values,
-    #                   score.T.loc[sorder, c].values]).T
-    
-    #fpr, tpr, thresholds = roc_curve(df.dropna()[0], df.dropna()[1])
+    plt.subplot(gs[:int(len(astrains) * 0.66),
+                   ws*2 + 7:ws*2 + 8])
+    im = plt.imshow([[x]
+                for x in score[c].loc[pstrains]],
+               aspect='auto',
+               interpolation='nearest',
+               cmap=plt.get_cmap('Reds'),
+               vmin=0)
+    im.set_rasterized(True)
+    plt.xticks([0],
+               ['Prediction'],
+               rotation=90)
+    plt.yticks([])
+    for i  in range(len(pstrains)):
+        plt.axhline(i+0.5,
+                    color='k')
 
-    #ax.plot(fpr, tpr,
-    #        'r-',
-    #        linewidth=3,
-    #        label='AUC: %.2f' % auc(fpr, tpr))
-    #ax.plot([0, 1],
-    #        [0, 1],
-    #        '--',
-    #        color=sns.xkcd_rgb['grey'],
-    #        zorder=0)
-    #plt.legend(loc='lower right')
-    #ax.set_xlabel('False positive rate')
-    #ax.set_ylabel('True positive rate')
-    #ax.yaxis.tick_right()
-    #ax.yaxis.set_label_position('right')
-
+    ax = plt.subplot(gs[:int(len(astrains) * 0.66),
+                        ws*2 + 8:])
+    im = plt.imshow([[x]
+                for x in z[c].loc[pstrains]],
+               aspect='auto',
+               interpolation='nearest',
+               cmap=plt.get_cmap('Reds'),
+               vmin=0,
+               vmax=1)
+    im.set_rasterized(True)
+    plt.xticks([0],
+               ['Phenotype'],
+               rotation=90)
+    plt.yticks(range(len(pstrains)),
+               [sdict.get(x, x) for x in pstrains])
+    ax.yaxis.tick_right()
+    for i  in range(len(pstrains)):
+        plt.axhline(i+0.5,
+                    color='k')
+                    
     plt.suptitle('Condition: %s' % cname, fontsize=11)
-    
+                    
     plt.savefig(outfile,
                 dpi=dpi)
 
@@ -346,6 +238,7 @@ if __name__ == "__main__":
     import matplotlib.cm as cm
     import matplotlib.patches as patches
     import matplotlib.colors as colors
+    from matplotlib import gridspec
 
     sns.set_style('white')
 
@@ -359,8 +252,14 @@ if __name__ == "__main__":
     plt.rc('axes', labelsize=10, titlesize=10)
     plt.rc('legend', fontsize=8)
 
+    sdict = pd.read_table(options.strains).set_index('Strain Identifier')['Strain name'].to_dict()
+
     conversion = {x.split('\t')[0]:x.rstrip().split()[1]
                   for x in open(options.eck)}
+    lconversion = {x.split()[0]:x.rstrip().split()[1]
+                   for x in open(options.locus)}
+    uncommon = {lconversion.get(x.rstrip(), x.rstrip())
+                for x in open(options.uncommon)}
     # Which functions are those?
     ep = {}
     en = {}
@@ -376,20 +275,25 @@ if __name__ == "__main__":
 
     genes = {x.split('\t')[0]: {conversion.get(y.split('-')[0],
                                                y.split('-')[0])
-                                for y in x.rstrip().split('\t')[1].split()}
+                                for y in x.rstrip().split('\t')[1].split()
+                                if conversion.get(y.split('-')[0], y.split('-')[0])
+                                not in uncommon}
              for x in open(options.deletion)
              if len(x.split()) > 1}
 
-    m = pd.read_table(options.sickness)
-    m.set_index(m.columns[0], inplace=True)
-    m[np.isnan(m)] = 0
-    m1 = m / -m.apply(expected, pseudo=0.0)
-    m.T.loc['NT12001'] = [0 for x in range(m.shape[0])]
-    m1.T.loc['NT12001'] = [0 for x in range(m.shape[0])]
+    p = pd.read_table(options.sickness)
+    p.set_index(p.columns[0], inplace=True)
+    p[np.isnan(p)] = 0
+    p1 = p / -p.apply(expected, pseudo=0.0)
+    p.T.loc['NT12001'] = [0 for x in range(p.shape[0])]
+    p1.T.loc['NT12001'] = [0 for x in range(p.shape[0])]
+    p = p.T
+    p1 = p1.T
 
     score = pd.read_table(options.predictions)
     score.set_index(score.columns[0], inplace=True)
     score[np.isnan(score)] = 0.
+    score = score.T
 
     a = pd.read_table(options.matrix)
     a.set_index(a.columns[0], inplace=True)
@@ -398,63 +302,55 @@ if __name__ == "__main__":
     v = a[f < 0.05]
     v = v[v < 0]
 
-    phenotypes = f.copy(deep=True)
-    phenotypes[(a < 0) & (f < 0.05)] = 1
-    phenotypes[(a >= 0) & (f < 0.05)] = 0
-    phenotypes[f >= 0.05] = 0
-    phenotypes = phenotypes.loc[score.T.index]
+    z = f.copy(deep=True)
+    z[(a < 0) & (f < 0.05)] = 1
+    z[(a >= 0) & (f < 0.05)] = 0
+    z[f >= 0.05] = 0
+    z = z.loc[score.index]
+    
+    f = pd.read_table(options.deletionfdr)
+    f.set_index(f.columns[0], inplace=True)
+    g = pd.read_table(options.deletionfdr)
+    g.set_index(g.columns[0], inplace=True)
+    g[g > 0.05] = 9999
+    g[g <= 0.05] = 1
+    g[g == 9999] = 0
 
-    tree = Phylo.read(options.tree,
-                      'newick')
-    strains = {}
-    for x in tree.get_terminals():
-        sid = x.name.split('.')[0].split('_')[0]
-        if sid == 'genome':
-            sid = 'NT12001'
-        strains[sid] = strains.get(sid, [])
-        strains[sid].append(x.name)
-    for k, v in strains.items():
-        strains[k] = sorted(v)
-    rename = {}
-    for k, v in strains.items():
-        rename[v[0]] = k
-        if len(v) > 1:
-            for x in v[1:]:
-                rename[x] = ''
-    for x in tree.get_terminals():
-        if rename[x.name] == '':
-            tree.prune(x)
-            continue
-        x.name = rename[x.name]
-    tree.ladderize()
-    mdist = max([tree.distance(tree.root, x) for x in tree.get_terminals()])
+    f.index = [conversion.get(x.split('-')[0],
+                              x.split('-')[0])
+               for x in f.index]
+    g.index = [conversion.get(x.split('-')[0],
+                              x.split('-')[0])
+               for x in g.index]
+
+    g = g.T.sum() / g.shape[1]
+
+    gmax = pd.Series(
+            -np.log10(f.values.flatten())
+            ).replace([np.inf,
+                       -np.inf],
+                       np.nan).dropna().max() * g.max()
+
+    conditions = {x.rstrip().split()[0]: x.rstrip().split()[1]
+                  for x in open(options.conditions)}
+              
+    c1 = conditions.get(options.condition, options.condition)    
+    weights = -(np.log10(
+        f[c1].loc[genes[options.condition]].dropna()
+        ).replace([np.inf, -np.inf], np.nan).dropna() * g.loc[genes[options.condition]]) / gmax
+    weights = weights.sort_values(ascending=False)
 
     # convert some chars to their greek counterpart
     cname = options.cname.replace('uM', '$\mu$M').replace('ug', '$\mu$g')
 
-    if options.notree:
-        plot_condition_roc(options.condition,
-               cname,
-               tree,
-               phenotypes,
-               mdist,
-               m,
-               score,
-               genes,
-               options.height,
-               options.width,
-               options.outfile,
-               options.dpi)
-    else:
-        plot_condition(options.condition,
-               cname,
-               tree,
-               phenotypes,
-               mdist,
-               m,
-               score,
-               genes,
-               options.height,
-               options.width,
-               options.outfile,
-               options.dpi)
+    cmap = cmap = truncate_colormap(plt.cm.plasma, 0, 0.8)
+    cmap.set_bad('grey', 0.2)
+    cmap.set_under('red', 1)
+
+    plot_details(options.condition, c1, cname,
+                 options.width,
+                 options.height,
+                 options.outfile,
+                 options.dpi,
+                 max_strains=options.max_strains,
+                 max_genes=options.max_genes)

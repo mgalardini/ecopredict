@@ -1,0 +1,910 @@
+Strain Identifier	Strain name	Evolution Experiment?	Parental Strain	Alternative Strain Name	Full Strain Name After Genome Analysis	ENA Accession	Alternative Genome Source	Reference (PMID)	Isolation origin	Year	Phenotype	German BSL level	Notes
+NT12001	MG1655	0			Escherichia coli str. K-12 substr. MG1655	PRJNA57779		22081388;16738553;16397293;9278503	Diphtheria patient in Palo Alto, CA, USA	1922	Laboratory strain	1	
+NT12002	MC4100	0			Escherichia coli str. K-12 substr. MC4100	PRJEB4621		781293	Derivation of K-12		Laboratory strain	1	
+NT12003	W3110	0			Escherichia coli W3110			4568763	Derivation of K-12		Laboratory strain	1	
+NT12004	BW25113	0			Escherichia coli BW25113	PRJNA257976		10829079	Derivation of K-12		Laboratory strain	1	
+NT12005	BL21(DE3)	0			Escherichia coli BL21(DE3)	PRJEA161949		19786035	Probable commensal isolate from Institut Pasteur	1918	Laboratory strain	1	
+NT12006	DH5a	0			Escherichia coli DH5a				Derivation of K-12		Laboratory strain	1	
+NT12007	ED1a	0			Escherichia coli ED1a	PRJNA59379		19165319	Human feces	2000s	Commensal strain	1	
+NT12008	iAi1	0			Escherichia coli IAI1	PRJNA59377		19165319	Human feces	1999	Commensal strain	1	
+NT12009	OP50	0			Escherichia coli OP50	PRJNA49051			Derivation of strain B		Laboratory strain	1	
+NT12010	Nissle 1917	0			Escherichia coli Nissle 1917	PRJNA186643			Commensal isolate from Freiburg, Germany	1917	Commensal strain	1	
+NT12011	MP1	0			Escherichia coli MP1	PRJNA196008		24563035	Mouse feces	2014	Commensal strain	1	
+NT12012	HS	0			Escherichia coli HS	PRJNA58393		18676672	Human feces		Commensal strain	1	
+NT12013	BW38029	0			Escherichia coli BW25113	PRJNA257976			Derivation of K-12		Laboratory strain	1	
+NT12014	CAG60056	0		(BW25113 pseudoHfr::(trp bla (-)) )	Escherichia coli BW25113	PRJNA257976			Derivation of K-12		Laboratory strain	1	
+NT12015	ATCC 700728	0		DSM-17076	Escherichia coli ATCC 700728	PRJNA188364					Commensal strain	2	Serotype O157:H7; nontoxigenic
+NT12016	NRG 857C	0			Escherichia coli O83:H1 str. NRG 857C	PRJNA161987		21108814;18312396;17900983	Crohn's disease patient, Charite, Berlin, Germany		Pathogenic strain	2	Adherent Invasive E. coli (AIEC)
+NT12017	ECOR-01	0			Escherichia coli ECOR-01			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
+NT12018	ECOR-02	0			Escherichia coli ECOR-02			6363394	Human, USA (NY)		Commensal strain	2	Group A strain from a healthy person
+NT12019	ECOR-03	0			Escherichia coli ECOR-03			6363394	Dog, USA (Mass.)		Commensal strain	1	Group A strain from a healthy dog
+NT12020	ECOR-04	0			Escherichia coli ECOR-04			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group A strain from a healthy child
+NT12021	ECOR-05	0			Escherichia coli ECOR-05			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
+NT12022	ECOR-06	0			Escherichia coli ECOR-06			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group A strain from a healthy child
+NT12023	ECOR-07	0			Escherichia coli ECOR-07			6363394	Orangutan, USA (Wash.)		Commensal strain	1	Group A strain from a healthy orangutan in captivity
+NT12024	ECOR-08	0			Escherichia coli ECOR-08			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
+NT12025	ECOR-09	0			Escherichia coli ECOR-09			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
+NT12026	ECOR-10	0			Escherichia coli ECOR-10			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
+NT12027	ECOR-11	0			Escherichia coli ECOR-11			6363394	Human, Sweden		Commensal strain	2	Group A strain from a patient with a UTI and acute cystitis
+NT12028	ECOR-12	0			Escherichia coli ECOR-12			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
+NT12029	ECOR-13	0			Escherichia coli ECOR-13			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
+NT12030	ECOR-14	0			Escherichia coli ECOR-14			6363394	Human, Sweden		Commensal strain	2	Group A strain from a patient with a UTI and acute pyelonephritis
+NT12031	ECOR-15	0			Escherichia coli ECOR-15			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
+NT12032	ECOR-16	0			Escherichia coli ECOR-16			6363394	Leopard, USA (Wash.)		Commensal strain	1	Group A strain from a healthy leopard in captivity
+NT12033	ECOR-17	0			Escherichia coli ECOR-17			6363394	Pig, Indonesia		Commensal strain	1	Group A strain from a healthy pig
+NT12034	ECOR-18	0			Escherichia coli ECOR-18			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Group A strain from a healthy Celebese ape in captivity
+NT12035	ECOR-19	0			Escherichia coli ECOR-19			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Group A strain from a healthy Celebese ape in captivity
+NT12036	ECOR-20	0			Escherichia coli ECOR-20			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
+NT12037	ECOR-21	0			Escherichia coli ECOR-21			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
+NT12038	ECOR-22	0			Escherichia coli ECOR-22			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
+NT12039	ECOR-23	0			Escherichia coli ECOR-23			6363394	Elephant, USA (Wash.)		Commensal strain	1	Group A strain from a healthy elephant in captivity
+NT12040	ECOR-24	0			Escherichia coli ECOR-24			6363394	Human, Sweden		Commensal strain	2	Group A strain from a healthy person
+NT12041	ECOR-25	0			Escherichia coli ECOR-25			6363394	Dog, USA (NY)		Commensal strain	2	Group A strain from a healthy dog
+NT12042	ECOR-26	0			Escherichia coli ECOR-26			6363394	Human (infant), USA (Mass.)		Commensal strain	1	Group B1 strain from a healthy infant
+NT12043	ECOR-27	0			Escherichia coli ECOR-27			6363394	Giraffe, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy giraffe in captivity
+NT12044	ECOR-28	0			Escherichia coli ECOR-28			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group B1 strain from a healthy child
+NT12045	ECOR-29	0			Escherichia coli ECOR-29			6363394	Kangaroo rat, USA (Nev.)		Commensal strain	1	Group B1 strain from a healthy kangaroo rat
+NT12046	ECOR-30	0			Escherichia coli ECOR-30			6363394	Bison, Canada		Commensal strain	2	Group B1 strain from a healthy bison
+NT12047	ECOR-31	0			Escherichia coli ECOR-31			6363394	Leopard, USA (Wash.)		Commensal strain	2	Group E strain from a healthy leopard in captivity
+NT12048	ECOR-32	0			Escherichia coli ECOR-32			6363394	Giraffe, USA (Wash.)		Commensal strain	1	Group B1 strain from a healthy giraffe in captivity
+NT12049	ECOR-33	0			Escherichia coli ECOR-33			6363394	Sheep, USA (Calif.)		Commensal strain	1	Group B1 strain from a healthy sheep
+NT12050	ECOR-34	0			Escherichia coli ECOR-34			6363394	Dog, USA (Mass.)		Commensal strain	1	Group B1 strain from a healthy dog
+NT12051	ECOR-35	0			Escherichia coli ECOR-35			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
+NT12052	ECOR-36	0			Escherichia coli ECOR-36			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
+NT12053	ECOR-37	0			Escherichia coli ECOR-37			6363394	Marmoset, USA (Wash.)		Commensal strain	2	Group E strain from a healthy marmoset in captivity
+NT12054	ECOR-38	0			Escherichia coli ECOR-38			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
+NT12055	ECOR-39	0			Escherichia coli ECOR-39			6363394	Human, Sweden		Commensal strain	2	Group D strain from a healthy person
+NT12056	ECOR-40	0			Escherichia coli ECOR-40			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute pyelonephritis
+NT12057	ECOR-41	0			Escherichia coli ECOR-41			6363394	Human, Tonga		Commensal strain	2	Group D strain from a healthy person
+NT12058	ECOR-42	0			Escherichia coli ECOR-42			6363394	Human, USA (Mass.)		Commensal strain	1	Group E strain from a healthy person
+NT12059	ECOR-43	0			Escherichia coli ECOR-43			6363394	Human, Sweden		Commensal strain	2	Group E strain from a healthy person
+NT12060	ECOR-44	0			Escherichia coli ECOR-44			6363394	Cougar, USA (Wash.)		Commensal strain	2	Group D strain from a healthy cougar in captivity
+NT12061	ECOR-45	0			Escherichia coli ECOR-45			6363394	Pig, Indonesia		Commensal strain	1	Group B1 strain from a healthy pig
+NT12062	ECOR-46	0			Escherichia coli ECOR-46			6363394	Ape, USA (Wash.)		Commensal strain	2	Group D strain from a healthy ape in captivity
+NT12063	ECOR-47	0			Escherichia coli ECOR-47			6363394	Sheep, New Guinea		Commensal strain	2	Group D strain from a healthy sheep
+NT12064	ECOR-48	0			Escherichia coli ECOR-48			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute cystitis
+NT12065	ECOR-49	0			Escherichia coli ECOR-49			6363394	Human, Sweden		Commensal strain	2	Group D strain from a healthy person
+NT12066	ECOR-50	0			Escherichia coli ECOR-50			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute pyelonephritis
+NT12067	ECOR-51	0			Escherichia coli ECOR-51			6363394	Human (infant), USA (Mass.)		Commensal strain	2	Group B2 strain from a healthy infant
+NT12068	ECOR-52	0			Escherichia coli ECOR-52			6363394	Orangutan, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy orangutan
+NT12069	ECOR-53	0			Escherichia coli ECOR-53			6363394	Human (child), USA (Iowa)		Commensal strain	2	Group B2 strain from a healthy child
+NT12070	ECOR-54	0			Escherichia coli ECOR-54			6363394	Human, USA (Iowa)		Commensal strain	2	Group B2 strain from a healthy person
+NT12071	ECOR-55	0			Escherichia coli ECOR-55			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute pyelonephritis
+NT12072	ECOR-56	0			Escherichia coli ECOR-56			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
+NT12073	ECOR-57	0			Escherichia coli ECOR-57			6363394	Gorilla, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy gorilla in captivity
+NT12074	ECOR-58	0			Escherichia coli ECOR-58			6363394	Lion, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy lion in captivity
+NT12075	ECOR-59	0			Escherichia coli ECOR-59			6363394	Human, USA (Mass.)		Commensal strain	2	Group B2 strain from a healthy person
+NT12076	ECOR-60	0			Escherichia coli ECOR-60			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute cystitis
+NT12077	ECOR-61	0			Escherichia coli ECOR-61			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
+NT12078	ECOR-62	0			Escherichia coli ECOR-62			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute pyelonephritis
+NT12079	ECOR-63	0			Escherichia coli ECOR-63			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
+NT12080	ECOR-64	0			Escherichia coli ECOR-64			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute cystitis
+NT12081	ECOR-65	0			Escherichia coli ECOR-65			6363394	Celebese ape, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy celebese ape in captivity
+NT12082	ECOR-66	0			Escherichia coli ECOR-66			6363394	Celebese ape, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy celebese ape in captivity
+NT12083	ECOR-67	0			Escherichia coli ECOR-67			6363394	Goat, Indonesia		Commensal strain	1	Group B1 strain from a healthy goat
+NT12084	ECOR-68	0			Escherichia coli ECOR-68			6363394	Giraffe, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy giraffe in captivity
+NT12085	ECOR-69	0			Escherichia coli ECOR-69			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Group B1 strain from a healthy celebese ape in captivity
+NT12086	ECOR-70	0			Escherichia coli ECOR-70			6363394	Gorilla, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy gorilla in captivity
+NT12087	ECOR-71	0			Escherichia coli ECOR-71			6363394	Human, Sweden		Commensal strain	2	Group B1 strain from a person with asymptomatic bacteriuria
+NT12088	ECOR-72	0			Escherichia coli ECOR-72			6363394	Human, Sweden		Commensal strain	2	Group B1 strain from a patient with a UTI and acute pyelonephritis
+NT12089	ATCC 11775	0		DSM-30083	Escherichia coli DSM 30083 = JCM 1649 = ATCC 11775	PRJNA59555			Human urine		Commensal strain	2	
+NT12090	W	0		DSM-1116	Escherichia coli W	PRJNA162011			Cemetery soil, Rutgers University, USA	1943	Commensal strain	1	
+NT12091	ATCC 8739	0		DSM-1576	Escherichia coli ATCC 8739	PRJNA58783					Commensal strain	2	
+NT12092	ATCC 25922	0		DSM-1103	Escherichia coli ATCC 25922	PRJNA197239			Clinical sample, Seattle, USA	1946	Pathogenic strain	2	
+NT12093	S17	0		DSM-9079	Escherichia coli S17	PRJNA189395			Derivation of K-12		Laboratory strain	1	
+NT12094	DH1	0		DSM-4235	Escherichia coli DH1	PRJDA162051		4568763	Derivation of K-12		Laboratory strain	1	
+NT12095	DH1 (E381)	0		DSM-5346	Escherichia coli str. K-12 substr. DH10B	PRJNA58979		4568763	Derivation of K-12		Laboratory strain	1	
+NT12096	UTI 83972	0			Escherichia coli ABU 83972	PRJNA161975		20865122	Asymptomatic human urine, Sweden	1975	Commensal strain	1	ABU (asymptomatic bacteriuria); colonization of urine in the absence of clinical symptoms
+NT12097	UTI89	0			Escherichia coli UTI89	PRJNA58541		16585510	Patient with an acute bladder infection		Pathogenic strain	2	UPEC
+NT12098	IAI01	0			Escherichia coli IAI1	PRJNA59377		9916057	Human feces	1999	Commensal strain	1	
+NT12099	IAI02	0			Escherichia coli IAI02			9916057	Human feces	1999	Commensal strain	1	
+NT12100	IAI03	0			Escherichia coli IAI03			9916057	Human feces	1999	Commensal strain	1	
+NT12101	IAI04	0			Escherichia coli IAI04			9916057	Human feces	1999	Commensal strain	1	
+NT12102	IAI05	0			Escherichia coli IAI05			9916057	Human feces	1999	Commensal strain	1	
+NT12103	IAI06	0			Escherichia coli IAI06			9916057	Human feces	1999	Commensal strain	1	
+NT12104	IAI07	0			Escherichia coli IAI07			9916057	Human feces	1999	Commensal strain	1	
+NT12105	IAI08	0			Escherichia coli IAI08			9916057	Human feces	1999	Commensal strain	1	
+NT12106	IAI09	0			Escherichia coli IAI09			9916057	Human feces	1999	Commensal strain	1	
+NT12107	IAI10	0			Escherichia coli IAI10			9916057	Human feces	1999	Commensal strain	1	
+NT12108	IAI11	0			Escherichia coli IAI11			9916057	Human feces	1999	Commensal strain	1	
+NT12109	IAI12	0			Escherichia coli IAI12			9916057	Human feces	1999	Commensal strain	1	
+NT12110	IAI13	0			Escherichia coli IAI13			9916057	Human feces	1999	Commensal strain	1	
+NT12111	IAI14	0			Escherichia coli IAI14			9916057	Human feces	1999	Commensal strain	1	
+NT12112	IAI15	0			Escherichia coli IAI15			9916057	Human feces	1999	Commensal strain	1	
+NT12113	IAI16	0			Escherichia coli IAI16			9916057	Human blood	1999	Pathogenic strain	2	
+NT12114	IAI17	0			Escherichia coli IAI17			9916057	Human urine	1999	Pathogenic strain	2	
+NT12115	IAI18	0			Escherichia coli IAI18			9916057	Human urine	1999	Pathogenic strain	2	
+NT12116	IAI19	0			Escherichia coli IAI19			9916057	Human urine	1999	Pathogenic strain	2	
+NT12117	IAI20	0			Escherichia coli IAI20			9916057	Human	1999	Pathogenic strain	2	
+NT12118	IAI21	0			Escherichia coli IAI21			9916057	Human urine	1999	Pathogenic strain	2	
+NT12119	IAI22	0			Escherichia coli IAI22			9916057	Human urine	1999	Pathogenic strain	2	
+NT12120	IAI23	0			Escherichia coli IAI23			9916057	Human urine	1999	Pathogenic strain	2	
+NT12121	IAI24	0			Escherichia coli IAI24			9916057	Human urine	1999	Pathogenic strain	2	
+NT12122	IAI25	0			Escherichia coli IAI25			9916057	Human urine	1999	Pathogenic strain	2	
+NT12123	IAI26	0			Escherichia coli IAI26			9916057	Human urine	1999	Pathogenic strain	2	
+NT12124	IAI27	0			Escherichia coli IAI27			9916057	Human urine	1999	Pathogenic strain	2	
+NT12125	IAI28	0			Escherichia coli IAI28			9916057	Human urine	1999	Pathogenic strain	2	
+NT12126	IAI29	0			Escherichia coli IAI29			9916057	Human urine	1999	Pathogenic strain	2	
+NT12127	IAI30	0			Escherichia coli IAI30			9916057	Human urine	1999	Pathogenic strain	2	
+NT12128	IAI31	0			Escherichia coli IAI31			9916057	Human urine	1999	Pathogenic strain	2	
+NT12129	IAI32	0			Escherichia coli IAI32			9916057	Human urine	1999	Pathogenic strain	2	
+NT12130	IAI33	0			Escherichia coli IAI33			9916057	Human urine	1999	Pathogenic strain	2	
+NT12131	IAI34	0			Escherichia coli IAI34			9916057	Human blood	1999	Pathogenic strain	2	
+NT12132	IAI35	0			Escherichia coli IAI35			9916057	Human blood	1999	Pathogenic strain	2	
+NT12133	IAI36	0			Escherichia coli IAI36			9916057	Human	1999	Pathogenic strain	2	
+NT12134	IAI37	0			Escherichia coli IAI37			9916057	Human	1999	Pathogenic strain	2	
+NT12135	IAI38	0			Escherichia coli IAI38			9916057	Human	1999	Pathogenic strain	2	
+NT12136	IAI39	0			Escherichia coli IAI39	PRJNA59381		9916057	Human urine	1999	Pathogenic strain	2	
+NT12137	IAI40	0			Escherichia coli IAI40			9916057	Human urine	1999	Pathogenic strain	2	
+NT12138	IAI41	0			Escherichia coli IAI41			9916057	Human urine	1999	Pathogenic strain	2	
+NT12139	IAI42	0			Escherichia coli IAI42			9916057	Human urine	1999	Pathogenic strain	2	
+NT12140	IAI43	0			Escherichia coli IAI43			9916057	Human urine	1999	Pathogenic strain	2	
+NT12141	IAI44	0			Escherichia coli IAI44			9916057	Human urine	1999	Pathogenic strain	2	
+NT12142	IAI45	0			Escherichia coli IAI45			9916057	Human urine	1999	Pathogenic strain	2	
+NT12143	IAI46	0			Escherichia coli IAI46			9916057	Human urine	1999	Pathogenic strain	2	
+NT12144	IAI47	0			Escherichia coli IAI47			9916057	Human urine	1999	Pathogenic strain	2	
+NT12145	IAI48	0			Escherichia coli IAI48			9916057	Human blood	1999	Pathogenic strain	2	
+NT12146	IAI49	0			Escherichia coli IAI49			9916057	Human urine	1999	Pathogenic strain	2	
+NT12147	IAI50	0			Escherichia coli IAI50			9916057	Human urine	1999	Pathogenic strain	2	
+NT12148	IAI51	0			Escherichia coli IAI51			9916057	Human urine	1999	Pathogenic strain	2	
+NT12149	IAI52	0			Escherichia coli IAI52			9916057	Human urine	1999	Pathogenic strain	2	
+NT12150	IAI53	0			Escherichia coli IAI53			9916057	Human urine	1999	Pathogenic strain	2	
+NT12151	IAI54	0			Escherichia coli IAI54			9916057	Human urine	1999	Pathogenic strain	2	
+NT12152	IAI55	0			Escherichia coli IAI55			9916057	Human urine	1999	Pathogenic strain	2	
+NT12153	IAI56	0			Escherichia coli IAI56			9916057	Human urine	1999	Pathogenic strain	2	
+NT12154	IAI57	0			Escherichia coli IAI57			9916057	Human urine	1999	Pathogenic strain	2	
+NT12155	IAI58	0			Escherichia coli IAI58			9916057	Human urine	1999	Pathogenic strain	2	
+NT12156	IAI59	0			Escherichia coli IAI59			9916057	Human urine	1999	Pathogenic strain	2	
+NT12157	IAI60	0			Escherichia coli IAI60			9916057	Human blood	1999	Pathogenic strain	2	
+NT12158	IAI61	0			Escherichia coli IAI61			9916057	Human	1999	Pathogenic strain	2	
+NT12159	IAI62	0			Escherichia coli IAI62			9916057	Human urine	1999	Pathogenic strain	2	
+NT12160	IAI63	0			Escherichia coli IAI63			9916057	Human urine	1999	Pathogenic strain	2	
+NT12161	IAI64	0			Escherichia coli IAI64			9916057	Human urine	1999	Pathogenic strain	2	
+NT12162	IAI65	0			Escherichia coli IAI65			9916057	Human	1999	Pathogenic strain	2	
+NT12163	IAI66	0			Escherichia coli IAI66			9916057	Human urine	1999	Pathogenic strain	2	
+NT12164	IAI67	0			Escherichia coli IAI67			9916057	Human urine	1999	Pathogenic strain	2	
+NT12165	IAI68	0			Escherichia coli IAI68			9916057	Human urine	1999	Pathogenic strain	2	
+NT12166	IAI69	0			Escherichia coli IAI69			9916057	Human	1999	Pathogenic strain	2	
+NT12167	IAI70	0			Escherichia coli IAI70			9916057	Human urine	1999	Pathogenic strain	2	
+NT12168	IAI71	0			Escherichia coli IAI71			9916057	Human urine	1999	Pathogenic strain	2	
+NT12169	IAI72	0			Escherichia coli IAI72			9916057	Human urine	1999	Pathogenic strain	2	
+NT12170	IAI73	0			Escherichia coli IAI73			9916057	Human blood	1999	Pathogenic strain	2	
+NT12171	IAI74	0			Escherichia coli IAI74			9916057	Human urine	1999	Pathogenic strain	2	
+NT12172	IAI75	0			Escherichia coli IAI75			9916057	Human	1999	Pathogenic strain	2	
+NT12173	IAI76	0			Escherichia coli IAI76			9916057	Human urine	1999	Pathogenic strain	2	
+NT12174	IAI77	0			Escherichia coli IAI77			9916057	Human urine	1999	Pathogenic strain	2	
+NT12175	IAI78	0			Escherichia coli IAI78			9916057	Human urine	1999	Pathogenic strain	2	
+NT12176	IAI79	0			Escherichia coli IAI79			9916057	Human urine	1999	Pathogenic strain	2	
+NT12177	IAI80	0			Escherichia coli IAI80			9916057	Human urine	1999	Pathogenic strain	2	
+NT12178	IAI81	0			Escherichia coli IAI81			9916057	Human urine	1999	Pathogenic strain	2	
+NT12179	IAI82	0			Escherichia coli IAI82			9916057	Human urine	1999	Pathogenic strain	2	
+NT12180	Perfeito-WT	1	NT12001		Escherichia coli Perfeito-WT			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12181	Perfeito-Clone-1	1	NT12001		Escherichia coli Perfeito-Clone-1			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12182	Perfeito-Clone-2	1	NT12001		Escherichia coli Perfeito-Clone-2			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12183	Perfeito-Clone-3	1	NT12001		Escherichia coli Perfeito-Clone-3			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12184	Perfeito-Clone-4	1	NT12001		Escherichia coli Perfeito-Clone-4			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12185	Perfeito-Clone-5	1	NT12001					17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12186	Perfeito-Clone-6	1	NT12001		Escherichia coli Perfeito-Clone-6			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12187	Perfeito-Clone-7	1	NT12001		Escherichia coli Perfeito-Clone-7			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12188	Perfeito-Clone-8	1	NT12001		Escherichia coli Perfeito-Clone-8			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12189	Perfeito-Clone-9	1	NT12001		Escherichia coli Perfeito-Clone-9			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12190	Perfeito-Clone-10	1	NT12001		Escherichia coli Perfeito-Clone-10			17690297	Evolution experiment	2007	Evolution experiment	1	
+NT12191	O42	0			Escherichia coli O42			20098708			Pathogenic strain	2	EAEC
+NT12192	CFT073	0			Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
+NT12193	HM605	0			Escherichia coli HM605	PRJNA180456		21705601	Crohn's disease patient colon biopsy		Pathogenic strain	2	Adherent-invasive strain
+NT12194	H10407	0			Escherichia coli ETEC H10407	PRJEA161993		20802035	Patient with cholera-like symptoms, Dacca, Bangladesh	1973	Pathogenic strain	2	ETEC
+NT12195	E2348/69	0			Escherichia coli O127:H6 str. E2348/69	PRJNA59343		18952797	Taunton, UK	1969	Pathogenic strain	2	EPEC
+NT12196	O157 delta stx	0			Escherichia coli O157						Laboratory strain	2	
+NT12197	EC958	0			Escherichia coli O25b:ST131 str. JIE186	PRJNA190594		22053197	Patient with urinary tract infection (UTI), UK		Pathogenic strain	2	UPEC
+NT12198	ZG-1.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12199	ZG-1.13	0			Escherichia coli ZG-1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12200	ZG-1.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12201	ZG-1.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12202	ZG-1.8	0			Escherichia coli ZG-1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12203	ZG-3.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12204	ZG-3.11	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12205	ZG-3.13	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12206	ZG-4.1	0			Escherichia coli ZG-4			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12207	ZG-4.11	0			Escherichia coli ZG-4			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12208	ZG-4.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12209	ZG-5.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12210	ZG-5.2	0			Escherichia coli ZG-5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12211	ZG-5.8	0			Escherichia coli ZG-5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12212	ZG-5.9	0			Escherichia coli ZG-5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12213	ZG-6.1	0			Escherichia coli ZG-6			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12214	ZG-6.10	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12215	ZG-7.1	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12216	ZG-7.13	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12217	ZG-7.8	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12218	ZG-7.9	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12219	ZG-8.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12220	ZG-8.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12221	ZG-8.5	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12222	ZG-8.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12223	ZG-9.1	0			Escherichia coli ZG-9			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12224	ZG-9.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12225	ZG-10.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12226	ZG-11.1	0			Escherichia coli ZG-11			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12227	ZG-11.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12228	ZG-12.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12229	ZG-12.10	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12230	ZG-12.2	0			Escherichia coli ZG-12			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12231	ZG-13.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12232	ZG-13.2	0			Escherichia coli ZG-13			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12233	ZG-13.4	0			Escherichia coli ZG-13			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12234	ZG-13.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12235	ZG-14.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12236	ZG-14.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12237	ZG-14.7	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12238	ZG-15.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12239	ZG-15.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12240	ZG-15.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12241	ZG-15.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12242	ZG-16.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12243	ZG-16.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12244	ZG-16.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12245	ZG-16.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12246	ZG-17.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12247	ZG-17.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12248	ZG-17.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12249	ZG-18.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12250	ZG-18.7	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12251	ZG-20.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12252	ZG-20.10	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12253	ZG-20.7	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12254	ZG-21.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12255	ZG-21.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12256	ZG-21.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12257	ZG-22.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12258	ZG-22.11	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12259	ZG-22.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12260	ZG-23.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12261	ZG-24.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12262	ZG-24.5	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12263	ZG-25.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12264	ZG-25.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12265	ZG-25.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12266	ZG-25.7	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12267	ZG-26.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12268	ZG-27.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12269	ZG-28.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12270	ZG-28.13	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12271	ZG-28.5	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12272	ZG-29.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12273	ZG-29.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12274	ZG-30.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12275	ZG-31.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12276	ZG-31.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12277	ZG-32.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12278	ZG-33.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12279	ZG-33.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12280	ZG-33.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12281	ZG-33.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12282	ZG-33.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12283	ZG-34.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12284	ZG-35.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12285	ZG-36.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12286	ZG-36.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12287	ZG-37.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12288	ZG-37.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12289	ZG-38.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12290	ZG-38.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12291	ZG-38.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12292	ZG-39.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12293	ZG-40.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12294	ZG-40.8	0			Escherichia coli ZG-40			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12295	ZG-41.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12296	ZG-41.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12297	ZG-41.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12298	ZG-42.1	0			Escherichia coli ZG-42			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12299	ZG-43.1	0			Escherichia coli ZG-43			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12300	ZG-43.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12301	ZG-43.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12302	ZG-44.1	0			Escherichia coli ZG-44			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12303	ZG-44.2	0			Escherichia coli ZG-44			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12304	ZG-45.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12305	ZG-46.1	0			Escherichia coli ZG-46			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12306	ZG-46.5	0			Escherichia coli ZG-46			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12307	ZG-47.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12308	ZG-47.3	0			Escherichia coli ZG-47			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12309	ZG-48.1	0			Escherichia coli ZG-48			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12310	ZG-48.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12311	ZG-49.1	0			Escherichia coli ZG-49			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12312	ZG-49.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12313	ZG-49.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12314	ZG-50.1	0			Escherichia coli ZG-50			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12315	ZG-51.1	0			Escherichia coli ZG-51			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12316	ZG-52.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12317	ZG-53.1	0			Escherichia coli ZG-53			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12318	ZG-54.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12319	ZG-54.2	0			Escherichia coli ZG-54			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12320	ZG-55.1	0			Escherichia coli ZG-55			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12321	ZG-55.2	0			Escherichia coli ZG-55			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12322	ZG-55.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12323	ZG-56.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12324	ZG-56.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12325	HM-343	0			Escherichia coli MS 110-3	PRJNA181410		20489017	Patient with ulcerative colitis, New York, USA		Pathogenic strain	2	
+NT12326	HM-342	0			Escherichia coli MS 57-2	PRJNA181414		20489017	Healthy human, New York, USA		Commensal strain	2	
+NT12327	HM-344	0			Escherichia coli MS 115-1	PRJNA50627		20489017	Patient with ulcerative colitis, New York, USA		Pathogenic strain	2	
+NT12328	HM-345	0			Escherichia coli MS 16-3	PRJNA181412		20489017	Patient with Crohn's disease, New York, USA		Pathogenic strain	2	
+NT12329	HM-346	0			Escherichia coli MS 21-1	PRJNA50631		20489017	Patient with Crohn's disease, New York, USA		Pathogenic strain	2	
+NT12330	HM-347	0			Escherichia coli MS 69-1	PRJNA50653		20489017	Healthy human, New York, USA		Commensal strain	2	
+NT12331	HM-356	0			Escherichia coli MS 200-1	PRJNA50645		20489017	Healthy human, New York, USA		Commensal strain	2	
+NT12332	HM-365	0			Escherichia coli MS 196-1	PRJNA50655		20489017	Healthy human, New York, USA		Commensal strain	2	
+NT12333	HM-366	0			Escherichia coli MS 198-1	PRJNA50625		20489017	Healthy human, New York, USA		Commensal strain	2	
+NT12334	HM-337	0			Escherichia coli MS 85-1	PRJNA179594		20489017	Patient with Crohn's disease, New York, USA	2002	Pathogenic strain	2	
+NT12335	HM-339	0			Escherichia coli MS 119-7	PRJNA50577		20489017	Patient with Crohn's disease, New York, USA	2002	Pathogenic strain	2	
+NT12336	HM-340	0			Escherichia coli MS 124-1	PRJNA50763		20489017	Patient with Crohn's disease, New York, USA	2002	Pathogenic strain	2	
+NT12337	HM-341	0			Escherichia coli MS 145-7	PRJNA59467		20489017	Patient with Crohn's disease, New York, USA	2002	Pathogenic strain	2	
+NT12338	HM-50	0			Escherichia coli 83972	PRJNA55485		1098383	Asymptomatic human urine, Sweden	1975	Commensal strain	1	ABU (asymptomatic bacteriuria); colonization of urine in the absence of clinical symptoms
+NT12339	NR-713	0							Human large intestine, USA	1999	Pathogenic strain	2	UPEC
+NT12340	NR-2654	0		NR-2654, morphology 1	Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
+NT12341	NR-15878	0			Escherichia coli TA206						Unknown	2	
+NT12342	NR-2654	0		NR-2654, morphology 2	Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
+NT12343	DH300	0			Escherichia coli DH300			12410838	Derived from DJ480		Laboratory strain	1	
+NT12344	DE-COMM-2180	0						24188314	Fox		Commensal strain	1	
+NT12345	DE-COMM-2493	0						24188314	Fox		Commensal strain	1	
+NT12346	DE-COMM-2495	0			Escherichia coli DE-COMM-2495			24188314	Squirrel		Commensal strain	1	
+NT12347	DE-COMM-2504	0			Escherichia coli DE-COMM-2504			24188314	Squirrel		Commensal strain	1	
+NT12348	DE-COMM-2555	0						24188314	Marten		Commensal strain	1	
+NT12349	DE-COMM-2560	0						24188314	Fox		Commensal strain	1	
+NT12350	DE-COMM-2568	0						24188314	Marten		Commensal strain	1	
+NT12351	DE-COMM-2570	0						24188314	Badger		Commensal strain	1	
+NT12352	DE-COMM-2572	0						24188314	Fox		Commensal strain	1	
+NT12353	DE-COMM-2574	0			Escherichia coli DE-COMM-2574			24188314	Squirrel		Commensal strain	1	
+NT12354	DE-COMM-2580	0						24188314	Squirrel		Commensal strain	1	
+NT12355	DE-COMM-2584	0			Escherichia coli DE-COMM-2584			24188314	Squirrel		Commensal strain	1	
+NT12356	DE-COMM-2624	0						24188314	Badger		Commensal strain	1	
+NT12357	DE-COMM-2651	0						24188314	Wild boar		Commensal strain	1	
+NT12358	DE-COMM-2652	0			Escherichia coli DE-COMM-2652			24188314	Wild boar		Commensal strain	1	
+NT12359	DE-COMM-2653	0			Escherichia coli DE-COMM-2653			24188314	Wild boar		Commensal strain	1	
+NT12360	DE-COMM-2654	0						24188314	Wild boar		Commensal strain	1	
+NT12361	DE-COMM-2655	0			Escherichia coli DE-COMM-2655			24188314	Wild boar		Commensal strain	1	
+NT12362	DE-COMM-2703	0			Escherichia coli DE-COMM-2703			24188314	Roe deer		Commensal strain	1	
+NT12363	DE-COMM-2704	0			Escherichia coli DE-COMM-2704			24188314	Roe deer		Commensal strain	1	
+NT12364	DE-COMM-2705	0			Escherichia coli DE-COMM-2705			24188314	Roe deer		Commensal strain	1	
+NT12365	DE-COMM-2710	0			Escherichia coli DE-COMM-2710			24188314	Roe deer		Commensal strain	1	
+NT12366	DE-COMM-3233	0			Escherichia sp. DE-COMM-3233			24188314	Blackbird		Commensal strain	1	
+NT12367	DE-COMM-3240	0			Escherichia coli DE-COMM-3240			24188314	Badger		Commensal strain	1	
+NT12368	DE-COMM-3244	0						24188314	Blackbird		Commensal strain	1	
+NT12369	DE-COMM-3248	0						24188314	Blackbird		Commensal strain	1	
+NT12370	DE-COMM-3256	0			Escherichia coli DE-COMM-3256			24188314	Fox		Commensal strain	1	
+NT12371	DE-COMM-3258	0						24188314	Marten		Commensal strain	1	
+NT12372	DE-COMM-3263	0			Escherichia coli DE-COMM-3263			24188314	Blackbird		Commensal strain	1	
+NT12373	DE-COMM-3445	0						24188314	Blackbird		Commensal strain	1	
+NT12374	DE-COMM-3457	0			Escherichia sp. DE-COMM-3457			24188314	Marten		Commensal strain	1	
+NT12375	DE-COMM-3473	0						24188314	Badger		Commensal strain	1	
+NT12376	DE-COMM-3699	0						24188314	Raccoon		Commensal strain	1	
+NT12377	DE-COMM-3700	0						24188314	Badger		Commensal strain	1	
+NT12378	DE-COMM-3736	0						24188314	Hare		Commensal strain	1	
+NT12379	DE-COMM-3739	0						24188314	Hare		Commensal strain	1	
+NT12380	DE-COMM-3993	0						24188314	Rabbit		Commensal strain	1	
+NT12381	DE-COMM-3995	0						24188314	Rabbit		Commensal strain	1	
+NT12382	DE-COMM-3998	0			Escherichia coli DE-COMM-3998			24188314	Rabbit		Commensal strain	1	
+NT12383	DE-COMM-3999	0			Citrobacter sp. DE-COMM-3999			24188314	Hedgehog		Commensal strain	1	
+NT12384	DE-COMM-4000	0						24188314	Rabbit		Commensal strain	1	
+NT12385	DE-COMM-4004	0						24188314	Common buzzard		Commensal strain	1	
+NT12386	DE-COMM-4006	0						24188314	Common buzzard		Commensal strain	1	
+NT12387	DE-COMM-4007	0						24188314	House mouse		Commensal strain	1	
+NT12388	DE-COMM-4008	0			Escherichia coli DE-COMM-4008			24188314	House mouse		Commensal strain	1	
+NT12389	DE-COMM-4009	0						24188314	House mouse		Commensal strain	1	
+NT12390	DE-COMM-4010	0			Escherichia coli DE-COMM-4010			24188314	House mouse		Commensal strain	1	
+NT12391	DE-COMM-4011	0						24188314	House mouse		Commensal strain	1	
+NT12392	DE-COMM-4014	0			Escherichia coli DE-COMM-4014			24188314	Otter		Commensal strain	1	
+NT12393	DE-COMM-4021	0						24188314	Roe deer		Commensal strain	1	
+NT12394	DE-COMM-4056	0			Escherichia coli DE-COMM-4056			24188314	Common buzzard		Commensal strain	1	
+NT12395	DE-COMM-4059	0						24188314	Common buzzard		Commensal strain	1	
+NT12396	DE-COMM-4123	0			Escherichia coli DE-COMM-4123			24188314	Brown rat		Commensal strain	1	
+NT12397	DE-COMM-4203	0						24188314	Common buzzard		Commensal strain	1	
+NT12398	DE-COMM-4204	0						24188314	Hare		Commensal strain	1	
+NT12399	DE-COMM-4291	0						24188314	Brown rat		Commensal strain	1	
+NT12400	DE-COMM-4353	0			Escherichia coli DE-COMM-4353			24188314	Sparrowhawk		Commensal strain	1	
+NT12401	DE-COMM-4367	0						24188314	Brown rat		Commensal strain	1	
+NT12402	DE-COMM-4432	0						24188314	Sparrowhawk		Commensal strain	1	
+NT12403	DE-COMM-4433	0			Escherichia sp. DE-COMM-4433			24188314	Sparrowhawk		Commensal strain	1	
+NT12404	DE-COMM-4741	0			Escherichia coli DE-COMM-4741			24188314	Hare		Commensal strain	1	
+NT12405	DE-COMM-4743	0						24188314	Raccoon		Commensal strain	1	
+NT12406	DE-COMM-4774	0			Escherichia coli DE-COMM-4774			24188314	Raccoon		Commensal strain	1	
+NT12407	DE-COMM-4794	0						24188314	Sparrowhawk		Commensal strain	1	
+NT12408	DE-COMM-4951	0			Escherichia sp. DE-COMM-4951			24188314	Raccoon		Commensal strain	1	
+NT12409	DE-COMM-4952	0						24188314	Raccoon		Commensal strain	1	
+NT12410	DE-COMM-4960	0						24188314	Human		Commensal strain	1	
+NT12411	DE-COMM-4961	0						24188314	Human		Commensal strain	1	
+NT12412	DE-COMM-4962	0			Escherichia coli DE-COMM-4962			24188314	Human		Commensal strain	1	
+NT12413	DE-COMM-4963	0			Escherichia coli DE-COMM-4963			24188314	Human		Commensal strain	1	
+NT12414	DE-COMM-4965	0			Escherichia coli DE-COMM-4965			24188314	Human		Commensal strain	1	
+NT12415	DE-COMM-4966	0						24188314	Human		Commensal strain	1	
+NT12416	DE-COMM-4969	0						24188314	Human		Commensal strain	1	
+NT12417	DE-COMM-4970	0						24188314	Human		Commensal strain	1	
+NT12418	DE-COMM-4971	0			Escherichia coli DE-COMM-4971			24188314	Human		Commensal strain	1	
+NT12419	DE-COMM-4972	0						24188314	Human		Commensal strain	1	
+NT12420	DE-COMM-4973	0			Escherichia coli DE-COMM-4973			24188314	Human		Commensal strain	1	
+NT12421	DE-COMM-4974	0			Escherichia coli DE-COMM-4974			24188314	Human		Commensal strain	1	
+NT12422	DE-COMM-4975	0			Escherichia coli DE-COMM-4975			24188314	Human		Commensal strain	1	
+NT12423	DE-COMM-4976	0			Escherichia coli DE-COMM-4976			24188314	Human		Commensal strain	1	
+NT12424	DE-COMM-4977	0			Escherichia coli DE-COMM-4977			24188314	Human		Commensal strain	1	
+NT12425	DE-COMM-4979	0			Escherichia coli DE-COMM-4979			24188314	Human		Commensal strain	1	
+NT12426	DE-COMM-4980	0						24188314	Human		Commensal strain	1	
+NT12427	DE-COMM-4981	0			Escherichia coli DE-COMM-4981			24188314	Human		Commensal strain	1	
+NT12428	DE-COMM-4994	0						24188314	Owl		Commensal strain	1	
+NT12429	DE-COMM-4995	0			Escherichia coli DE-COMM-4995			24188314	Owl		Commensal strain	1	
+NT12430	DE-COMM-4999	0						24188314	Sparrowhawk		Commensal strain	1	
+NT12431	DE-COMM-5006	0						24188314	Owl		Commensal strain	1	
+NT12432	DE-COMM-5012	0			Escherichia coli DE-COMM-5012			24188314	Owl		Commensal strain	1	
+NT12433	DE-COMM-5022	0						24188314	Badger		Commensal strain	1	
+NT12434	DE-COMM-5028	0						24188314	Hare		Commensal strain	1	
+NT12435	DE-COMM-5041	0			Escherichia coli DE-COMM-5041			24188314	Badger		Commensal strain	1	
+NT12436	DE-COMM-5058	0						24188314	Otter		Commensal strain	1	
+NT12437	DE-COMM-5060	0						24188314	Otter		Commensal strain	1	
+NT12438	DE-COMM-5075	0			Escherichia sp. DE-COMM-5075			24188314	Owl		Commensal strain	1	
+NT12439	DE-COMM-5076	0						24188314	Hedgehog		Commensal strain	1	
+NT12440	DE-COMM-5079	0			Escherichia coli DE-COMM-5079			24188314	Otter		Commensal strain	1	
+NT12441	DE-COMM-5082	0						24188314	Otter		Commensal strain	1	
+NT12442	DE-COMM-5105	0			Escherichia coli DE-COMM-5105			24188314	Hedgehog		Commensal strain	1	
+NT12443	DE-COMM-5115	0						24188314	Hedgehog		Commensal strain	1	
+NT12444	B090	0		KC326	Escherichia albertii B090		Broad institute Antibiotic resistance collection		Australian magpie, O'Connor, ACT, Australia	2001	Commensal strain	1	
+NT12445	B156	0		KC327	Escherichia albertii B156		Broad institute Antibiotic resistance collection		Australian magpie, O'Connor, ACT, Australia	2001	Commensal strain	1	
+NT12446	B108	0		KC328			Broad institute Antibiotic resistance collection		Little friarbird, Wongarbon, NSW, Australia	2001	Commensal strain	1	
+NT12447	B367	0		KC329	Escherichia coli B367		Broad institute Antibiotic resistance collection		Australian magpie, Coffs Harbour, NSW, Australia	2001	Commensal strain	1	
+NT12448	B671	0		KC330	Escherichia coli B671		Broad institute Antibiotic resistance collection		Magpie-lark, Woopi, NSW, Australia	2001	Commensal strain	1	
+NT12449	E1118	0		KC331	Escherichia sp. E1118		Broad institute Antibiotic resistance collection		Water sample, Lake Burley Griffin, ACT, Australia	2003	Commensal strain	1	
+NT12450	E1520	0		KC332	Escherichia coli E1520	PRJNA38945	Broad institute Antibiotic resistance collection		Sediment sample, Perry Lakes, WA, Australia	2004	Commensal strain	1	
+NT12451	H001	0		KC333	Escherichia coli H001		Broad institute Antibiotic resistance collection		Human, blood stream, Canberra, ACT, Australia	1999	Commensal strain	1	
+NT12452	H296	0		KC334	Escherichia coli H296		Broad institute Antibiotic resistance collection		Human, feces, Canberra, ACT, Australia	2001	Commensal strain	1	
+NT12453	H378	0		KC335	Escherichia coli H378		Broad institute Antibiotic resistance collection		Human, feces, Canberra, ACT, Australia	2001	Commensal strain	1	
+NT12454	H397	0		KC336	Escherichia coli H397	PRJNA39001	Broad institute Antibiotic resistance collection		Human, feces, Canberra, ACT, Australia	2001	Commensal strain	1	
+NT12455	H605	0		KC337	Escherichia sp. H605		Broad institute Antibiotic resistance collection		Human, feces, Canberra, ACT, Australia	2001	Commensal strain	1	
+NT12456	TA004	0		KC338	Escherichia sp. TA004		Broad institute Antibiotic resistance collection		Western grey kangaroo, Kangaroo Island, SA, Australia	1993	Commensal strain	1	
+NT12457	TA014	0		KC339	Escherichia coli TA014		Broad institute Antibiotic resistance collection		Long-nosed potoroo, Timbillica State Forest, NSW, Australia	1993	Commensal strain	1	
+NT12458	TA103	0		KC340	Escherichia coli TA103		Broad institute Antibiotic resistance collection		Mitchell's hopping mouse, Wyperfeld National Park, VIC, Australia	1994	Commensal strain	1	
+NT12459	TA141	0		KC341	Escherichia coli TA141		Broad institute Antibiotic resistance collection		Common rock rat, Kakadu National Park, NT, Australia	1994	Commensal strain	1	
+NT12460	TA464	0		KC342	Escherichia coli TA464		Broad institute Antibiotic resistance collection		Common wallaroo, Barrow Island, WA, Australia	1996	Commensal strain	1	
+NT12461	B253	0		KC343	Escherichia fergusonii B253	PRJNA38067	Broad institute Antibiotic resistance collection		Australian magpie, Sawtell, NSW, Australia	2001	Commensal strain	1	
+NT12462	B646	0		KC344	Escherichia sp. B646		Broad institute Antibiotic resistance collection		Australian wood duck, Coffs Harbour, NSW, Australia	2001	Commensal strain	1	
+NT12463	glyA-A	1	NT12001		Escherichia coli glyA-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12464	hisH-A	1	NT12001		Escherichia coli hisH-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12465	leuL-A	1	NT12001		Escherichia coli leuL-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12466	serB-A	1	NT12001		Escherichia coli serB-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12467	metR-A	1	NT12001		Escherichia coli metR-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12468	ppc-A	1	NT12001		Escherichia coli ppc-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12469	argC-A	1	NT12001		Escherichia coli argC-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12470	ptsI-A	1	NT12001		Escherichia coli ptsI-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12471	metL-A	1	NT12001		Escherichia coli metL-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12472	thrA-A	1	NT12001		Escherichia coli thrA-A		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12473	gltA-B	1	NT12001		Escherichia coli gltA-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12474	lpd-B	1	NT12001		Escherichia coli lpd-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12475	yhhK-B	1	NT12001		Escherichia coli yhhK-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12476	proB-B	1	NT12001		Escherichia coli proB-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12477	glyA-B	1	NT12001		Escherichia coli glyA-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12478	cysB-B	1	NT12001		Escherichia coli cysB-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12479	hisH-B	1	NT12001		Escherichia coli hisH-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12480	leuL-B	1	NT12001		Escherichia coli leuL-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12481	serB-B	1	NT12001		Escherichia coli serB-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12482	ppc-B	1	NT12001		Escherichia coli ppc-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12483	ptsI-B	1	NT12001		Escherichia coli ptsI-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12484	metL-B	1	NT12001		Escherichia coli metL-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12485	thrA-B	1	NT12001		Escherichia coli thrA-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12486	carA-B	1	NT12001		Escherichia coli carA-B		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12487	gltA-C	1	NT12001		Escherichia coli gltA-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12488	yhhK-C	1	NT12001		Escherichia coli yhhK-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12489	proB-C	1	NT12001		Escherichia coli proB-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12490	glyA-C	1	NT12001		Escherichia coli glyA-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12491	hisH-C	1	NT12001		Escherichia coli hisH-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12492	ilvA-C	1	NT12001		Escherichia coli ilvA-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12493	leuL-C	1	NT12001		Escherichia coli leuL-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12494	serB-C	1	NT12001		Escherichia coli serB-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12495	ppc-C	1	NT12001		Escherichia coli ppc-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12496	ptsI-C	1	NT12001		Escherichia coli ptsI-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12497	metL-C	1	NT12001		Escherichia coli metL-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12498	argB-C	1	NT12001		Escherichia coli argB-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12499	thrA-C	1	NT12001		Escherichia coli thrA-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12500	carA-C	1	NT12001		Escherichia coli carA-C		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12501	gltA-D	1	NT12001		Escherichia coli gltA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12502	proB-D	1	NT12001		Escherichia coli proB-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12503	glyA-D	1	NT12001		Escherichia coli glyA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12504	cysB-D	1	NT12001		Escherichia coli cysB-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12505	hisH-D	1	NT12001		Escherichia coli hisH-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12506	tyrA-D	1	NT12001		Escherichia coli tyrA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12507	ilvE-D	1	NT12001		Escherichia coli ilvE-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12508	fes-D	1	NT12001		Escherichia coli fes-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12509	leuL-D	1	NT12001		Escherichia coli leuL-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12510	serB-D	1	NT12001		Escherichia coli serB-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12511	pabA-D	1	NT12001		Escherichia coli pabA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12512	ppc-D	1	NT12001		Escherichia coli ppc-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12513	argC-D	1	NT12001		Escherichia coli argC-D			24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12514	ptsI-D	1	NT12001		Escherichia coli ptsI-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12515	metL-D	1	NT12001		Escherichia coli metL-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12516	thrA-D	1	NT12001		Escherichia coli thrA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12517	carA-D	1	NT12001		Escherichia coli carA-D		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12518	gltA-E	1	NT12001		Escherichia coli gltA-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12519	proB-E	1	NT12001		Escherichia coli proB-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12520	glyA-E	1	NT12001		Escherichia coli glyA-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12521	hisH-E	1	NT12001		Escherichia coli hisH-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12522	ilvE-E	1	NT12001		Escherichia coli ilvE-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12523	leuL-E	1	NT12001		Escherichia coli leuL-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12524	serB-E	1	NT12001		Escherichia coli serB-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12525	metR-E	1	NT12001		Escherichia coli metR-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12526	ppc-E	1	NT12001		Escherichia coli ppc-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12527	ptsI-E	1	NT12001		Escherichia coli ptsI-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12528	metL-E	1	NT12001		Escherichia coli metL-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12529	thrA-E	1	NT12001		Escherichia coli thrA-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12530	carA-E	1	NT12001		Escherichia coli carA-E		http://www.pnas.org/content/suppl/2014/02/06/1318797111.DCSupplemental/sd01.txt	24516157	Evolution experiment	2014	Evolution experiment	1	
+NT12531	SE11	0		JCM 16574	Escherichia coli SE11	PRJNA59425		18931093	Healthy human feces		Commensal strain	1	
+NT12532	SE15	0		JCM 16575	Escherichia coli SE15	PRJDA161939		20008064	Healthy human feces		Commensal strain	1	
+NT12533	APEC01	0			Escherichia coli APEC O1	PRJNA58623		16940062			Pathogenic strain	2	APEC
+NT12534	NILS 1	0			Escherichia coli NILS 1			25266386	Human feces	2013	Commensal strain	1	
+NT12535	NILS 2	0			Escherichia coli NILS 2			25266386	Human feces	2013	Commensal strain	1	
+NT12536	NILS 3	0			Escherichia coli NILS 3			25266386	Human feces	2013	Commensal strain	1	
+NT12537	NILS 4	0			Escherichia coli NILS 4			25266386	Human feces	2013	Commensal strain	1	
+NT12538	NILS 5	0			Escherichia coli NILS 5			25266386	Human feces	2013	Commensal strain	1	
+NT12539	NILS 6	0			Escherichia coli NILS 6			25266386	Human feces	2013	Commensal strain	1	
+NT12540	NILS 7	0			Escherichia coli NILS 7			25266386	Human feces	2013	Commensal strain	1	
+NT12541	NILS 8	0			Escherichia coli NILS 8			25266386	Human feces	2013	Commensal strain	1	
+NT12542	NILS 9	0			Escherichia coli NILS 9			25266386	Human feces	2013	Commensal strain	1	
+NT12543	NILS 10	0			Escherichia coli NILS 10			25266386	Human feces	2013	Commensal strain	1	
+NT12544	NILS 11	0			Escherichia coli NILS 11			25266386	Human feces	2013	Commensal strain	1	
+NT12545	NILS 12	0			Escherichia coli NILS 12			25266386	Human feces	2013	Commensal strain	1	
+NT12546	NILS 13	0			Escherichia coli NILS 13			25266386	Human feces	2013	Commensal strain	1	
+NT12547	NILS 14	0			Escherichia coli NILS 14			25266386	Human feces	2013	Commensal strain	1	
+NT12548	NILS 15	0			Escherichia coli NILS 15			25266386	Human feces	2013	Commensal strain	1	
+NT12549	NILS 16	0			Escherichia coli NILS 16			25266386	Human blood	2013	Pathogenic strain	2	
+NT12550	NILS 17	0			Escherichia coli NILS 17			25266386	Human blood	2013	Pathogenic strain	2	
+NT12551	NILS 18	0			Escherichia coli NILS 18			25266386	Human blood	2013	Pathogenic strain	2	
+NT12552	NILS 19	0			Escherichia coli NILS 19			25266386	Human blood	2013	Pathogenic strain	2	
+NT12553	NILS 20	0			Escherichia coli NILS 20			25266386	Human blood	2013	Pathogenic strain	2	
+NT12554	NILS 21	0			Escherichia coli NILS 21			25266386	Human blood	2013	Pathogenic strain	2	
+NT12555	NILS 22	0			Escherichia coli NILS 22			25266386	Human blood	2013	Pathogenic strain	2	
+NT12556	NILS 23	0			Escherichia coli NILS 23			25266386	Human	2013	Pathogenic strain	2	
+NT12557	NILS 24	0			Escherichia coli NILS 24			25266386	Human	2013	Pathogenic strain	2	
+NT12558	NILS 25	0			Escherichia coli NILS 25			25266386	Human	2013	Pathogenic strain	2	
+NT12559	NILS 26	0			Escherichia coli NILS 26			25266386	Human	2013	Pathogenic strain	2	
+NT12560	NILS 27	0			Escherichia coli NILS 27			25266386	Human	2013	Pathogenic strain	2	
+NT12561	NILS 28	0			Escherichia coli NILS 28			25266386	Human	2013	Pathogenic strain	2	
+NT12562	NILS 29	0			Escherichia coli NILS 29			25266386	Human	2013	Pathogenic strain	2	
+NT12563	NILS 30	0			Escherichia coli NILS 30			25266386	Human urine	2013	Pathogenic strain	2	
+NT12564	NILS 31	0			Escherichia coli NILS 31			25266386	Human urine	2013	Pathogenic strain	2	
+NT12565	NILS 32	0			Escherichia coli NILS 32			25266386	Human urine	2013	Pathogenic strain	2	
+NT12566	NILS 33	0			Escherichia coli NILS 33			25266386	Human urine	2013	Pathogenic strain	2	
+NT12567	NILS 34	0			Escherichia coli NILS 34			25266386	Human urine	2013	Pathogenic strain	2	
+NT12568	NILS 35	0			Escherichia coli NILS 35			25266386	Human urine	2013	Pathogenic strain	2	
+NT12569	NILS 36	0			Escherichia coli NILS 36			25266386	Human urine	2013	Pathogenic strain	2	
+NT12570	NILS 37	0			Escherichia coli NILS 37			25266386	Human urine	2013	Pathogenic strain	2	
+NT12571	NILS 38	0			Escherichia coli NILS 38			25266386	Human urine	2013	Pathogenic strain	2	
+NT12572	NILS 39	0			Escherichia coli NILS 39			25266386	Human urine	2013	Pathogenic strain	2	
+NT12573	NILS 40	0			Escherichia coli NILS 40			25266386	Human urine	2013	Pathogenic strain	2	
+NT12574	NILS 41	0			Escherichia coli NILS 41			25266386	Human urine	2013	Pathogenic strain	2	
+NT12575	NILS 42	0			Escherichia coli NILS 42			25266386	Human urine	2013	Pathogenic strain	2	
+NT12576	NILS 43	0			Escherichia coli NILS 43			25266386	Human urine	2013	Pathogenic strain	2	
+NT12577	NILS 44	0			Escherichia coli NILS 44			25266386	Human urine	2013	Pathogenic strain	2	
+NT12578	NILS 45	0			Escherichia coli NILS 45			25266386	Human urine	2013	Pathogenic strain	2	
+NT12579	NILS 46	0			Escherichia coli NILS 46			25266386	Human urine	2013	Pathogenic strain	2	
+NT12580	NILS 47	0			Escherichia coli NILS 47			25266386	Human urine	2013	Pathogenic strain	2	
+NT12581	NILS 48	0			Escherichia coli NILS 48			25266386	Human urine	2013	Pathogenic strain	2	
+NT12582	NILS 49	0			Escherichia coli NILS 49			25266386	Human urine	2013	Pathogenic strain	2	
+NT12583	NILS 50	0			Escherichia coli NILS 50			25266386	Human urine	2013	Pathogenic strain	2	
+NT12584	NILS 51	0			Escherichia coli NILS 51			25266386	Human urine	2013	Pathogenic strain	2	
+NT12585	NILS 52	0			Escherichia coli NILS 52			25266386	Human urine	2013	Pathogenic strain	2	
+NT12586	NILS 53	0			Escherichia coli NILS 53			25266386	Human urine	2013	Pathogenic strain	2	
+NT12587	NILS 54	0			Escherichia coli NILS 54			25266386	Human urine	2013	Pathogenic strain	2	
+NT12588	NILS 55	0			Escherichia coli NILS 55			25266386	Human urine	2013	Pathogenic strain	2	
+NT12589	NILS 56	0			Escherichia coli NILS 56			25266386	Human urine	2013	Pathogenic strain	2	
+NT12590	NILS 57	0			Escherichia coli NILS 57			25266386	Human urine	2013	Pathogenic strain	2	
+NT12591	NILS 58	0			Escherichia coli NILS 58			25266386	Human urine	2013	Pathogenic strain	2	
+NT12592	NILS 59	0			Escherichia coli NILS 59			25266386	Human urine	2013	Pathogenic strain	2	
+NT12593	NILS 60	0			Escherichia coli NILS 60			25266386	Human urine	2013	Pathogenic strain	2	
+NT12594	NILS 61	0			Escherichia coli NILS 61			25266386	Human urine	2013	Pathogenic strain	2	
+NT12595	NILS 62	0			Escherichia coli NILS 62			25266386	Human urine	2013	Pathogenic strain	2	
+NT12596	NILS 63	0			Escherichia coli NILS 63			25266386	Human urine	2013	Pathogenic strain	2	
+NT12597	NILS 64	0			Escherichia coli NILS 64			25266386	Human urine	2013	Pathogenic strain	2	
+NT12598	NILS 65	0			Escherichia coli NILS 65			25266386	Human urine	2013	Pathogenic strain	2	
+NT12599	NILS 66	0			Escherichia coli NILS 66			25266386	Human urine	2013	Pathogenic strain	2	
+NT12600	NILS 67	0			Escherichia coli NILS 67			25266386	Human urine	2013	Pathogenic strain	2	
+NT12601	NILS 68	0			Escherichia coli NILS 68			25266386	Human urine	2013	Pathogenic strain	2	
+NT12602	NILS 69	0			Escherichia coli NILS 69			25266386	Human urine	2013	Pathogenic strain	2	
+NT12603	NILS 70	0			Escherichia coli NILS 70			25266386	Human urine	2013	Pathogenic strain	2	
+NT12604	NILS 71	0			Escherichia coli NILS 71			25266386	Human urine	2013	Pathogenic strain	2	
+NT12605	NILS 72	0			Escherichia coli NILS 72			25266386	Human urine	2013	Pathogenic strain	2	
+NT12606	NILS 73	0			Escherichia coli NILS 73			25266386	Human urine	2013	Pathogenic strain	2	
+NT12607	NILS 74	0			Escherichia coli NILS 74			25266386	Human urine	2013	Pathogenic strain	2	
+NT12608	NILS 75	0			Escherichia coli NILS 75			25266386	Human urine	2013	Pathogenic strain	2	
+NT12609	NILS 76	0			Escherichia coli NILS 76			25266386	Human urine	2013	Pathogenic strain	2	
+NT12610	NILS 77	0			Escherichia coli NILS 77			25266386	Human urine	2013	Pathogenic strain	2	
+NT12611	NILS 78	0			Escherichia coli NILS 78			25266386	Human urine	2013	Pathogenic strain	2	
+NT12612	NILS 79	0			Escherichia coli NILS 79			25266386	Human urine	2013	Pathogenic strain	2	
+NT12613	NILS 80	0			Escherichia coli NILS 80			25266386	Human urine	2013	Pathogenic strain	2	
+NT12614	NILS 81	0			Escherichia coli NILS 81			25266386	Human urine	2013	Pathogenic strain	2	
+NT12615	NILS 82	0			Escherichia coli NILS 82			25266386	Human urine	2013	Pathogenic strain	2	
+NT12616	SCI-07	0			Escherichia coli SCI-07	PRJNA180387		22582380	Hen with swollen head syndrome, Brasil	2012	Pathogenic strain	2	APEC
+NT12617	O08	0			Escherichia coli O08	PRJNA189394		23516222	Yolk of the abdomen of a diseased 1-day-old chick, Brasil	2013	Pathogenic strain	2	APEC
+NT12618	SEPT362	0			Escherichia coli SEPT362	PRJNA189393		23516222	Hen with clinical signs of septicemia, Brasil	2013	Pathogenic strain	2	APEC
+NT12619	S17	0			Escherichia coli S17	PRJNA189395		23516222	Broiler chick with septicemia	2013	Pathogenic strain	2	APEC
+NT12620	762B	1	NT12704		Escherichia coli NT12620	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12621	762C	1	NT12704		Escherichia coli NT12621	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12622	763A	1	NT12704		Escherichia coli NT12622	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12623	763B	1	NT12704		Escherichia coli NT12623	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12624	764A	1	NT12704		Escherichia coli NT12624	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12625	764B	1	NT12704		Escherichia coli NT12625	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12626	765A	1	NT12704		Escherichia coli NT12626	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12627	765B	1	NT12704		Escherichia coli NT12627	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12628	766A	1	NT12704		Escherichia coli NT12628	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12629	766B	1	NT12704		Escherichia coli NT12629	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12630	767A	1	NT12704		Escherichia coli NT12630	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12631	767B	1	NT12704		Escherichia coli NT12631	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12632	768A	1	NT12705		Escherichia coli NT12632	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12633	768B	1	NT12705		Escherichia coli NT12633	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12634	769A	1	NT12705		Escherichia coli NT12634	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12635	769B	1	NT12705		Escherichia coli NT12635	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12636	770A	1	NT12705		Escherichia coli NT12636	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12637	770B	1	NT12705		Escherichia coli NT12637	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12638	771A	1	NT12705		Escherichia coli NT12638	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12639	771B	1	NT12705		Escherichia coli NT12639	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12640	772A	1	NT12705		Escherichia coli NT12640	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12641	772B	1	NT12705		Escherichia coli NT12641	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12642	773A	1	NT12705		Escherichia coli NT12642	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12643	773B	1	NT12705		Escherichia coli NT12643	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12644	964A	1	NT12704			PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12645	964B	1	NT12704		Escherichia coli NT12645	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12646	965A	1	NT12704		Escherichia coli NT12646	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12647	965B	1	NT12704		Escherichia coli NT12647	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12648	966A	1	NT12704		Escherichia coli NT12648	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12649	966B	1	NT12704		Escherichia coli NT12649	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12650	967A	1	NT12704		Escherichia coli NT12650	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12651	967B	1	NT12704		Escherichia coli NT12651	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12652	968A	1	NT12704		Escherichia coli NT12652	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12653	968B	1	NT12704		Escherichia coli NT12653	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12654	969A	1	NT12704		Escherichia coli NT12654	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12655	969B	1	NT12704		Escherichia coli NT12655	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12656	958A	1	NT12705		Escherichia coli NT12656	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12657	958B	1	NT12705		Escherichia coli NT12657	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12658	959A	1	NT12705		Escherichia coli NT12658	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12659	959B	1	NT12705		Escherichia coli NT12659	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12660	960A	1	NT12705		Escherichia coli NT12660	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12661	960B	1	NT12705		Escherichia coli NT12661	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12662	961A	1	NT12705		Escherichia coli NT12662	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12663	961B	1	NT12705		Escherichia coli NT12663	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12664	962A	1	NT12705		Escherichia coli NT12664	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12665	962B	1	NT12705		Escherichia coli NT12665	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12666	963A	1	NT12705		Escherichia coli NT12666	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12667	963B	1	NT12705		Escherichia coli NT12667	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12668	1068B	1	NT12704		Escherichia coli NT12668	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12669	1068C	1	NT12704		Escherichia coli NT12669	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12670	1069A	1	NT12704		Escherichia coli NT12670	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12671	1069B	1	NT12704		Escherichia coli NT12671	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12672	1070A	1	NT12704		Escherichia coli NT12672	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12673	1070B	1	NT12704		Escherichia coli NT12673	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12674	1071A	1	NT12704		Escherichia coli NT12674	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12675	1071B	1	NT12704		Escherichia coli NT12675	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12676	1072A	1	NT12704		Escherichia coli NT12676	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12677	1072B	1	NT12704		Escherichia coli NT12677	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12678	1073A	1	NT12704		Escherichia coli NT12678	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12679	1073B	1	NT12704		Escherichia coli NT12679	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12680	1062A	1	NT12705		Escherichia coli NT12680	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12681	1062B	1	NT12705		Escherichia coli NT12681	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12682	1063A	1	NT12705		Escherichia coli NT12682	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12683	1063B	1	NT12705		Escherichia coli NT12683	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12684	1064A	1	NT12705		Escherichia coli NT12684	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12685	1064B	1	NT12705		Escherichia coli NT12685	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12686	1065A	1	NT12705		Escherichia coli NT12686	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12687	1065B	1	NT12705		Escherichia coli NT12687	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12688	1066A	1	NT12705		Escherichia coli NT12688	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12689	1066B	1	NT12705		Escherichia coli NT12689	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12690	1067A	1	NT12705		Escherichia coli NT12690	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12691	1067B	1	NT12705		Escherichia coli NT12691	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12692	1164A	1	NT12704		Escherichia coli NT12692	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12693	1164B	1	NT12704		Escherichia coli NT12693	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12694	1165A	1	NT12704		Escherichia coli NT12694	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12695	2K4	1	NT12704			PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12696	1166A	1	NT12704		Escherichia coli NT12696	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12697	1166B	1	NT12704		Escherichia coli NT12697	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12698	1167A	1	NT12704		Escherichia coli NT12698	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12699	1167B	1	NT12704		Escherichia coli NT12699	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12700	1168A	1	NT12704		Escherichia coli NT12700	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12701	1168B	1	NT12704		Escherichia coli NT12701	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12702	1169A	1	NT12704		Escherichia coli NT12702	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12703	1169B	1	NT12704		Escherichia coli NT12703	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12704	606	0			Escherichia coli B str. REL606	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Derivation of B		Laboratory strain	1	
+NT12705	607	0			Escherichia coli B str. REL607	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Derivation of REL606		Laboratory strain	1	
+NT12706	1158A	1	NT12705		Escherichia coli NT12706	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12707	1158C	1	NT12705		Escherichia coli NT12707	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12708	1159A	1	NT12705		Escherichia coli NT12708	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12709	1159B	1	NT12705		Escherichia coli NT12709	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12710	1160A	1	NT12705		Escherichia coli NT12710	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12711	1160B	1	NT12705		Escherichia coli NT12711	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12712	1161A	1	NT12705		Escherichia coli NT12712	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12713	1161B	1	NT12705		Escherichia coli NT12713	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12714	1162A	1	NT12705		Escherichia coli NT12714	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12715	1162B	1	NT12705		Escherichia coli NT12715	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12716	1163A	1	NT12705		Escherichia coli NT12716	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12717	1163B	1	NT12705		Escherichia coli NT12717	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12718	2179A	1	NT12704		Escherichia coli NT12718	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12719	2179B	1	NT12704		Escherichia coli NT12719	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12720	2180A	1	NT12704		Escherichia coli NT12720	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12721	2180B	1	NT12704		Escherichia coli NT12721	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12722	2181A	1	NT12704		Escherichia coli NT12722	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12723	ZDB409	1	NT12704		Escherichia coli NT12723	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12724	2182A	1	NT12704		Escherichia coli NT12724	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12725	2182B	1	NT12704		Escherichia coli NT12725	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12726	2183A	1	NT12704		Escherichia coli NT12726	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12727	2183B	1	NT12704		Escherichia coli NT12727	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12728	2184A	1	NT12704		Escherichia coli NT12728	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12729	2184B	1	NT12704		Escherichia coli NT12729	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12730	2173A	1	NT12705		Escherichia coli NT12730	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12731	2173B	1	NT12705		Escherichia coli NT12731	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12732	2174A	1	NT12705		Escherichia coli NT12732	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12733	2174B	1	NT12705		Escherichia coli NT12733	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12734	2175A	1	NT12705		Escherichia coli NT12734	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12735	2175B	1	NT12705		Escherichia coli NT12735	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12736	2176A	1	NT12705		Escherichia coli NT12736	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12737	2176B	1	NT12705		Escherichia coli NT12737	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12738	2177A	1	NT12705		Escherichia coli NT12738	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12739	2177B	1	NT12705		Escherichia coli NT12739	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12740	2178A	1	NT12705		Escherichia coli NT12740	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12741	2178B	1	NT12705		Escherichia coli NT12741	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12742	4536A	1	NT12704		Escherichia coli NT12742	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12743	4536B	1	NT12704		Escherichia coli NT12743	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12744	4537A	1	NT12704		Escherichia coli NT12744	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12745	4537B	1	NT12704		Escherichia coli NT12745	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12746	4538A	1	NT12704		Escherichia coli NT12746	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12747	ZDB429	1	NT12704		Escherichia coli NT12747	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12748	4539A	1	NT12704		Escherichia coli NT12748	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12749	4539B	1	NT12704		Escherichia coli NT12749	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12750	4540A	1	NT12704		Escherichia coli NT12750	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12751	4540B	1	NT12704		Escherichia coli NT12751	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12752	4541A	1	NT12704		Escherichia coli NT12752	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12753	4541B	1	NT12704		Escherichia coli NT12753	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12754	4530A	1	NT12705		Escherichia coli NT12754	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12755	4530B	1	NT12705		Escherichia coli NT12755	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12756	4531A	1	NT12705		Escherichia coli NT12756	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12757	4531B	1	NT12705		Escherichia coli NT12757	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12758	4532A	1	NT12705		Escherichia coli NT12758	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12759	4532B	1	NT12705		Escherichia coli NT12759	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12760	4533A	1	NT12705		Escherichia coli NT12760	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12761	4533B	1	NT12705		Escherichia coli NT12761	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12762	4534A	1	NT12705		Escherichia coli NT12762	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12763	4534B	1	NT12705		Escherichia coli NT12763	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12764	4535A	1	NT12705		Escherichia coli NT12764	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12765	4535B	1	NT12705		Escherichia coli NT12765	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12766	7177A	1	NT12704		Escherichia coli NT12766	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12767	7177B	1	NT12704		Escherichia coli NT12767	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12768	7178A	1	NT12704		Escherichia coli NT12768	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12769	7178B	1	NT12704		Escherichia coli NT12769	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12770	7179A	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12771	7179B	1	NT12704		Escherichia coli NT12771	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12772	7180A	1	NT12704		Escherichia coli NT12772	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12773	7180B	1	NT12704		Escherichia coli NT12773	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12774	7181A	1	NT12704		Escherichia coli NT12774	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12775	7181B	1	NT12704		Escherichia coli NT12775	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12776	7182A	1	NT12704		Escherichia coli NT12776	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12777	7182B	1	NT12704		Escherichia coli NT12777	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12778	7183A	1	NT12705		Escherichia coli NT12778	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12779	7183B	1	NT12705		Escherichia coli NT12779	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12780	7184A	1	NT12705		Escherichia coli NT12780	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12781	7184B	1	NT12705		Escherichia coli NT12781	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12782	7185A	1	NT12705		Escherichia coli NT12782	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12783	7185B	1	NT12705		Escherichia coli NT12783	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12784	7186A	1	NT12705		Escherichia coli NT12784	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12785	7186B	1	NT12705		Escherichia coli NT12785	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12786	7187A	1	NT12705		Escherichia coli NT12786	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12787	7187B	1	NT12705		Escherichia coli NT12787	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12788	7188A	1	NT12705		Escherichia coli NT12788	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12789	7188B	1	NT12705		Escherichia coli NT12789	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12790	8593A	1	NT12704		Escherichia coli NT12790	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12791	8593B	1	NT12704		Escherichia coli NT12791	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12792	20KS1	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12793	20KLA	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12794	ZDB458	1	NT12704		Escherichia coli NT12794	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12795	ZDB464	1	NT12704		Escherichia coli NT12795	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12796	8596A	1	NT12704		Escherichia coli NT12796	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12797	8596B	1	NT12704		Escherichia coli NT12797	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12798	8597A	1	NT12704		Escherichia coli NT12798	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12799	8597B	1	NT12704		Escherichia coli NT12799	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12800	8598A	1	NT12704		Escherichia coli NT12800	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12801	8598B	1	NT12704		Escherichia coli NT12801	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12802	9282A	1	NT12705		Escherichia coli NT12802	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12803	9282B	1	NT12705		Escherichia coli NT12803	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12804	8601A	1	NT12705		Escherichia coli NT12804	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12805	8601B	1	NT12705		Escherichia coli NT12805	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12806	8602A	1	NT12705		Escherichia coli NT12806	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12807	8602B	1	NT12705		Escherichia coli NT12807	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12808	8603A	1	NT12705		Escherichia coli NT12808	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12809	8603B	1	NT12705		Escherichia coli NT12809	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12810	8604A	1	NT12705		Escherichia coli NT12810	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12811	8604B	1	NT12705		Escherichia coli NT12811	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12812	8605A	1	NT12705		Escherichia coli NT12812	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12813	8605B	1	NT12705		Escherichia coli NT12813	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12814	10391	1	NT12704		Escherichia coli NT12814	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12815	10392	1	NT12704		Escherichia coli NT12815	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12816	30KS1	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12817	30KL1	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12818	ZDB16	1	NT12704		Escherichia coli NT12818	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12819	ZDB357	1	NT12704		Escherichia coli NT12819	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12820	10401	1	NT12704		Escherichia coli NT12820	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12821	10402	1	NT12704		Escherichia coli NT12821	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12822	10404	1	NT12704		Escherichia coli NT12822	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12823	10405	1	NT12704		Escherichia coli NT12823	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12824	10447	1	NT12704		Escherichia coli NT12824	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12825	10448	1	NT12704		Escherichia coli NT12825	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12826	10450	1	NT12705		Escherichia coli NT12826	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12827	10451	1	NT12705		Escherichia coli NT12827	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12828	10407	1	NT12705		Escherichia coli NT12828	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12829	10408	1	NT12705		Escherichia coli NT12829	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12830	10410	1	NT12705		Escherichia coli NT12830	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12831	10411	1	NT12705		Escherichia coli NT12831	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12832	10414	1	NT12705		Escherichia coli NT12832	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12833	10415	1	NT12705		Escherichia coli NT12833	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12834	10432	1	NT12705		Escherichia coli NT12834	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12835	10433	1	NT12705		Escherichia coli NT12835	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12836	10417	1	NT12705		Escherichia coli NT12836	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12837	10418	1	NT12705		Escherichia coli NT12837	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12838	10938	1	NT12704		Escherichia coli NT12838	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12839	10939	1	NT12704		Escherichia coli NT12839	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12840	11035(L)	1	NT12704		Escherichia coli NT12840	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12841	11036(S)	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12842	10988	1	NT12704		Escherichia coli NT12842	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12843	10979	1	NT12704		Escherichia coli NT12843	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12844	10944	1	NT12704		Escherichia coli NT12844	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12845	10945	1	NT12704		Escherichia coli NT12845	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12846	10947	1	NT12704		Escherichia coli NT12846	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12847	10948	1	NT12704		Escherichia coli NT12847	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12848	11005	1	NT12704		Escherichia coli NT12848	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12849	11006	1	NT12704		Escherichia coli NT12849	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12850	11008	1	NT12705		Escherichia coli NT12850	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12851	11009	1	NT12705		Escherichia coli NT12851	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12852	10950	1	NT12705		Escherichia coli NT12852	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12853	10951	1	NT12705		Escherichia coli NT12853	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12854	10953	1	NT12705		Escherichia coli NT12854	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12855	10954	1	NT12705		Escherichia coli NT12855	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12856	10956	1	NT12705		Escherichia coli NT12856	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12857	10957	1	NT12705		Escherichia coli NT12857	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12858	10982	1	NT12705		Escherichia coli NT12858	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12859	10983	1	NT12705		Escherichia coli NT12859	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12860	10985	1	NT12705		Escherichia coli NT12860	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12861	10986	1	NT12705		Escherichia coli NT12861	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12862	11330	1	NT12704		Escherichia coli NT12862	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12863	11331	1	NT12704		Escherichia coli NT12863	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12864	11333	1	NT12704		Escherichia coli NT12864	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12865	11335	1	NT12704		Escherichia coli NT12865	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12866	11364	1	NT12704		Escherichia coli NT12866	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12867	11365	1	NT12704		Escherichia coli NT12867	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12868	11336	1	NT12704		Escherichia coli NT12868	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12869	11337	1	NT12704		Escherichia coli NT12869	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12870	11339	1	NT12704		Escherichia coli NT12870	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12871	11340	1	NT12704		Escherichia coli NT12871	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12872	11389	1	NT12704		Escherichia coli NT12872	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12873	11390	1	NT12704		Escherichia coli NT12873	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12874	11392	1	NT12705		Escherichia coli NT12874	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12875	11393	1	NT12705		Escherichia coli NT12875	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12876	11342	1	NT12705		Escherichia coli NT12876	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12877	11343	1	NT12705		Escherichia coli NT12877	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12878	11345	1	NT12705		Escherichia coli NT12878	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12879	11346	1	NT12705		Escherichia coli NT12879	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12880	11348	1	NT12705		Escherichia coli NT12880	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12881	11349	1	NT12705		Escherichia coli NT12881	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12882	11367	1	NT12705		Escherichia coli NT12882	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12883	11368	1	NT12705		Escherichia coli NT12883	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12884	11370	1	NT12705		Escherichia coli NT12884	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12885	11371	1	NT12705		Escherichia coli NT12885	PRJNA294072		27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12886	11691	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12887	11692	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12888	11694	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12889	11695	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12890	11725	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12891	11726	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12892	11697	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12893	11698	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12894	11700	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12895	11701	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12896	11771	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12897	11772	1	NT12704					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12898	11774	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12899	11775	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12900	11703	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12901	11704	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12902	11706	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12903	11707	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12904	11709	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12905	11710	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12906	11728	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12907	11729	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12908	11731	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	
+NT12909	11732	1	NT12705					27479321;22992527;22207905;21415350;19838166;19776167	Evolution experiment		Evolution experiment	1	

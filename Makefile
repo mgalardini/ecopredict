@@ -30,6 +30,9 @@ VEPDIR = $(CURDIR)/strains-scores
 
 GENOME = genome.gbk
 
+# Strain information
+STRAINS = $(INPUT)/strains.tsv
+
 UNIPROT = $(MUTATION)/uniprot.txt
 UNIPROTSIZES = $(MUTATION)/uniprot_sizes.txt
 
@@ -581,21 +584,13 @@ $(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
 $(ASSOCIATIONPLOT): $(AUCDATA) $(ASSOCIATIONDATA) $(ECKFILE) $(CONVERSION) $(FIXEDPANGENOME) $(DELETION)
 	$(SRCDIR)/run_associations_plot $(ECKFILE) $(CONVERSION) $(DELETION) $(CHEMICAL)/deletion.all.genes.2.txt $(FIXEDPANGENOME) $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(ASSOCIATIONDIR) $@ --height 2.33 --width 3.5 --dpi 300
 
-$(EXAMPLE1PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3 --dpi 300 --notree
-$(EXAMPLE1APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) OXACILLIN.5UM "Oxacillin 5 uM" $@ --height 4 --width 3.5 --dpi 300
-$(EXAMPLE2PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3 --dpi 300 --notree
-$(EXAMPLE2APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 4 --width 3.5 --dpi 300
-$(EXAMPLE3PLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) CLINDAMYCIN.3 "Clindamycin 3 ug/ml" $@ --height 4 --width 3 --dpi 300 --notree
-$(EXAMPLE3APLOT): $(ECKFILE) $(GENOME) $(TREE) $(SCREENING) $(SCREENINGFDR) $(SCORE)
-	$(SRCDIR)/run_examples $(ECKFILE) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(TREE) CLINDAMYCIN.3 "Clindamycin 3 ug/ml" $@ --height 4 --width 3.5 --dpi 300
+$(EXAMPLE1PLOT): $(STRAINS) $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) $(SCORE)
+	$(SRCDIR)/run_examples $(STRAINS) $(ECKFILE) $(CONVERSION) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(UNCOMMON) $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) MOPS.AAFB "Minimal media (AAFB)" $@ --height 5.5 --width 3.5 --dpi 300
+$(EXAMPLE2PLOT): $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) $(SCORE)
+	$(SRCDIR)/run_examples $(STRAINS) $(ECKFILE) $(CONVERSION) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(UNCOMMON) $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 5.5 --width 3.5 --dpi 300
 
 $(EXAMPLEROCPLOT): $(AUCDATA)
-	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition OXACILLIN.5UM PSEUDOMONICACID.2 CLINDAMYCIN.3 --cname "Oxacillin 5 uM" "Pseudomonic acid 2 ug/ml" "Clindamycin 3 ug/ml" --size 3.7 --dpi 90
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
 #############
 ## Figures ##
@@ -617,7 +612,7 @@ $(FIGUREC): $(EXAMPLE1)
 $(FIGURED): $(SCHEMEPHENOTYPES) $(PREPLICATES) $(EXAMPLE2)
 	$(SRCDIR)/run_figure_d $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PCORRELATION) $(PCORRELATIONL) $(PCORRELATIONC) $(PTREEPLOT) $(TREELEGEND) $(PTREEBARS) $(PPURITY) $(PCHEMICAL) $(ARROW) $(EXAMPLE2) $@
 
-$(FIGUREE): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLE3PLOT) $(EXAMPLEROCPLOT)
+$(FIGUREE): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT)
 	$(SRCDIR)/run_figure_e $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLE3PLOT) $(EXAMPLEROCPLOT) $@
 
 ########################
@@ -640,9 +635,8 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS) \
        $(CONDITIONSPLOT) \
        $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) \
-       $(EXAMPLE1PLOT) $(EXAMPLE1APLOT) \
-       $(EXAMPLE2PLOT) $(EXAMPLE2APLOT) \
-       $(EXAMPLE3PLOT) $(EXAMPLE3APLOT) \
+       $(EXAMPLE1PLOT) \
+       $(EXAMPLE2PLOT) \
        $(EXAMPLEROCPLOT)
 figures: $(FIGUREA) $(FIGUREB) $(FIGUREBCORE) $(FIGUREBACC) $(FIGUREC) $(FIGURED) $(FIGUREE)
 
