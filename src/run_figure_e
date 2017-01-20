@@ -17,7 +17,6 @@ def get_options():
     parser.add_argument('associations')
     parser.add_argument('example1')
     parser.add_argument('example2')
-    parser.add_argument('example3')
     parser.add_argument('example')
     parser.add_argument('outfile',
                         help='output (including extension)')
@@ -35,7 +34,7 @@ if __name__ == "__main__":
     import svgutils.transform as sg
 
     #create new SVG figure
-    fig = sg.SVGFigure("11in", "10in")
+    fig = sg.SVGFigure("11in", "11in")
 
     # load matpotlib-generated figures
     fig1 = sg.fromfile(options.scheme)
@@ -43,7 +42,6 @@ if __name__ == "__main__":
     fig5 = sg.fromfile(options.associations)
     fig6 = sg.fromfile(options.example1)
     fig7 = sg.fromfile(options.example2)
-    fig8 = sg.fromfile(options.example3)
     fig10 = sg.fromfile(options.example)
 
     # get the plot objects
@@ -55,11 +53,9 @@ if __name__ == "__main__":
     plot5.moveto(435, 315, scale=1)
 
     plot6 = fig6.getroot()
-    plot6.moveto(95, 545, scale=1)
+    plot6.moveto(430, 545, scale=1)
     plot7 = fig7.getroot()
-    plot7.moveto(270, 545, scale=1)
-    plot8 = fig8.getroot()
-    plot8.moveto(645, 545, scale=1)
+    plot7.moveto(-10, 545, scale=1)
 
     plot10 = fig10.getroot()
     plot10.moveto(690, 260, scale=1)
@@ -75,9 +71,8 @@ if __name__ == "__main__":
     fig.append([plot3,
                 plot5,
                 plot1,
-                plot7,
                 plot6,
-                plot8,
+                plot7,
                 plot10,
                ])
     fig.append([txt1,
