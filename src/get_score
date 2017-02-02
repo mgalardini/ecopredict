@@ -94,6 +94,11 @@ def weighted_score(values, genes, pvals, gsum, gmax, pseudo):
     logvalues = (np.log(1 - values.loc[genes].dropna() + 0.0).dropna().T * corr).dropna().T
     return sum(logvalues/expected(values,
                                   pseudo))
+def weighted_score_natural(values, genes, pvals, gsum, gmax, pseudo):
+    corr = -(np.log(pvals.dropna()).replace([np.inf, -np.inf], np.nan).dropna() * gsum) / gmax
+    logvalues = (np.log(1 - values.loc[genes].dropna() + 0.0).dropna().T * corr).dropna().T
+    return sum(logvalues/expected(values,
+                                  pseudo))
 
 if __name__ == "__main__":
     import sys

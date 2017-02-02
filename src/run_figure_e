@@ -53,9 +53,9 @@ if __name__ == "__main__":
     plot5.moveto(435, 315, scale=1)
 
     plot6 = fig6.getroot()
-    plot6.moveto(430, 545, scale=1)
+    plot6.moveto(500, 545, scale=1)
     plot7 = fig7.getroot()
-    plot7.moveto(-10, 545, scale=1)
+    plot7.moveto(70, 545, scale=1)
 
     plot10 = fig10.getroot()
     plot10.moveto(690, 260, scale=1)
@@ -66,6 +66,7 @@ if __name__ == "__main__":
     txt3 = sg.TextElement(425, 270, "C)", size=12, weight="bold")
     txt4 = sg.TextElement(670, 270, "D)", size=12, weight="bold")
     txt5 = sg.TextElement(75, 545, "E)", size=12, weight="bold")
+    txt6 = sg.TextElement(505, 545, "F)", size=12, weight="bold")
 
     # append plots and labels to figure
     fig.append([plot3,
@@ -80,6 +81,7 @@ if __name__ == "__main__":
                 txt3,
                 txt4,
                 txt5,
+                txt6,
                ])
 
     fig.save(options.outfile)

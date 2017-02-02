@@ -14,6 +14,7 @@ def get_options():
     parser.add_argument('scheme', action='store',
                         help='scheme')
     parser.add_argument('replicates', action='store')
+    parser.add_argument('distance', action='store')
     parser.add_argument('correlation1', action='store')
     parser.add_argument('correlation2', action='store')
     parser.add_argument('correlation3', action='store')
@@ -40,6 +41,7 @@ if __name__ == "__main__":
 
     fig1 = sg.fromfile(options.scheme)
     fig2 = sg.fromfile(options.replicates)
+    fig2a = sg.fromfile(options.distance)
     fig3 = sg.fromfile(options.correlation1)
     fig4 = sg.fromfile(options.correlation2)
     fig5 = sg.fromfile(options.correlation3)
@@ -56,6 +58,8 @@ if __name__ == "__main__":
     plot1.moveto(25, 25, scale=0.39)
     plot2 = fig2.getroot()
     plot2.moveto(25, 230, scale=1)
+    plot2a = fig2a.getroot()
+    plot2a.moveto(285, 250, scale=1)
     plot3 = fig3.getroot()
     plot3.moveto(25, 450, scale=1)
     plot4 = fig4.getroot()
@@ -92,6 +96,7 @@ if __name__ == "__main__":
     fig.append([plot7,
                 plot3,
                 plot2,
+                plot2a,
                 plot1,
                 plot4,
                 plot5,

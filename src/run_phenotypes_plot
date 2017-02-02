@@ -146,9 +146,9 @@ if __name__ == "__main__":
     a3 = pd.read_table(options.emap3)
     a3.set_index(a3.columns[0], inplace=True)
 
-    plt.figure(figsize=(12*options.size, 4*options.size))
+    plt.figure(figsize=(8*options.size, 8*options.size))
 
-    plt.subplot(131)
+    plt.subplot(221)
     c = set(a1.columns).intersection(a2.columns)
     s = set(a1.index).intersection(a2.index)
 
@@ -179,13 +179,13 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('replicate 1')
-    plt.ylabel('replicate 2')
+    plt.xlabel('Replicate 1')
+    plt.ylabel('Replicate 2')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
 
-    plt.subplot(132)
+    plt.subplot(222)
     c = set(a2.columns).intersection(a3.columns)
     s = set(a2.index).intersection(a3.index)
 
@@ -216,13 +216,13 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('replicate 2')
-    plt.ylabel('replicate 3')
+    plt.xlabel('Replicate 2')
+    plt.ylabel('Replicate 3')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
 
-    plt.subplot(133)
+    plt.subplot(223)
     c = set(a1.columns).intersection(a3.columns)
     s = set(a1.index).intersection(a3.index)
 
@@ -253,12 +253,62 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('replicate 1')
-    plt.ylabel('replicate 3')
+    plt.xlabel('Replicate 1')
+    plt.ylabel('Replicate 3')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
 
+    plt.subplot(224)
+    a = pd.read_table(options.allmatrix)
+    a.set_index(a.columns[0], inplace=True)
+
+    p8 = {x.split()[0] for x in a.index
+          if '-P8' in x}
+    p9 = {x.split()[0] for x in a.index
+          if '-P9' in x}
+    p10 = {x.split()[0] for x in a.index
+          if '-P10' in x}
+
+    strains = p8.intersection(p9)
+
+    values = []
+    for x in strains:
+        p8 = x + ' - -P8'
+        p9 = x + ' - -P9'
+        
+        for j, k in a.loc[[p8, p9]].T.dropna().values:
+            values.append((j, k))
+    tmp = plt.plot([x[0] for x in values],
+                   [x[1] for x in values],
+             'k.',
+             alpha=0.3)
+    for t in tmp:
+        t.set_rasterized(True)
+
+    plt.title('Pearson\'s r: %.3f' % stats.pearsonr([x[0] for x in values],
+                                                    [x[1] for x in values])[0])
+
+    plt.plot([-15, 10],
+             [-15, 10],
+             '--',
+             color=sns.xkcd_rgb['grey'],
+             zorder=0)
+    plt.axhline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+    plt.axvline(0,
+                color=sns.xkcd_rgb['grey'],
+                linestyle='dashed',
+                zorder=0)
+
+    plt.xlabel('First plate')
+    plt.ylabel('Second plate')
+
+    plt.xlim(-15, 10)
+    plt.ylim(-15, 10)
+    
     plt.tight_layout()
     sns.despine()
 
@@ -272,9 +322,7 @@ if __name__ == "__main__":
                            a2.loc[list(s), list(c)].values.flatten()])
     values = values.T.dropna().values
 
-    plt.figure(figsize=(7*options.size, 3.5*options.size))
-
-    plt.subplot(121)
+    plt.figure(figsize=(3.5*options.size, 3.5*options.size))
 
     #histogram definition
     xyrange = [[-20, 10],
@@ -330,84 +378,6 @@ if __name__ == "__main__":
 
     sns.despine()
     c.ax.yaxis.set_ticks_position('right')
-
-    a = pd.read_table(options.allmatrix)
-    a.set_index(a.columns[0], inplace=True)
-
-    p8 = {x.split()[0] for x in a.index
-          if '-P8' in x}
-    p9 = {x.split()[0] for x in a.index
-          if '-P9' in x}
-    p10 = {x.split()[0] for x in a.index
-          if '-P10' in x}
-
-    strains = p8.intersection(p9)
-
-    values = []
-    for x in strains:
-        p8 = x + ' - -P8'
-        p9 = x + ' - -P9'
-        
-        for j, k in a.loc[[p8, p9]].T.dropna().values:
-            values.append((j, k))
-
-    plt.subplot(122)
-
-    #histogram definition
-    xyrange = [[-15, 10],
-               [-15, 10]]
-    bins = [100, 100]
-    thresh = 0.1
-
-    xdat = np.array([x[0] for x in values])
-    ydat = np.array([x[1] for x in values])
-
-    # histogram the data
-    hh, locx, locy = scipy.histogram2d(xdat,
-                                       ydat,
-                                       range=xyrange,
-                                       bins=bins)
-    posx = np.digitize(xdat, locx)
-    posy = np.digitize(ydat, locy)
-
-    #select points within the histogram
-    ind = (posx > 0) & (posx <= bins[0]) & (posy > 0) & (posy <= bins[1])
-    hhsub = hh[posx[ind] - 1, posy[ind] - 1]
-    xdat1 = xdat[ind][hhsub < thresh]
-    ydat1 = ydat[ind][hhsub < thresh]
-    hh[hh < thresh] = np.nan
-
-    im = plt.imshow(np.flipud(hh.T),
-               cmap='viridis_r',
-               extent=np.array(xyrange).flatten(),
-               interpolation='none')
-    c1 = plt.colorbar(im, shrink=0.65)   
-    c1.ax.set_ylabel('Density')
-
-    plt.plot([-15, 10],
-             [-15, 10],
-             '--',
-             color=sns.xkcd_rgb['grey'],
-             zorder=0)
-    plt.axhline(0,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed',
-                zorder=0)
-    plt.axvline(0,
-                color=sns.xkcd_rgb['grey'],
-                linestyle='dashed',
-                zorder=0)
-
-    plt.xlabel('First plate')
-    plt.ylabel('Second plate')
-    plt.text(-14, 8, 'Pearson\'s r: %.3f\n(N=%d)'%(stats.pearsonr(
-            [x[0] for x in values],
-            [x[1] for x in values])[0],
-            len(xdat)))
-
-    sns.despine()
-    c.ax.yaxis.set_ticks_position('right')
-    c1.ax.yaxis.set_ticks_position('right')
 
     plt.tight_layout()
 
