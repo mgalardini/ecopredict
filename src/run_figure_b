@@ -17,8 +17,8 @@ def get_options():
                         help='essential plot')
     parser.add_argument('correlation', action='store',
                         help='correlation plot')
-    parser.add_argument('roc', action='store',
-                        help='ROC plot')
+    parser.add_argument('examples', action='store',
+                        help='Examples plot')
     parser.add_argument('annotation', action='store',
                         help='annotation plot')
     parser.add_argument('outfile', action='store',
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     fig1 = sg.fromfile(options.scheme)
     fig2 = sg.fromfile(options.essential)
     fig3 = sg.fromfile(options.correlation)
-    fig4 = sg.fromfile(options.roc)
+    fig4 = sg.fromfile(options.examples)
     fig5 = sg.fromfile(options.annotation)
 
     plot1 = fig1.getroot()
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     plot4 = fig5.getroot()
     plot4.moveto(315, 200, scale=1)
     plot5 = fig4.getroot()
-    plot5.moveto(575, 175, scale=1)
+    plot5.moveto(540, 140, scale=1)
 
     txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(500, 25, "B)", size=12, weight="bold")
@@ -58,11 +58,11 @@ if __name__ == "__main__":
     txt4 = sg.TextElement(300, 185, "D)", size=12, weight="bold")
     txt5 = sg.TextElement(560, 185, "E)", size=12, weight="bold")
 
-    fig.append([plot1,
+    fig.append([plot4,
+                plot5,
+                plot1,
                 plot2,
                 plot3,
-                plot4,
-                plot5
                ])
     fig.append([txt1,
                 txt2,

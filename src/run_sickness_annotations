@@ -79,9 +79,9 @@ if __name__ == "__main__":
                     b.artists):
         a.set_facecolor(c)
     plt.xticks(range(4),
-               ['operons', 
-                'complexes',
-                'pathways',
+               ['Operons', 
+                'Complexes',
+                'Pathways',
                 'PPIs',],
                rotation=25)
     plt.legend([])

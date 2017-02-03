@@ -1,0 +1,149 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run sickness plot"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='src/run_sickness_examples')
+    parser.add_argument('sickness', action='store',
+                        help='Sickness file')
+    parser.add_argument('lconversion', action='store',
+                        help='Locus to Uniprot file')
+    parser.add_argument('genome', action='store',
+                        help='Genome in GenBank format')
+    parser.add_argument('complexes', action='store',
+                        help='Complexes file')
+    parser.add_argument('outfile', action='store',
+                        help='output file')
+
+    parser.add_argument('--complex', action='append',
+                        nargs='+',
+                        help='Complex to plot')
+    parser.add_argument('--cname', action='append',
+                        nargs='+',
+                        help='Complex name')
+
+    parser.add_argument('--width', action='store',
+                        type=float,
+                        default=3.5,
+                        help='Figure width [Default: 3.5 inches]')
+    parser.add_argument('--height', action='store',
+                        type=float,
+                        default=1.5,
+                        help='Figure height [Default: 1.5 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=90,
+                        help='DPI [Default: 90]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+    from Bio import SeqIO
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib.patches as patches
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=18)
+    plt.rc('legend', fontsize=8)
+
+    m = pd.read_table(options.sickness)
+    m.set_index('prot', inplace=True)
+    m[np.isnan(m)] = 0
+        
+    k = {x.split('\t')[0]:x.rstrip().split('\t')[1]
+         for x in open(options.lconversion)}
+
+    names = {}
+    for s in SeqIO.parse(options.genome, 'genbank'):
+        for f in s.features:
+            if f.type != 'CDS':
+                continue
+            locus = f.qualifiers.get('locus_tag', [''])[0]
+            name = f.qualifiers.get('gene', [locus])[0]
+            names[k.get(locus, locus)] = name
+
+    p = {}
+    for l in open(options.complexes):
+        if l.startswith('#'):
+            continue
+        gene, cpx = l.rstrip().split('\t')
+        p[cpx] = p.get(cpx, set())
+        p[cpx].add(k.get(gene, gene))
+
+    agenes = []
+    row_colors = []
+    for cpx, color in zip(options.complex, sns.color_palette('Set2',
+                                                            len(options.complex))):
+        for gene in m.loc[p[cpx[0]]].T.corr().sum().sort_values(ascending=False).index:
+            agenes.append(gene)
+            row_colors.append(color)
+
+        pp = sns.diverging_palette(217, 76, l=89, n=100,
+                                 center="dark",
+                                 as_cmap=True)
+
+    cmap = sns.diverging_palette(217, 76, l=89, n=100,
+                                 center="dark",
+                                 as_cmap=True)    
+
+    h = sns.clustermap(m.loc[agenes].T.corr(),
+                       cmap=cmap,
+                       vmax=1,
+                       vmin=-1,
+                       figsize=(options.width,
+                                options.height),
+                       row_colors=row_colors);
+
+    h.ax_heatmap.set_ylabel('Genes')
+    h.ax_heatmap.set_yticklabels([names.get(x.get_text(), x.get_text())
+                       for x in h.ax_heatmap.get_yticklabels()],
+                      rotation=0,
+                      size=7)
+    h.ax_heatmap.set_xticks([])
+    h.ax_heatmap.set_xlabel('')
+    for t in h.ax_heatmap.artists:
+        t.set_rasterized(True)
+    h.ax_col_dendrogram.clear()
+    h.ax_col_dendrogram.axis('off')
+    h.cax.clear()
+    h.cax.axis('off')
+    handles = []
+    for color, label in zip(sns.color_palette('Set2',
+                                              len(options.complex)),
+                            options.cname):
+        handles.append(patches.Patch(color=color, label=label[0]))
+    legend = h.ax_heatmap.legend(handles=handles,
+                        loc='lower center',
+                        bbox_to_anchor=(0.45, -0.37),
+                        title='Complexes',
+                        frameon=True,
+                        ncol=2,
+                        labelspacing=0.2,
+                        columnspacing=0.2)
+    ltext  = legend.get_texts()
+    plt.setp(ltext, fontsize=7)
+    plt.savefig(options.outfile, dpi=options.dpi)
