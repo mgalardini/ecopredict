@@ -1,0 +1,141 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Collect follow up experiments"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='collect_follow_up')
+
+    parser.add_argument('index', action='store',
+                        help='plate index')
+    parser.add_argument('folder', action='store',
+                        help='data folder')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def median(data):
+    '''
+    Get the median of the input data
+    
+    Works with columns extracted from a Pandas DataFrame
+    '''
+    import numpy as np
+
+    data = np.ma.masked_array(data.as_matrix(),
+                   np.isnan(data.as_matrix()))
+    
+    return np.ma.median(data)
+
+def plate_middle_mean(df, param):
+    '''
+    Calculates the Plate Middle Mean
+
+    Mean of central colonies in the 40-60 sizes percentiles
+    '''
+    import numpy as np
+    from scipy.stats.mstats import mquantiles
+
+    data = df[(df.row > 1) &
+              (df.row < 16) &
+              (df.column > 1) &
+              (df.column < 24)][param].values.flatten()
+
+    data = np.ma.masked_array(data)
+
+    Q1, Q2 = mquantiles(data,
+                        prob=[0.40, 0.60])
+
+    return data[(data >= Q1) & (data <= Q2)].mean()
+
+def normalize_outer(df,
+                    param=None,
+                    pmm=False):
+    '''
+    Bring the outer colonies to the center median
+    
+    Takes in input a dataframe generated from an Iris file
+    if plate_middle_mean is set, the EMAP approach will be used
+    '''
+    if param is None:
+        param = df.name
+    if not pmm:
+        inner_median = median(df[(df.row > 1) &
+                                (df.row < 16) &
+                                (df.column > 1) &
+                                (df.column < 24)][param])
+    else: 
+        inner_median = plate_middle_mean(df, param=param)
+
+    outer_median = median(df[(df.row < 2) |
+                            (df.row > 15) |
+                            (df.column < 2) |
+                            (df.column > 23)][param])
+    
+    outer_size = df[(df.row < 2) |
+                   (df.row > 15) |
+                   (df.column < 2) |
+                   (df.column > 23)][param]
+    
+    df.ix[(df.row < 2) |
+         (df.row > 15) |
+         (df.column < 2) |
+         (df.column > 23), param] =  outer_size * (
+                 inner_median/outer_median
+                 )
+
+    return df[param]
+
+if __name__ == "__main__":
+    import os
+    import sys
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+
+    options = get_options()
+
+    idx = pd.read_table(options.index) 
+
+    files = []
+    for d in os.listdir(options.folder):
+        if not os.path.isdir(os.path.join(options.folder, d)):
+            continue
+        for f in os.listdir(os.path.join(options.folder, d)):
+            files.append(os.path.join(options.folder, d, f))
+
+    m = None
+    times = set()
+    for f in files:
+        df = pd.read_table(f,
+                           skiprows=6)
+        df = pd.merge(idx, df, how='outer').drop('info', axis=1)
+        _ = normalize_outer(df, param='size')
+        s = df.set_index(['row', 'column', 'strain'])['size']
+        time = int(os.path.split(os.path.split(f)[0])[-1].replace('hrs', ''))
+        times.add(time)
+        cond = os.path.split(f)[-1].split('_')[0]
+        rep = int(os.path.split(f)[-1].split('_')[1].split('.')[0])
+        s.name = (cond, time, rep)
+        if m is None:
+            m = pd.DataFrame(s)
+        else:
+            m = m.join(s)
+
+    m = m.reset_index().drop([('row', '', ''),
+                              ('column', '', '')],
+                             axis=1).set_index('strain')
+
+    m.columns.names = ['condition', 'time', 'replica']
+
+    last_time = sorted(times)[-1]
+
+    m.xs(last_time, axis=1, level='time').to_csv(sys.stdout, sep='\t')

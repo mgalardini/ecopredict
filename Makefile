@@ -10,6 +10,7 @@ SUBMIT = eval
 
 SRCDIR = $(CURDIR)/src
 INPUT = $(CURDIR)/input
+FOLLOW = $(INPUT)/follow_up
 CHEMICAL = $(INPUT)/chemical
 PHENOTYPEDIR = $(CHEMICAL)/phenotypes
 PHENOTYPESTRAINSDIR = $(CHEMICAL)/strains
@@ -113,6 +114,9 @@ NONSYNCOUNT = $(INPUT)/strains_nonsyn.txt
 PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
 EVOLUTION = $(INPUT)/evolution_experiment.txt
 OUTGROUPS = $(INPUT)/outgroups.txt
+
+FINDEX = $(FOLLOW)/384.txt
+FOUT = $(FOLLOW)/follow_up.txt
 
 SCREENING = $(CHEMICAL)/emap.matrix.txt
 SCREENINGFDR = $(CHEMICAL)/emap.fdr.txt
@@ -487,6 +491,13 @@ $(ASSOCIATIONDATA): $(FIXEDPANGENOME) $(PHENOTYPEDIRDONE)
 	  $(SUBMIT) "python ../Scoary/scoary.py -t $$i -g $(FIXEDPANGENOME) -r $(PHENOTYPESTRAINSDIR)/$$(basename $$i) --no-time -c I"; \
 	done && touch $@
 
+###############
+## Follow up ##
+###############
+
+$(FOUT): $(FINDEX)
+	$(SRCDIR)/collect_follow_up $< $(FOLLOW) > $@
+
 ##########################
 ## Plot data generation ##
 ##########################
@@ -539,7 +550,7 @@ $(CORRELATIONPLOT): $(PROFILEDATA)
 	$(SRCDIR)/run_sickness_correlation $(SICKNESSDIR)/pcorr1.tsv $@ --width 3.5 --height 3.5 --dpi 300
 
 $(EXAMPLESPLOT): $(SICKNESS) $(CONVERSION) $(GENOME) $(COMPLEXESORIG) 
-	$(SRCDIR)/run_sickness_examples $(SICKNESSDIR)/123456/all.txt $(CONVERSION) $(GENOME) $(COMPLEXESORIG) $@ --complex CPLX0-7725 --complex CPLX0-7805 --complex CPLX0-231 --complex CPLX0-1721 --complex ABC-58-CPLX --complex CPLX0-2081 --cname "CRISPR cascade" --cname "Aldehyde dehydrogenase" --cname "Galactitol PTS permease" --cname "Copper/Silver exporter" --cname "Autoinducer transporter" --cname "Dihydroxyacetone kinase" --width 3.5 --height 3.5 --dpi 150
+	$(SRCDIR)/run_sickness_examples $(SICKNESSDIR)/123456/all.txt $(CONVERSION) $(GENOME) $(COMPLEXESORIG) $@ --complex CPLX0-7725 --complex CPLX0-231 --complex EIISGC --complex CPLX0-1721 --complex ABC-58-CPLX --complex CPLX0-2081 --cname "CRISPR cascade" --cname "Galactitol PTS permease" --cname "Predicted PTS permease" --cname "Copper/Silver exporter" --cname "Autoinducer transporter" --cname "Dihydroxyacetone kinase" --width 3.5 --height 3.5 --dpi 150
 
 $(ROCPLOT): $(PROFILEDATA)
 	$(SRCDIR)/run_sickness_roc $(SICKNESSDIR)/bench.json $@ --width 3.5 --height 3.5 --dpi 90
@@ -627,6 +638,7 @@ auc: $(AUCDATA)
 bootstraps: $(BOOTSTRAPSDATA)
 collect: $(COLLECTBOOTSTRAPS)
 associations: $(ASSOCIATIONDATA)
+followup: $(FOUT)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(EXAMPLESPLOT) $(ANNOTATIONPLOT) \
@@ -641,4 +653,4 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(EXAMPLEROCPLOT)
 figures: $(FIGUREA) $(FIGUREB) $(FIGURED) $(FIGUREE)
 
-.PHONY: constraints sickness score auc bootstraps collect associations plots figures
+.PHONY: constraints sickness score auc bootstraps collect associations followup plots figures
