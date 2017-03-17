@@ -1,0 +1,309 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+def get_options():
+    import argparse
+    import sys
+
+    # create the top-level parser
+    description = "In-silico mutation"
+    parser = argparse.ArgumentParser(description = description,
+                                     prog = 'simulate_mutations')
+
+    parser.add_argument('probabilities', action='store',
+                        help='Deleterious probabilities file')
+    parser.add_argument('deletion', action='store',
+                        help='Deletion experiment important genes (conditions -> genes)')
+    parser.add_argument('predictions', action='store',
+                        help='Predicted growth score file')
+    parser.add_argument('matrix', action='store',
+                        help='Phenotypes matrix')
+    parser.add_argument('condition', action='store',
+                        help='Condition to mutate')
+
+    parser.add_argument('--conversion', action='store',
+                        default=None,
+                        help='ECK to uniprot identifiers')
+    parser.add_argument('--lconversion', action='store',
+                        default=None,
+                        help='Locus to uniprot identifiers')
+    parser.add_argument('--uncommon', action='store',
+                        default=None,
+                        help='Accessory genes to exclude from gene sets')
+    parser.add_argument('--pseudocount', action='store',
+                        type=float,
+                        default=0.01,
+                        help='Pseudocount [Default: 0.01]')
+    
+    parser.add_argument('--fdr', action='store',
+                        default=None,
+                        help='FDR correction matrix (triggers weighted scoring)')
+    parser.add_argument('--conditions', action='store',
+                        default=None,
+                        help='Conditions conversion (might be necessary if --fdr called)')
+
+    parser.add_argument('--linear', action='store_true',
+                        default=False,
+                        help='Linear addition of P(AF), instead of logaritmic')
+    parser.add_argument('--uncorrected', action='store_true',
+                        default=False,
+                        help='Do not apply genome-wide correction')
+    parser.add_argument('--mean', action='store_true',
+                        default=False,
+                        help='Mean log P(AF) score, correcting for gene set sizes')
+    parser.add_argument('--minimum', action='store',
+                        type=int,
+                        default=None,
+                        help='Minimum gene set size')
+    parser.add_argument('--maximum', action='store',
+                        type=int,
+                        default=None,
+                        help='Maximum gene set size')
+    parser.add_argument('--benchmark', action='store',
+                        choices=['shuffle', 'random'],
+                        default=None,
+                        help='Shuffle/Randomize the gene sets members')
+    
+    parser.add_argument('--version', action='version',
+                         version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+def expected(values, pseudo):
+    return sum(np.log(1 - values + pseudo))/values.shape[0]
+
+def score(values, genes, pseudo):
+    return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
+        pseudo))
+        
+def score_mean(values, genes, pseudo):
+    return sum(np.log(1 - values.loc[genes].dropna() + pseudo)/expected(values,
+        pseudo))/len(genes)
+
+def expected_linear(values, pseudo):
+    return sum((values + pseudo))/values.shape[0]
+
+def score_linear(values, genes, pseudo):
+    return sum((values.loc[genes].dropna() + pseudo)/expected_linear(values,
+        pseudo))
+
+def score_mean_linear(values, genes, pseudo):
+    return sum(values.loc[genes].dropna() + pseudo)/len(genes)
+
+def score_uncorrected(values, genes, pseudo):
+    return -sum(np.log(1 - values.loc[genes].dropna() + pseudo))
+
+def weighted_score(values, genes, pvals, gsum, gmax, pseudo):
+    corr = -(np.log10(pvals.dropna()).replace([np.inf, -np.inf], np.nan).dropna() * gsum) / gmax
+    logvalues = (np.log(1 - values.loc[genes].dropna() + 0.0).dropna().T * corr).dropna().T
+    return sum(logvalues/expected(values,
+                                  pseudo))
+
+if __name__ == "__main__":
+    import sys
+    import random
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+
+    options = get_options()
+
+    conversion = {}
+    if options.conversion:
+        conversion = {x.split()[0]:x.rstrip().split()[1]
+                      for x in open(options.conversion)}
+    lconversion = {}
+    if options.lconversion:
+        lconversion = {x.split()[0]:x.rstrip().split()[1]
+                      for x in open(options.lconversion)}
+    uncommon = {}
+    if options.uncommon:
+        uncommon = {lconversion.get(x.rstrip(), x.rstrip())
+                    for x in open(options.uncommon)}
+    deletion = {x.split()[0]:{conversion.get(y.split('-')[0], y.split('-')[0])
+                              for y in x.rstrip().split('\t')[1].split()
+                              if conversion.get(y.split('-')[0], y.split('-')[0]) not in uncommon}
+                for x in open(options.deletion)
+                if len(x.split()) > 1}
+
+    if options.benchmark is not None:
+        if options.benchmark == 'shuffle':
+            # TODO: handle genes that are in multiple sets
+            all_genes = []
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                for gene in v:
+                    all_genes.append(gene)
+            random.shuffle(all_genes)
+            new_deletion = {}
+            i = 0
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                new_deletion[k] = all_genes[i:i+len(v)]
+                i += len(v)
+        else:
+            # TODO: simulate gene sets w/ same level of duplications as the real ones
+            all_genes = conversion.values()
+            new_deletion = {}
+            for k,v in deletion.items():
+                if options.minimum is not None:
+                    if len(v) < options.minimum:
+                        continue
+                if options.maximum is not None:
+                    if len(v) > options.maximum:
+                        continue
+                new_deletion[k] = []
+                while len(new_deletion[k]) < len(v):
+                    gene = random.choice(all_genes)
+                    if gene not in new_deletion[k]:
+                        new_deletion[k].append( gene )
+        deletion = new_deletion
+
+    m = pd.read_table(options.probabilities)
+    m.set_index('prot', inplace=True)
+    m[np.isnan(m)] = 0.
+
+    max_sickness = max([0.99, m.values.flatten().max()])
+
+    df = m.copy()
+
+    if options.fdr is not None:
+        f = pd.read_table(options.fdr)
+        f.set_index(f.columns[0], inplace=True)
+        g = pd.read_table(options.fdr)
+        g.set_index(g.columns[0], inplace=True)
+        g[g > 0.05] = 9999
+        g[g <= 0.05] = 1
+        g[g == 9999] = 0
+
+        f.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in f.index]
+        g.index = [conversion.get(x.split('-')[0],
+                                  x.split('-')[0])
+                   for x in g.index]
+
+        g = g.T.sum() / g.shape[1]
+
+        gmax = pd.Series(
+                -np.log10(f.values.flatten())
+                ).replace([np.inf,
+                           -np.inf],
+                           np.nan).dropna().max() * g.max()
+
+        conditions = {x.rstrip().split()[0]: x.rstrip().split()[1]
+                      for x in open(options.conditions)}
+
+    s = pd.read_table(options.predictions)
+    s.set_index(s.columns[0], inplace=True)
+    s.index.name = 'condition'
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0], inplace=True)
+
+    all_genes = set(m.index)
+
+    c = options.condition
+    
+    strains = set(a[c].dropna().index).intersection(m.columns)
+    genes = deletion[c]
+    if options.minimum is not None:
+        if len(genes) < options.minimum:
+            sys.exit(0)
+    if options.maximum is not None:
+        if len(genes) > options.maximum:
+            sys.exit(0)
+    for gene in genes:
+        if gene not in all_genes:
+            continue
+        for strain in strains:
+            tmp = m.loc[gene, strain]
+            if tmp == 0.0:
+                print('\t'.join((c,
+                                 gene,
+                                 strain,
+                                 '0.0', '0.0', '0.0',
+                                 '0.0', '0.0')))
+                continue
+            m.loc[gene, strain] = 0.0
+
+            df.loc[set(genes).intersection(all_genes), strain] = [max_sickness for x in range(len(set(genes).intersection(all_genes)))]
+
+            index = [strain] + list(set(strains) - set((strain)))
+
+            try:
+                if not options.linear and not options.uncorrected and not options.mean and not options.fdr:
+                    p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+                    q = df.apply(score, genes=genes, pseudo=options.pseudocount)
+                elif options.fdr is not None:
+                    if conditions.get(c, None) is None:
+                        continue
+                    c1 = conditions[c]
+                    p = m.apply(weighted_score,
+                                genes=genes,
+                                pvals=f[c1].loc[genes],
+                                gsum=g.loc[genes],
+                                gmax=gmax,
+                                pseudo=options.pseudocount)
+                    q = df.apply(weighted_score,
+                                genes=genes,
+                                pvals=f[c1].loc[genes],
+                                gsum=g.loc[genes],
+                                gmax=gmax,
+                                pseudo=options.pseudocount)
+                elif options.linear and options.mean:
+                    p = m.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
+                    q = df.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
+                elif options.linear:
+                    p = m.apply(score_linear, genes=genes, pseudo=options.pseudocount)
+                    q = df.apply(score_linear, genes=genes, pseudo=options.pseudocount)
+                elif options.uncorrected:
+                    p = m.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
+                    q = df.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
+                elif options.mean:
+                    p = m.apply(score_mean, genes=genes, pseudo=options.pseudocount)
+                    q = df.apply(score_mean, genes=genes, pseudo=options.pseudocount)
+                else:
+                    p = []
+                    q = []
+                p = pd.DataFrame(p).T
+                p.index = [c]
+                q = pd.DataFrame(q).T
+                q.index = [c]
+            except KeyError:
+                # Very rare, means that none of the genes was found
+                m.loc[gene, strain] = tmp
+                continue
+
+            dscore = p.loc[c, strain] - s.loc[c, strain]
+            pscore = dscore/s.loc[c].max()
+            qscore = dscore/q.loc[c, strain]
+
+            rank = stats.rankdata(s.loc[c, index], 'min')
+            orank = rank[0]
+            nrank = stats.rankdata(p.loc[c, index], 'min')[0]
+            drank = nrank - orank
+            prank = drank/float(rank.max())
+
+            print('\t'.join((c,
+                             gene,
+                             strain,
+                             str(dscore),
+                             str(pscore),
+                             str(qscore),
+                             str(drank),
+                             str(prank))))
+            m.loc[gene, strain] = tmp
+            df.loc[set(genes).intersection(all_genes), strain] = m.loc[set(genes).intersection(all_genes), strain]

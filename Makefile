@@ -115,8 +115,12 @@ PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
 EVOLUTION = $(INPUT)/evolution_experiment.txt
 OUTGROUPS = $(INPUT)/outgroups.txt
 
+# Follow-up
+SIMULATIONS = $(SICKNESSDIR)/123456/simulate/.simulations.done
 FINDEX = $(FOLLOW)/384.txt
 FOUT = $(FOLLOW)/follow_up.txt
+FSTRAINS = $(FOLLOW)/strains.txt
+FEXPERIMENT = $(FOLLOW)/experiments.txt
 
 SCREENING = $(CHEMICAL)/emap.matrix.txt
 SCREENINGFDR = $(CHEMICAL)/emap.fdr.txt
@@ -198,6 +202,11 @@ EXAMPLE1APLOT = $(PLOTDIR)/example_1a.svg
 EXAMPLE2APLOT = $(PLOTDIR)/example_2a.svg
 EXAMPLE3APLOT = $(PLOTDIR)/example_3a.svg
 EXAMPLEROCPLOT = $(PLOTDIR)/example_roc.svg
+FOVERALLPLOT = $(PLOTDIR)/overall_followup.svg
+FSIMULATIONPLOT = $(PLOTDIR)/simulation.svg
+FEXAMPLE1 = $(PLOTDIR)/fexample_1.svg
+FEXAMPLE2 = $(PLOTDIR)/fexample_2.svg
+FEXAMPLE3 = $(PLOTDIR)/fexample_3.svg
 
 # Manually-generated plots and figures
 EXAMPLE1 = $(EXAMPLEDIR)/example_1.svg
@@ -208,6 +217,9 @@ ARROW = $(SCHEMEDIR)/arrow.svg
 SCHEMESICKNESS = $(SCHEMEDIR)/gene_sickness.svg
 SCHEMEPHENOTYPES = $(SCHEMEDIR)/phenotypes.svg
 SCHEMEPREDICTIONS = $(SCHEMEDIR)/prediction.svg
+FSCHEME = $(SCHEMEDIR)/follow_up.svg
+FSTRUCTURE = $(SCHEMEDIR)/structure.svg
+FLEGEND = $(SCHEMEDIR)/legend.svg
 
 # Figures
 FIGUREA = $(FIGUREDIR)/figure_1.svg
@@ -217,6 +229,7 @@ FIGUREBACC = $(FIGUREDIR)/figure_2_acc.svg
 FIGUREC = $(FIGUREDIR)/figure_3.svg
 FIGURED = $(FIGUREDIR)/figure_4.svg
 FIGUREE = $(FIGUREDIR)/figure_5.svg
+FIGUREF = $(FIGUREDIR)/figure_6.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -495,6 +508,12 @@ $(ASSOCIATIONDATA): $(FIXEDPANGENOME) $(PHENOTYPEDIRDONE)
 ## Follow up ##
 ###############
 
+$(SIMULATIONS): $(SICKNESS) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETIONFDR) $(SHARED) $(SCORE) $(SCREENING)
+	mkdir -p $(SICKNESSDIR)/123456/simulate
+	for condition in $$(awk '{print $$1}' $(SHARED)); do \
+	  $(SUBMIT) "$(SRCDIR)/simulate_mutations $(SICKNESSDIR)/123456/all.txt $(CHEMICAL)/deletion.all.genes.2.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $$condition --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 --fdr $(DELETIONFDR) --conditions $(SHARED) > $(SICKNESSDIR)/123456/simulate/$$condition"; \
+	done && touch $@
+
 $(FOUT): $(FINDEX)
 	$(SRCDIR)/collect_follow_up $< $(FOLLOW) > $@
 
@@ -611,6 +630,21 @@ $(EXAMPLE2PLOT): $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREEN
 $(EXAMPLEROCPLOT): $(AUCDATA)
 	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
+$(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
+	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3 --height 1.5 --dpi 90
+
+$(FSIMULATIONPLOT): $(SIMULATIONS) $(ECKFILE) $(GENOME) 
+	src/run_silver_bullets $(SICKNESSDIR)/123456/simulate $(ECKFILE) $(GENOME) $@ --width 3.5 --height 1.5 --dpi 90
+
+$(FEXAMPLE1): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
+	$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" acrB $@ --width 0.75 --height 2 --dpi 90
+
+$(FEXAMPLE2): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
+	$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate PYOCYANIN.10 "Pyocyanin 10 ug/ml" soxSR $@ --width 0.75 --height 2 --dpi 90
+
+$(FEXAMPLE3): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
+	$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate MOPSN.LGLUTAMINE "L-Glutamine 4.6 nM" proAB $@ --width 0.75 --height 2 --dpi 90
+
 #############
 ## Figures ##
 #############
@@ -627,6 +661,9 @@ $(FIGURED): $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PDISTANCE) $(EXAMPLE2)
 $(FIGUREE): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT)
 	$(SRCDIR)/run_figure_e $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(ASSOCIATIONPLOT) $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT) $@
 
+$(FIGUREF): $(FSCHEME) $(FSTRUCTURE) $(FLEGEND) $(FOVERALLPLOT) $(FSIMULATIONPLOT) $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) 
+	$(SRCDIR)/run_figure_f $(FSCHEME) $(FSTRUCTURE) $(FSIMULATIONPLOT) $(FOVERALLPLOT) $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) $(FLEGEND) $@
+
 ########################
 ## Targets definition ##
 ########################
@@ -638,7 +675,7 @@ auc: $(AUCDATA)
 bootstraps: $(BOOTSTRAPSDATA)
 collect: $(COLLECTBOOTSTRAPS)
 associations: $(ASSOCIATIONDATA)
-followup: $(FOUT)
+followup: $(SIMULATIONS) $(FOUT)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(EXAMPLESPLOT) $(ANNOTATIONPLOT) \
@@ -650,7 +687,9 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) \
        $(EXAMPLE1PLOT) \
        $(EXAMPLE2PLOT) \
-       $(EXAMPLEROCPLOT)
-figures: $(FIGUREA) $(FIGUREB) $(FIGURED) $(FIGUREE)
+       $(EXAMPLEROCPLOT) \
+       $(FOVERALLPLOT) $(FSIMULATIONPLOT) \
+       $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3)
+figures: $(FIGUREA) $(FIGUREB) $(FIGURED) $(FIGUREE) $(FIGUREF)
 
 .PHONY: constraints sickness score auc bootstraps collect associations followup plots figures

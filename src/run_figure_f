@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Create figure 4"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_figure_f')
+                                     
+    parser.add_argument('scheme')
+    parser.add_argument('structure')
+    parser.add_argument('simulation')
+    parser.add_argument('overall')
+    parser.add_argument('example1')
+    parser.add_argument('example2')
+    parser.add_argument('example3')
+    parser.add_argument('legend')
+    parser.add_argument('outfile',
+                        help='output (including extension)')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+    import svgutils.transform as sg
+
+    fig = sg.SVGFigure("10in", "8in")
+
+    fig1 = sg.fromfile(options.scheme)
+    fig2 = sg.fromfile(options.structure)
+    fig3 = sg.fromfile(options.simulation)
+    fig4 = sg.fromfile(options.overall)
+    fig5 = sg.fromfile(options.example1)
+    fig6 = sg.fromfile(options.example2)
+    fig7 = sg.fromfile(options.example3)
+    fig8 = sg.fromfile(options.legend)
+
+    plot1 = fig1.getroot()
+    plot1.moveto(25, 25, scale=1.75)
+    plot2 = fig2.getroot()
+    plot2.moveto(520, 25, scale=0.9)
+    plot3 = fig3.getroot()
+    plot3.moveto(0, 220, scale=1)
+    plot4 = fig4.getroot()
+    plot4.moveto(270, 220, scale=1)
+    plot5 = fig5.getroot()
+    plot5.moveto(0, 380, scale=1)
+    plot6 = fig6.getroot()
+    plot6.moveto(500, 380, scale=1)
+    plot7 = fig7.getroot()
+    plot7.moveto(-35, 550, scale=1)
+    plot8 = fig8.getroot()
+    plot8.moveto(740, 550, scale=1)
+
+    txt1 = sg.TextElement(0,  25, "A)", size=12, weight="bold")
+    txt2 = sg.TextElement(0, 220, "B)", size=12, weight="bold")
+    txt3 = sg.TextElement(270, 220, "C)", size=12, weight="bold")
+    txt4 = sg.TextElement(0, 380, "D)", size=12, weight="bold")
+    txt5 = sg.TextElement(490, 380, "E)", size=12, weight="bold")
+    txt6 = sg.TextElement(0, 550, "F)", size=12, weight="bold")
+    txt7 = sg.TextElement(520, 25, "G)", size=12, weight="bold")
+
+    fig.append([plot1,
+                plot2,
+                plot3,
+                plot4,
+                plot5,
+                plot6,
+                plot7,
+                plot8,
+               ])
+    fig.append([txt1,
+                txt2,
+                txt3,
+                txt4,
+                txt5,
+                txt6,
+                txt7,
+               ])
+
+    fig.save(options.outfile)
