@@ -70,29 +70,44 @@ if __name__ == "__main__":
               for x in open(options.pangenome)
               if x.rstrip().split()[0] in strains}
     mreference = max(reference)
+    target = {int(x.rstrip().split()[3])
+              for x in open(options.pangenome)
+              if x.rstrip().split()[0] in strains}
+    mtarget = max(target)
 
     plt.figure(figsize=(options.width, options.height))
 
-    plt.subplot(121)
+    plt.subplot(131)
     gradient = np.linspace(0, mnonsyn, mnonsyn)
     gradient = np.vstack((gradient, gradient))
     plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Blues'),
                vmax=mnonsyn)
 
-    plt.xticks(range(0, mnonsyn, mnonsyn/5),
-               [str(x) for x in range(0, mnonsyn, mnonsyn/5)])
+    plt.xticks((0, mnonsyn/2, mnonsyn),
+               [str(x) for x in (0, mnonsyn/2, mnonsyn)])
     plt.yticks([])
     plt.title('Non-syn. mutations')
 
-    plt.subplot(122)
+    plt.subplot(132)
     gradient = np.linspace(0, mreference, mreference)
     gradient = np.vstack((gradient, gradient))
     plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Greens'),
                vmax=mreference)
 
-    plt.xticks(range(0, mreference, mreference/6),
-               [str(x) for x in range(0, mreference, mreference/6)])
+    plt.xticks((0, mreference/2, mreference),
+               [str(x) for x in (0, mreference/2, mreference)])
     plt.yticks([])
     plt.title('Missing reference genes')
 
+    plt.subplot(133)
+    gradient = np.linspace(0, mtarget, mtarget)
+    gradient = np.vstack((gradient, gradient))
+    plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Purples'),
+               vmax=mtarget)
+
+    plt.xticks((0, mtarget/2, mtarget),
+               [str(x) for x in (0, mtarget/2, mtarget)])
+    plt.yticks([])
+    plt.title('Additional genes')
+    
     plt.savefig(options.outfile, dpi=options.dpi)

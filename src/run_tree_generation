@@ -132,7 +132,7 @@ if __name__ == "__main__":
                                 (max(reference.values()))+1))}
     tcolor = {x:y
               for x,y in zip(range((max(target.values()))+1),
-                            sns.color_palette('Reds',
+                            sns.color_palette('Purples',
                                 (max(target.values()))+1))}
 
     ref = NodeStyle()
@@ -154,6 +154,11 @@ if __name__ == "__main__":
                          colors.rgb2hex(rcolor[reference.get(n.name, 0)]),)
             n.add_face(r, 1,
                        position="aligned")
+            r = RectFace(10, 3,
+                         colors.rgb2hex(tcolor[target.get(n.name, 0)]),
+                         colors.rgb2hex(tcolor[target.get(n.name, 0)]),)
+            n.add_face(r, 2,
+                       position="aligned")
         else:
             r = RectFace(10, 3,
                          sns.xkcd_rgb['light red'],
@@ -164,6 +169,11 @@ if __name__ == "__main__":
                          sns.xkcd_rgb['light red'],
                          sns.xkcd_rgb['light red'],)
             n.add_face(r, 1,
+                       position="aligned")
+            r = RectFace(10, 3,
+                         sns.xkcd_rgb['light red'],
+                         sns.xkcd_rgb['light red'],)
+            n.add_face(r, 2,
                        position="aligned")
         if n.name in evol:
             ev = NodeStyle()

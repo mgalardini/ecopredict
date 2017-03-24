@@ -114,9 +114,6 @@ if __name__ == "__main__":
 
             cond, gene, prots, ref, refp, dels, delsp, targets, targetsp = exp[exp.condition == cond].values[num]
 
-            if gene == 'glnD':
-                continue
-            
             res = []
             ranks = []
             for v in df.loc[ref, (cond, '1')]:

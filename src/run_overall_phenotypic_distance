@@ -1,0 +1,131 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Run phenotypes plots"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_overall_phenotypic_distance')
+    parser.add_argument('matrix', action='store',
+                        help='matrix file')
+    parser.add_argument('fdr', action='store',
+                        help='fdr file')
+    parser.add_argument('tree', action='store',
+                        help='tree file')
+    parser.add_argument('outfile', action='store',
+                        help='Output file')
+
+    parser.add_argument('--size', action='store',
+                        type=int,
+                        default=1,
+                        help='Figure size multiplier [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+    
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+    from Bio import Phylo
+    import itertools
+    from nadist.pure.spatial import euclidean_pdist
+    from scipy.spatial.distance import pdist, squareform
+
+    options = get_options()
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    plt.rc('font', size=8)
+    plt.rc('xtick', labelsize=8)
+    plt.rc('ytick', labelsize=8)
+    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('legend', fontsize=8)
+
+    t = Phylo.read(options.tree, 'newick')
+    ref = None
+    for x in t.get_terminals():
+        x.name = x.name.split('_')[0]
+        if 'genome' in x.name:
+            x.name = 'NT12001'
+            ref = x
+    strains = {x.name for x in t.get_terminals()}
+
+    a = pd.read_table(options.matrix)
+    a.set_index(a.columns[0],
+                inplace=True)
+    f = pd.read_table(options.fdr)
+    f.set_index(f.columns[0],
+                inplace=True)
+    a = a.loc[strains]
+    f = f.loc[strains]
+    v = a[a < 0][f < 0.05]
+    v[np.invert(np.isnan(v))] = 1
+    v[np.isnan(v)] = 0
+    v[np.isnan(a)] = np.nan
+
+    p = squareform(euclidean_pdist(a.values))
+    p = pd.DataFrame(p,
+                     index=a.index,
+                     columns=a.index)
+
+    res = []
+    for s1, s2 in itertools.combinations(strains, 2):
+        res.append((s1, s2, t.distance(s1, s2), p.loc[s1, s2]))
+    r = pd.DataFrame(res)
+    r.columns = ['strain1', 'strain2',
+                 'phylo', 'pheno']
+    r.dropna(inplace=True)    
+
+    plt.figure(figsize=(3*options.size,
+                        3*options.size))
+
+    plt.plot(r.phylo,
+             r.pheno,
+             'k.',
+             label='_',
+             alpha=0.01)
+
+    l = stats.linregress(r.phylo,
+                         r.pheno)
+    fn = l.intercept + l.slope * np.linspace(0, r.phylo.max())
+    print(l.rvalue, l.pvalue)
+    x = plt.plot(np.linspace(0, r.phylo.max()),
+             fn,
+             '--',
+             color='grey',
+             label='Pearson\'s r: %.2f' % l.rvalue)
+    x[0].set_rasterized(True)
+
+    plt.legend(loc=(0.05, 1.01),
+               frameon=True)
+
+    plt.xlabel('Phylogenetic distance')
+    plt.ylabel('Phenotypic distance')
+
+    sns.despine()
+    plt.tight_layout()
+
+    plt.savefig(options.outfile,
+                dpi=options.dpi)

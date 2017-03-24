@@ -20,9 +20,12 @@ ASSOCIATIONDIR = $(CURDIR)/associations
 ANNOTATION = $(CURDIR)/annotations
 PLOTDATA = $(CURDIR)/plotdata
 PLOTDIR = $(CURDIR)/plots
+SUPPLOTDIR = $(CURDIR)/plots/supplementary
 SCHEMEDIR = $(CURDIR)/schemes
 EXAMPLEDIR = $(CURDIR)/examples
 FIGUREDIR = $(CURDIR)/figures
+SFIGUREDIR = $(FIGUREDIR)/supplementary
+NOTEBOOKDIR = $(CURDIR)/notebooks
 VEPDIR = $(CURDIR)/strains-scores
 
 ############
@@ -193,6 +196,7 @@ PREPLICATESA = $(PLOTDIR)/p_replicates_all.svg
 PTREEPLOT = $(PLOTDIR)/ptree.svg
 PTREEBARS = $(PLOTDIR)/ptree_colorbars.svg
 CONDITIONSPLOT = $(PLOTDIR)/conditions_auc.svg
+ACONDITIONSPLOT = $(PLOTDIR)/conditions_all_auc.svg
 CATEGORIESPLOT = $(PLOTDIR)/categories_auc.svg
 ASSOCIATIONPLOT = $(PLOTDIR)/association_auc.svg
 EXAMPLE1PLOT = $(PLOTDIR)/example_1.svg
@@ -207,6 +211,7 @@ FSIMULATIONPLOT = $(PLOTDIR)/simulation.svg
 FEXAMPLE1 = $(PLOTDIR)/fexample_1.svg
 FEXAMPLE2 = $(PLOTDIR)/fexample_2.svg
 FEXAMPLE3 = $(PLOTDIR)/fexample_3.svg
+FSUPBAR = $(SUPPLOTDIR)/.supbarplot.done
 
 # Manually-generated plots and figures
 EXAMPLE1 = $(EXAMPLEDIR)/example_1.svg
@@ -230,6 +235,12 @@ FIGUREC = $(FIGUREDIR)/figure_3.svg
 FIGURED = $(FIGUREDIR)/figure_4.svg
 FIGUREE = $(FIGUREDIR)/figure_5.svg
 FIGUREF = $(FIGUREDIR)/figure_6.svg
+
+# Supplementary figures
+SFIGUREA = $(SFIGUREDIR)/sfig1.svg
+SFIGUREB = $(SFIGUREDIR)/sfig2.svg
+SFIGUREC = $(SFIGUREDIR)/sfig3.svg
+SFIGURED = $(SFIGUREDIR)/sfig4.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -554,7 +565,7 @@ $(TREEPLOT): $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT)
 	$(SRCDIR)/run_tree_generation $(TREE) $(EVOLUTION) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 7 --dpi 90
 
 $(TREEBARS): $(TREE) $(NONSYNCOUNT) $(PANGENOMECOUNT)
-	$(SRCDIR)/run_tree_colorbar $(TREE) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 0.3 --width 5.7 --dpi 90
+	$(SRCDIR)/run_tree_colorbar $(TREE) $(NONSYNCOUNT) $(PANGENOMECOUNT) $@ --height 0.3 --width 6 --dpi 90
 
 $(TREELEGEND):
 	$(SRCDIR)/run_tree_legend $@ --height 0.5 --width 2 --dpi 90
@@ -615,6 +626,9 @@ $(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(AS
 
 $(CONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
 	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/1236 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 5.25 --dpi 90 --only-all
+	
+$(ACONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
+	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/1236 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 5.25 --dpi 90
 
 $(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
 	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90
@@ -645,6 +659,14 @@ $(FEXAMPLE2): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GEN
 $(FEXAMPLE3): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
 	$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate MOPSN.LGLUTAMINE "L-Glutamine 4.6 nM" proAB $@ --width 0.75 --height 2 --dpi 90
 
+$(FSUPBAR): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
+	for condition in $$(tail -n+2 $(FEXPERIMENT) | awk '{print $$1}' | sort | uniq); do \
+	  for gene in $$(tail -n+2 $(FEXPERIMENT) | grep "^$$condition" | awk '{print $$2}'); do \
+	    echo $$condition $$gene; \
+	    $(SUBMIT) "$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $$condition "$$condition" $$gene $(SUPPLOTDIR)/$$condition"_"$$gene.svg --width 0.75 --height 2 --dpi 90"; \
+	  done; \
+	done && touch $(FSUPBAR)
+
 #############
 ## Figures ##
 #############
@@ -663,6 +685,28 @@ $(FIGUREE): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(CATEGORIESPLOT) $(ASSOCIATI
 
 $(FIGUREF): $(FSCHEME) $(FSTRUCTURE) $(FLEGEND) $(FOVERALLPLOT) $(FSIMULATIONPLOT) $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) 
 	$(SRCDIR)/run_figure_f $(FSCHEME) $(FSTRUCTURE) $(FSIMULATIONPLOT) $(FOVERALLPLOT) $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) $(FLEGEND) $@
+
+###########################
+## Supplementary figures ##
+###########################
+
+# WARNING: they come as a result of Jupyter Notebooks, so paths are hardcoded
+
+SNOTEBOOKA = $(NOTEBOOKDIR)/sfig1.ipynb
+$(SFIGUREA): $(TREE) $(PANGENOMECOUNT)
+	jupyter nbconvert --to notebook --execute $(SNOTEBOOKA) --output $(SNOTEBOOKA)
+
+SNOTEBOOKB = $(NOTEBOOKDIR)/sfig2.ipynb
+$(SFIGUREB): $(TREE) $(SICKNESS) $(ROCPLOT1) $(ROCPLOT2) $(ROCPLOT3)
+	jupyter nbconvert --to notebook --execute $(SNOTEBOOKB) --output $(SNOTEBOOKB)
+	
+SNOTEBOOKC = $(NOTEBOOKDIR)/sfig3.ipynb
+$(SFIGUREC): $(PREPLICATES) $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR) $(STRAINS) $(DELETION) $(SHARED)
+	jupyter nbconvert --to notebook --execute $(SNOTEBOOKC) --output $(SNOTEBOOKC)
+	
+SNOTEBOOKD = $(NOTEBOOKDIR)/sfig4.ipynb
+$(SFIGURED): $(SCREENING) $(SCREENINGFDR) $(SCORE) $(AUCDATA) $(TREE) $(ACONDITIONSPLOT)
+	jupyter nbconvert --to notebook --execute $(SNOTEBOOKD) --output $(SNOTEBOOKD)
 
 ########################
 ## Targets definition ##
@@ -683,13 +727,15 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CORRELATIONPLOT2) $(ROCPLOT2) $(ANNOTATIONPLOT2) \
        $(ROCPLOT3) $(ANNOTATIONPLOT3) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS) \
-       $(CONDITIONSPLOT) $(PDISTANCE) \
+       $(CONDITIONSPLOT) $(ACONDITIONSPLOT) $(PDISTANCE) \
        $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) \
        $(EXAMPLE1PLOT) \
        $(EXAMPLE2PLOT) \
        $(EXAMPLEROCPLOT) \
        $(FOVERALLPLOT) $(FSIMULATIONPLOT) \
-       $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3)
-figures: $(FIGUREA) $(FIGUREB) $(FIGURED) $(FIGUREE) $(FIGUREF)
+       $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) \
+       $(FSUPBAR)
+figures: $(FIGUREA) $(FIGUREB) $(FIGURED) $(FIGUREE) $(FIGUREF) \
+         $(SFIGUREA) $(SFIGUREB) $(SFIGUREC) $(SFIGURED)
 
 .PHONY: constraints sickness score auc bootstraps collect associations followup plots figures

@@ -44,7 +44,11 @@ def get_options():
 
 
 def plot_condition_sim(cond, num, title):
-    sim = pd.read_table(os.path.join(options.simulate, cond),
+    if cond == 'MECILLINAM':
+        cond1 = 'MECILLINAM.CEPHALEXIN'
+    else:
+        cond1 = cond
+    sim = pd.read_table(os.path.join(options.simulate, cond1),
                   header=None,
                   names=['condition',
                          'gene',
@@ -64,13 +68,19 @@ def plot_condition_sim(cond, num, title):
         res.append((cond, 'BW25113', 'empty', v))
     for v in df.loc[refp, (cond, '1')]:
         res.append((cond, 'BW25113', gene, v))
-    for d, p in zip(dels.split(','), prots.split(',')):
-        tag = 'BW25113\n$\Delta$%s' % en.get(p, p)
+    for d, p, k in zip(dels.split(','), prots.split(','), range(1, len(dels.split(','))+1)):
+        if len(set(prots.split(','))) == 1 and len(dels.split(',')) > 1:
+            tag = 'BW25113\n$\Delta$%s (%d)' % (en.get(p, p), k)
+        else:
+            tag = 'BW25113\n$\Delta$%s' % en.get(p, p)
         order.append(tag)
         for v in df.loc[d, (cond, '1')]:
             res.append((cond, tag, 'empty', v))
-    for d, p in zip(delsp.split(','), prots.split(',')):
-        tag = 'BW25113\n$\Delta$%s' % en.get(p, p)
+    for d, p, k in zip(delsp.split(','), prots.split(','), range(1, len(delsp.split(','))+1)):
+        if len(set(prots.split(','))) == 1 and len(delsp.split(',')) > 1:
+            tag = 'BW25113\n$\Delta$%s (%d)' % (en.get(p, p), k)
+        else:
+            tag = 'BW25113\n$\Delta$%s' % en.get(p, p)
         for v in df.loc[d, (cond, '1')]:
             res.append((cond, tag, gene, v))
     for strain in set(o[(o.condition == cond) &
@@ -154,16 +164,28 @@ def plot_condition_sim(cond, num, title):
                                   (o.srank <= -0.01)].strain))):
         barplot.patches[j].set_color((0.97430555555555542, 0.92812500000000009, 0.92569444444444449, 1.0))
         barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['pale red'])
-    i = j + 1
+    try:
+        i = j + 1
+    except:
+        pass
     for j in range(i, i+len(set(o[(o.condition == cond) &
                                   (o.gene == gene) &
                                   (o.srank > -0.01)].strain))):
-        barplot.patches[j].set_color(sns.xkcd_rgb['pale green'])
-        barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['green'])
-    i = j + 1
+        try:
+            barplot.patches[j].set_color(sns.xkcd_rgb['pale green'])
+            barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['green'])
+        except:
+            pass
+    try:
+        i = j + 1
+    except:
+        pass
     for j in range(j-diff_comp+1, j+1):
-        barplot.patches[j].set_color(sns.xkcd_rgb['pale blue'])
-        barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['light blue'])
+        try:
+            barplot.patches[j].set_color(sns.xkcd_rgb['pale blue'])
+            barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['light blue'])
+        except:
+            barplot.patches[len(set(r.strain))].set_color(sns.xkcd_rgb['grey'])
     
     ph = barplot.get_ylim()[1]
     plt.ylim(0, ph+ph*0.15)
@@ -277,8 +299,8 @@ if __name__ == "__main__":
             df.loc[:, (cond, '1')]
         except KeyError:
             continue
-        if cond in ['MECILLINAM', 'CHIR090.MECILLINAM', 'OXACILLIN.5UM']:
-            continue
+        #if cond in ['MECILLINAM', 'CHIR090.MECILLINAM', 'OXACILLIN.5UM']:
+        #    continue
         for num in range(exp[exp.condition == cond].shape[0]):
             if cond == 'MECILLINAM':
                 cond1 = 'MECILLINAM.CEPHALEXIN'
@@ -297,8 +319,8 @@ if __name__ == "__main__":
 
             cond, gene, prots, ref, refp, dels, delsp, targets, targetsp = exp[exp.condition == cond].values[num]
 
-            if gene == 'glnD':
-                continue
+            #if gene == 'glnD':
+            #    continue
             
             res = []
             ranks = []

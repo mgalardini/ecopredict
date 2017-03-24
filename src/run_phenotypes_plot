@@ -146,7 +146,7 @@ if __name__ == "__main__":
     a3 = pd.read_table(options.emap3)
     a3.set_index(a3.columns[0], inplace=True)
 
-    plt.figure(figsize=(8*options.size, 8*options.size))
+    plt.figure(figsize=(6*options.size, 6*options.size))
 
     plt.subplot(221)
     c = set(a1.columns).intersection(a2.columns)
@@ -518,8 +518,8 @@ if __name__ == "__main__":
     plt.imshow(gradient, aspect='auto', cmap=plt.get_cmap('Purples'),
                vmax=mphen)
 
-    plt.xticks(range(0, mphen, mphen/6),
-               [str(x) for x in range(0, mphen, mphen/6)])
+    plt.xticks(range(0, mphen, int(mphen/6)),
+               [str(x) for x in range(0, mphen, int(mphen/6))])
     plt.yticks([])
     plt.title('Sick strains')
     
