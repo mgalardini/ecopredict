@@ -17,12 +17,12 @@ NT12015	ATCC 700728	0		DSM-17076	Escherichia coli ATCC 700728	PRJNA188364					Co
 NT12016	NRG 857C	0			Escherichia coli O83:H1 str. NRG 857C	PRJNA161987		21108814;18312396;17900983	Crohn's disease patient, Charite, Berlin, Germany		Pathogenic strain	2	Adherent Invasive E. coli (AIEC)
 NT12017	ECOR-01	0			Escherichia coli ECOR-01			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
 NT12018	ECOR-02	0			Escherichia coli ECOR-02			6363394	Human, USA (NY)		Commensal strain	2	Group A strain from a healthy person
-NT12019	ECOR-03	0			Escherichia coli ECOR-03			6363394	Dog, USA (Mass.)		Commensal strain	1	Group A strain from a healthy dog
+NT12019	ECOR-02a	0			Escherichia coli ECOR-02a			6363394	Human, USA (NY)		Commensal strain	2	Was originally ECOR-03, but typing doesn't match
 NT12020	ECOR-04	0			Escherichia coli ECOR-04			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group A strain from a healthy child
-NT12021	ECOR-05	0			Escherichia coli ECOR-05			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
-NT12022	ECOR-06	0			Escherichia coli ECOR-06			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group A strain from a healthy child
-NT12023	ECOR-07	0			Escherichia coli ECOR-07			6363394	Orangutan, USA (Wash.)		Commensal strain	1	Group A strain from a healthy orangutan in captivity
-NT12024	ECOR-08	0			Escherichia coli ECOR-08			6363394	Human, USA (Iowa)		Commensal strain	2	Group A strain from a healthy person
+NT12021	ECOR-04a	0			Escherichia coli ECOR-04a			6363394	Human (child), USA (Iowa)		Commensal strain	1	Was originally ECOR-05, but typing doesn't match
+NT12022	ECOR-06x	0			Escherichia coli ECOR-06x								Was originally ECOR-06, but typing doesn't match
+NT12023	ECOR-07x	0			Escherichia coli ECOR-07x								Was originally ECOR-07, but typing doesn't match
+NT12024	ECOR-08x	0			Escherichia coli ECOR-08x								Was originally ECOR-08, but typing doesn't match
 NT12025	ECOR-09	0			Escherichia coli ECOR-09			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
 NT12026	ECOR-10	0			Escherichia coli ECOR-10			6363394	Human, Sweden		Commensal strain	1	Group A strain from a healthy person
 NT12027	ECOR-11	0			Escherichia coli ECOR-11			6363394	Human, Sweden		Commensal strain	2	Group A strain from a patient with a UTI and acute cystitis
@@ -36,56 +36,56 @@ NT12034	ECOR-18	0			Escherichia coli ECOR-18			6363394	Celebese ape, USA (Wash.)
 NT12035	ECOR-19	0			Escherichia coli ECOR-19			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Group A strain from a healthy Celebese ape in captivity
 NT12036	ECOR-20	0			Escherichia coli ECOR-20			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
 NT12037	ECOR-21	0			Escherichia coli ECOR-21			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
-NT12038	ECOR-22	0			Escherichia coli ECOR-22			6363394	Steer, Bali		Commensal strain	1	Group A strain from a healthy steer
-NT12039	ECOR-23	0			Escherichia coli ECOR-23			6363394	Elephant, USA (Wash.)		Commensal strain	1	Group A strain from a healthy elephant in captivity
+NT12038	ECOR-22x	0			Escherichia coli ECOR-22x								Was originally ECOR-22, but typing doesn't match
+NT12039	ECOR-23x	0			Escherichia coli ECOR-23x								Was originally ECOR-23, but typing doesn't match
 NT12040	ECOR-24	0			Escherichia coli ECOR-24			6363394	Human, Sweden		Commensal strain	2	Group A strain from a healthy person
 NT12041	ECOR-25	0			Escherichia coli ECOR-25			6363394	Dog, USA (NY)		Commensal strain	2	Group A strain from a healthy dog
 NT12042	ECOR-26	0			Escherichia coli ECOR-26			6363394	Human (infant), USA (Mass.)		Commensal strain	1	Group B1 strain from a healthy infant
 NT12043	ECOR-27	0			Escherichia coli ECOR-27			6363394	Giraffe, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy giraffe in captivity
 NT12044	ECOR-28	0			Escherichia coli ECOR-28			6363394	Human (child), USA (Iowa)		Commensal strain	1	Group B1 strain from a healthy child
 NT12045	ECOR-29	0			Escherichia coli ECOR-29			6363394	Kangaroo rat, USA (Nev.)		Commensal strain	1	Group B1 strain from a healthy kangaroo rat
-NT12046	ECOR-30	0			Escherichia coli ECOR-30			6363394	Bison, Canada		Commensal strain	2	Group B1 strain from a healthy bison
-NT12047	ECOR-31	0			Escherichia coli ECOR-31			6363394	Leopard, USA (Wash.)		Commensal strain	2	Group E strain from a healthy leopard in captivity
-NT12048	ECOR-32	0			Escherichia coli ECOR-32			6363394	Giraffe, USA (Wash.)		Commensal strain	1	Group B1 strain from a healthy giraffe in captivity
-NT12049	ECOR-33	0			Escherichia coli ECOR-33			6363394	Sheep, USA (Calif.)		Commensal strain	1	Group B1 strain from a healthy sheep
-NT12050	ECOR-34	0			Escherichia coli ECOR-34			6363394	Dog, USA (Mass.)		Commensal strain	1	Group B1 strain from a healthy dog
-NT12051	ECOR-35	0			Escherichia coli ECOR-35			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
-NT12052	ECOR-36	0			Escherichia coli ECOR-36			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
-NT12053	ECOR-37	0			Escherichia coli ECOR-37			6363394	Marmoset, USA (Wash.)		Commensal strain	2	Group E strain from a healthy marmoset in captivity
+NT12046	ECOR-14a	0			Escherichia coli ECOR-14a			6363394	Human, Sweden		Commensal strain	2	Was originally ECOR-30, but typing doesn't match
+NT12047	ECOR-14b	0			Escherichia coli ECOR-14b			6363394	Human, Sweden		Commensal strain	2	Was originally ECOR-31, but typing doesn't match
+NT12048	ECOR-32x	0			Escherichia coli ECOR-32x								Was originally ECOR-32, but typing doesn't match
+NT12049	ECOR-01a	0			Escherichia coli ECOR-01a			6363394	Human, USA (Iowa)		Commensal strain	2	Was originally ECOR-33, but typing doesn't match
+NT12050	ECOR-34x	0											Was originally ECOR-34, removed genome due to inconsistent typing
+NT12051	ECOR-19a	0			Escherichia coli ECOR-19a			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Was originally ECOR-35, but typing doesn't match
+NT12052	ECOR-36x	0			Escherichia coli ECOR-36x								Was originally ECOR-36, but typing doesn't match
+NT12053	ECOR-38a	0			Escherichia coli ECOR-38a			6363394	Human, USA (Iowa)		Commensal strain	2	Was originally ECOR-37, but typing doesn't match
 NT12054	ECOR-38	0			Escherichia coli ECOR-38			6363394	Human, USA (Iowa)		Commensal strain	2	Group D strain from a healthy person
 NT12055	ECOR-39	0			Escherichia coli ECOR-39			6363394	Human, Sweden		Commensal strain	2	Group D strain from a healthy person
 NT12056	ECOR-40	0			Escherichia coli ECOR-40			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute pyelonephritis
 NT12057	ECOR-41	0			Escherichia coli ECOR-41			6363394	Human, Tonga		Commensal strain	2	Group D strain from a healthy person
 NT12058	ECOR-42	0			Escherichia coli ECOR-42			6363394	Human, USA (Mass.)		Commensal strain	1	Group E strain from a healthy person
-NT12059	ECOR-43	0			Escherichia coli ECOR-43			6363394	Human, Sweden		Commensal strain	2	Group E strain from a healthy person
-NT12060	ECOR-44	0			Escherichia coli ECOR-44			6363394	Cougar, USA (Wash.)		Commensal strain	2	Group D strain from a healthy cougar in captivity
-NT12061	ECOR-45	0			Escherichia coli ECOR-45			6363394	Pig, Indonesia		Commensal strain	1	Group B1 strain from a healthy pig
+NT12059	ECOR-42a	0			Escherichia coli ECOR-42a			6363394	Human, USA (Mass.)		Commensal strain	1	Was originally ECOR-43, but typing doesn't match
+NT12060	ECOR-44x	0			Escherichia coli ECOR-44x								Was originally ECOR-44, but typing doesn't match
+NT12061	ECOR-45x	0			Escherichia coli ECOR-45x								Was originally ECOR-45, but typing doesn't match
 NT12062	ECOR-46	0			Escherichia coli ECOR-46			6363394	Ape, USA (Wash.)		Commensal strain	2	Group D strain from a healthy ape in captivity
-NT12063	ECOR-47	0			Escherichia coli ECOR-47			6363394	Sheep, New Guinea		Commensal strain	2	Group D strain from a healthy sheep
-NT12064	ECOR-48	0			Escherichia coli ECOR-48			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute cystitis
-NT12065	ECOR-49	0			Escherichia coli ECOR-49			6363394	Human, Sweden		Commensal strain	2	Group D strain from a healthy person
+NT12063	ECOR-19b	0			Escherichia coli ECOR-19b			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Was originally ECOR-47, but typing doesn't match
+NT12064	ECOR-48x	0			Escherichia coli ECOR-48x								Was originally ECOR-48, but typing doesn't match
+NT12065	ECOR-49x	0			Escherichia coli ECOR-49x								Was originally ECOR-49, but typing doesn't match
 NT12066	ECOR-50	0			Escherichia coli ECOR-50			6363394	Human, Sweden		Commensal strain	2	Group D strain from a patient with a UTI and acute pyelonephritis
-NT12067	ECOR-51	0			Escherichia coli ECOR-51			6363394	Human (infant), USA (Mass.)		Commensal strain	2	Group B2 strain from a healthy infant
+NT12067	ECOR-67a	0			Escherichia coli ECOR-67a			6363394	Goat, Indonesia		Commensal strain	1	Was originally ECOR-51, but typing doesn't match
 NT12068	ECOR-52	0			Escherichia coli ECOR-52			6363394	Orangutan, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy orangutan
 NT12069	ECOR-53	0			Escherichia coli ECOR-53			6363394	Human (child), USA (Iowa)		Commensal strain	2	Group B2 strain from a healthy child
 NT12070	ECOR-54	0			Escherichia coli ECOR-54			6363394	Human, USA (Iowa)		Commensal strain	2	Group B2 strain from a healthy person
-NT12071	ECOR-55	0			Escherichia coli ECOR-55			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute pyelonephritis
-NT12072	ECOR-56	0			Escherichia coli ECOR-56			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
+NT12071	ECOR-14c	0			Escherichia coli ECOR-14c			6363394	Human, Sweden		Commensal strain	2	Was originally ECOR-55, but typing doesn't match
+NT12072	ECOR-56x	0			Escherichia coli ECOR-56x								Was originally ECOR-56, but typing doesn't match
 NT12073	ECOR-57	0			Escherichia coli ECOR-57			6363394	Gorilla, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy gorilla in captivity
 NT12074	ECOR-58	0			Escherichia coli ECOR-58			6363394	Lion, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy lion in captivity
-NT12075	ECOR-59	0			Escherichia coli ECOR-59			6363394	Human, USA (Mass.)		Commensal strain	2	Group B2 strain from a healthy person
+NT12075	ECOR-59x	0			Escherichia coli ECOR-59x								Was originally ECOR-59, but typing doesn't match
 NT12076	ECOR-60	0			Escherichia coli ECOR-60			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute cystitis
-NT12077	ECOR-61	0			Escherichia coli ECOR-61			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
-NT12078	ECOR-62	0			Escherichia coli ECOR-62			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute pyelonephritis
+NT12077	ECOR-53a	0			Escherichia coli ECOR-53a			6363394	Human (child), USA (Iowa)		Commensal strain	2	Was originally ECOR-61, but typing doesn't match
+NT12078	ECOR-62x	0											Was originally ECOR-62x, removed genome due to inconsistent typing
 NT12079	ECOR-63	0			Escherichia coli ECOR-63			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a healthy person
-NT12080	ECOR-64	0			Escherichia coli ECOR-64			6363394	Human, Sweden		Commensal strain	2	Group B2 strain from a patient with a UTI and acute cystitis
-NT12081	ECOR-65	0			Escherichia coli ECOR-65			6363394	Celebese ape, USA (Wash.)		Commensal strain	2	Group B2 strain from a healthy celebese ape in captivity
-NT12082	ECOR-66	0			Escherichia coli ECOR-66			6363394	Celebese ape, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy celebese ape in captivity
+NT12080	ECOR-67b	0			Escherichia coli ECOR-67b			6363394	Goat, Indonesia		Commensal strain	1	Was originally ECOR-64, but typing doesn't match
+NT12081	ECOR-65x	0			Escherichia coli ECOR-65x								Was originally ECOR-65, but typing doesn't match
+NT12082	ECOR-66x	0			Escherichia coli ECOR-66x								Was originally ECOR-66, but typing doesn't match
 NT12083	ECOR-67	0			Escherichia coli ECOR-67			6363394	Goat, Indonesia		Commensal strain	1	Group B1 strain from a healthy goat
-NT12084	ECOR-68	0			Escherichia coli ECOR-68			6363394	Giraffe, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy giraffe in captivity
+NT12084	ECOR-68x	0			Escherichia coli ECOR-68x								Was originally ECOR-68, but typing doesn't match
 NT12085	ECOR-69	0			Escherichia coli ECOR-69			6363394	Celebese ape, USA (Wash.)		Commensal strain	1	Group B1 strain from a healthy celebese ape in captivity
 NT12086	ECOR-70	0			Escherichia coli ECOR-70			6363394	Gorilla, USA (Wash.)		Commensal strain	2	Group B1 strain from a healthy gorilla in captivity
-NT12087	ECOR-71	0			Escherichia coli ECOR-71			6363394	Human, Sweden		Commensal strain	2	Group B1 strain from a person with asymptomatic bacteriuria
+NT12087	ECOR-71x	0			Escherichia coli ECOR-71x								Was originally ECOR-71, but typing doesn't match
 NT12088	ECOR-72	0			Escherichia coli ECOR-72			6363394	Human, Sweden		Commensal strain	2	Group B1 strain from a patient with a UTI and acute pyelonephritis
 NT12089	ATCC 11775	0		DSM-30083	Escherichia coli DSM 30083 = JCM 1649 = ATCC 11775	PRJNA59555			Human urine		Commensal strain	2	
 NT12090	W	0		DSM-1116	Escherichia coli W	PRJNA162011			Cemetery soil, Rutgers University, USA	1943	Commensal strain	1	
@@ -124,10 +124,10 @@ NT12122	IAI25	0			Escherichia coli IAI25			9916057	Human urine	1999	Pathogenic s
 NT12123	IAI26	0			Escherichia coli IAI26			9916057	Human urine	1999	Pathogenic strain	2	
 NT12124	IAI27	0			Escherichia coli IAI27			9916057	Human urine	1999	Pathogenic strain	2	
 NT12125	IAI28	0			Escherichia coli IAI28			9916057	Human urine	1999	Pathogenic strain	2	
-NT12126	IAI29	0			Escherichia coli IAI29			9916057	Human urine	1999	Pathogenic strain	2	
+NT12126	IAI59a	0			Escherichia coli IAI29			9916057	Human urine	1999	Pathogenic strain	2	Was originally IAI29, but typing doesn't match
 NT12127	IAI30	0			Escherichia coli IAI30			9916057	Human urine	1999	Pathogenic strain	2	
 NT12128	IAI31	0			Escherichia coli IAI31			9916057	Human urine	1999	Pathogenic strain	2	
-NT12129	IAI32	0			Escherichia coli IAI32			9916057	Human urine	1999	Pathogenic strain	2	
+NT12129	IAI32x	0											Was originally IAI32, removed genome due to inconsistent typing
 NT12130	IAI33	0			Escherichia coli IAI33			9916057	Human urine	1999	Pathogenic strain	2	
 NT12131	IAI34	0			Escherichia coli IAI34			9916057	Human blood	1999	Pathogenic strain	2	
 NT12132	IAI35	0			Escherichia coli IAI35			9916057	Human blood	1999	Pathogenic strain	2	
@@ -140,14 +140,14 @@ NT12138	IAI41	0			Escherichia coli IAI41			9916057	Human urine	1999	Pathogenic s
 NT12139	IAI42	0			Escherichia coli IAI42			9916057	Human urine	1999	Pathogenic strain	2	
 NT12140	IAI43	0			Escherichia coli IAI43			9916057	Human urine	1999	Pathogenic strain	2	
 NT12141	IAI44	0			Escherichia coli IAI44			9916057	Human urine	1999	Pathogenic strain	2	
-NT12142	IAI45	0			Escherichia coli IAI45			9916057	Human urine	1999	Pathogenic strain	2	
+NT12142	IAI45x	0											Was originally IAI45, removed genome due to inconsistent typing
 NT12143	IAI46	0			Escherichia coli IAI46			9916057	Human urine	1999	Pathogenic strain	2	
 NT12144	IAI47	0			Escherichia coli IAI47			9916057	Human urine	1999	Pathogenic strain	2	
 NT12145	IAI48	0			Escherichia coli IAI48			9916057	Human blood	1999	Pathogenic strain	2	
 NT12146	IAI49	0			Escherichia coli IAI49			9916057	Human urine	1999	Pathogenic strain	2	
 NT12147	IAI50	0			Escherichia coli IAI50			9916057	Human urine	1999	Pathogenic strain	2	
 NT12148	IAI51	0			Escherichia coli IAI51			9916057	Human urine	1999	Pathogenic strain	2	
-NT12149	IAI52	0			Escherichia coli IAI52			9916057	Human urine	1999	Pathogenic strain	2	
+NT12149	IAI52x	0											Was originally IAI52, removed genome due to inconsistent typing
 NT12150	IAI53	0			Escherichia coli IAI53			9916057	Human urine	1999	Pathogenic strain	2	
 NT12151	IAI54	0			Escherichia coli IAI54			9916057	Human urine	1999	Pathogenic strain	2	
 NT12152	IAI55	0			Escherichia coli IAI55			9916057	Human urine	1999	Pathogenic strain	2	
@@ -159,7 +159,7 @@ NT12157	IAI60	0			Escherichia coli IAI60			9916057	Human blood	1999	Pathogenic s
 NT12158	IAI61	0			Escherichia coli IAI61			9916057	Human	1999	Pathogenic strain	2	
 NT12159	IAI62	0			Escherichia coli IAI62			9916057	Human urine	1999	Pathogenic strain	2	
 NT12160	IAI63	0			Escherichia coli IAI63			9916057	Human urine	1999	Pathogenic strain	2	
-NT12161	IAI64	0			Escherichia coli IAI64			9916057	Human urine	1999	Pathogenic strain	2	
+NT12161	IAI64x	0			Escherichia coli IAI64								Was originally IAI64, but typing doesn't match
 NT12162	IAI65	0			Escherichia coli IAI65			9916057	Human	1999	Pathogenic strain	2	
 NT12163	IAI66	0			Escherichia coli IAI66			9916057	Human urine	1999	Pathogenic strain	2	
 NT12164	IAI67	0			Escherichia coli IAI67			9916057	Human urine	1999	Pathogenic strain	2	
@@ -202,10 +202,10 @@ NT12200	ZG-1.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Comm
 NT12201	ZG-1.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12202	ZG-1.8	0			Escherichia coli ZG-1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12203	ZG-3.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12204	ZG-3.11	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12205	ZG-3.13	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12206	ZG-4.1	0			Escherichia coli ZG-4			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12207	ZG-4.11	0			Escherichia coli ZG-4			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12204	ZG-3.11	0			Escherichia coli ZG-3.11			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12205	ZG-3.13	0			Escherichia coli ZG-3.13			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12206	ZG-4.1x	0											Was originally ZG-4.1, removed genome because of possible contamination
+NT12207	ZG-4.11x	0											Was originally ZG-4.11, removed genome because of possible contamination
 NT12208	ZG-4.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12209	ZG-5.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12210	ZG-5.2	0			Escherichia coli ZG-5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
@@ -217,12 +217,12 @@ NT12215	ZG-7.1	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielon
 NT12216	ZG-7.13	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12217	ZG-7.8	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12218	ZG-7.9	0			Escherichia coli ZG-7			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12219	ZG-8.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12220	ZG-8.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12219	ZG-8.1	0			Escherichia coli ZG-8.1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12220	ZG-8.3	0			Escherichia coli ZG-8.5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12221	ZG-8.5	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12222	ZG-8.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12223	ZG-9.1	0			Escherichia coli ZG-9			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12224	ZG-9.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12224	ZG-9.3	0			Escherichia coli ZG-9.3			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12225	ZG-10.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12226	ZG-11.1	0			Escherichia coli ZG-11			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12227	ZG-11.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
@@ -255,12 +255,12 @@ NT12253	ZG-20.7	0						24851235	Healthy human adults, Zielona Góra, Poland		Com
 NT12254	ZG-21.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12255	ZG-21.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12256	ZG-21.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12257	ZG-22.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12257	ZG-22.1	0			Escherichia coli ZG-22.1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12258	ZG-22.11	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12259	ZG-22.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12260	ZG-23.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12261	ZG-24.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12262	ZG-24.5	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12262	ZG-24.5	0			Escherichia coli ZG-24.5			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12263	ZG-25.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12264	ZG-25.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12265	ZG-25.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
@@ -283,14 +283,14 @@ NT12281	ZG-33.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Com
 NT12282	ZG-33.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12283	ZG-34.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12284	ZG-35.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12285	ZG-36.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12286	ZG-36.8	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12285	ZG-36.1	0			Escherichia coli ZG-36.1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12286	ZG-36.8	0			Escherichia coli ZG-36.8			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12287	ZG-37.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12288	ZG-37.3	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12288	ZG-37.3	0			Escherichia coli ZG-37.3			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12289	ZG-38.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12290	ZG-38.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12291	ZG-38.9	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12292	ZG-39.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12292	ZG-39.1	0			Escherichia coli ZG-39.1			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12293	ZG-40.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12294	ZG-40.8	0			Escherichia coli ZG-40			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12295	ZG-41.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
@@ -308,7 +308,7 @@ NT12306	ZG-46.5	0			Escherichia coli ZG-46			24851235	Healthy human adults, Ziel
 NT12307	ZG-47.1	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12308	ZG-47.3	0			Escherichia coli ZG-47			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12309	ZG-48.1	0			Escherichia coli ZG-48			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
-NT12310	ZG-48.4	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
+NT12310	ZG-48.4	0			Escherichia coli ZG-48.4			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12311	ZG-49.1	0			Escherichia coli ZG-49			24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12312	ZG-49.2	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
 NT12313	ZG-49.6	0						24851235	Healthy human adults, Zielona Góra, Poland		Commensal strain	1	
@@ -338,9 +338,9 @@ NT12336	HM-340	0			Escherichia coli MS 124-1	PRJNA50763		20489017	Patient with C
 NT12337	HM-341	0			Escherichia coli MS 145-7	PRJNA59467		20489017	Patient with Crohn's disease, New York, USA	2002	Pathogenic strain	2	
 NT12338	HM-50	0			Escherichia coli 83972	PRJNA55485		1098383	Asymptomatic human urine, Sweden	1975	Commensal strain	1	ABU (asymptomatic bacteriuria); colonization of urine in the absence of clinical symptoms
 NT12339	NR-713	0							Human large intestine, USA	1999	Pathogenic strain	2	UPEC
-NT12340	NR-2654	0		NR-2654, morphology 1	Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
+NT12340	NR-2654	0			Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
 NT12341	NR-15878	0			Escherichia coli TA206						Unknown	2	
-NT12342	NR-2654	0		NR-2654, morphology 2	Escherichia coli CFT073	PRJNA57915		12471157	Patient with Pyelonephritis, University of Maryland Hospital, USA		Pathogenic strain	2	
+NT12342	NR-2654x	0		NR-2654, possible contaminant									Unknown strain, correct one is NT12340 (based on phylogeny and phenotypes)
 NT12343	DH300	0			Escherichia coli DH300			12410838	Derived from DJ480		Laboratory strain	1	
 NT12344	DE-COMM-2180	0						24188314	Fox		Commensal strain	1	
 NT12345	DE-COMM-2493	0						24188314	Fox		Commensal strain	1	
@@ -358,7 +358,7 @@ NT12356	DE-COMM-2624	0						24188314	Badger		Commensal strain	1
 NT12357	DE-COMM-2651	0						24188314	Wild boar		Commensal strain	1	
 NT12358	DE-COMM-2652	0			Escherichia coli DE-COMM-2652			24188314	Wild boar		Commensal strain	1	
 NT12359	DE-COMM-2653	0			Escherichia coli DE-COMM-2653			24188314	Wild boar		Commensal strain	1	
-NT12360	DE-COMM-2654	0						24188314	Wild boar		Commensal strain	1	
+NT12360	DE-COMM-2654	0			Escherichia coli DE-COMM-2654			24188314	Wild boar		Commensal strain	1	
 NT12361	DE-COMM-2655	0			Escherichia coli DE-COMM-2655			24188314	Wild boar		Commensal strain	1	
 NT12362	DE-COMM-2703	0			Escherichia coli DE-COMM-2703			24188314	Roe deer		Commensal strain	1	
 NT12363	DE-COMM-2704	0			Escherichia coli DE-COMM-2704			24188314	Roe deer		Commensal strain	1	
@@ -376,27 +376,27 @@ NT12374	DE-COMM-3457	0			Escherichia sp. DE-COMM-3457			24188314	Marten		Commens
 NT12375	DE-COMM-3473	0						24188314	Badger		Commensal strain	1	
 NT12376	DE-COMM-3699	0						24188314	Raccoon		Commensal strain	1	
 NT12377	DE-COMM-3700	0						24188314	Badger		Commensal strain	1	
-NT12378	DE-COMM-3736	0						24188314	Hare		Commensal strain	1	
+NT12378	DE-COMM-3736	0			Escherichia coli DE-COMM-3736			24188314	Hare		Commensal strain	1	
 NT12379	DE-COMM-3739	0						24188314	Hare		Commensal strain	1	
 NT12380	DE-COMM-3993	0						24188314	Rabbit		Commensal strain	1	
 NT12381	DE-COMM-3995	0						24188314	Rabbit		Commensal strain	1	
 NT12382	DE-COMM-3998	0			Escherichia coli DE-COMM-3998			24188314	Rabbit		Commensal strain	1	
 NT12383	DE-COMM-3999	0			Citrobacter sp. DE-COMM-3999			24188314	Hedgehog		Commensal strain	1	
-NT12384	DE-COMM-4000	0						24188314	Rabbit		Commensal strain	1	
+NT12384	DE-COMM-4000	0			Escherichia coli DE-COMM-4000			24188314	Rabbit		Commensal strain	1	
 NT12385	DE-COMM-4004	0						24188314	Common buzzard		Commensal strain	1	
 NT12386	DE-COMM-4006	0						24188314	Common buzzard		Commensal strain	1	
-NT12387	DE-COMM-4007	0						24188314	House mouse		Commensal strain	1	
+NT12387	DE-COMM-4007	0			Escherichia coli DE-COMM-4007			24188314	House mouse		Commensal strain	1	
 NT12388	DE-COMM-4008	0			Escherichia coli DE-COMM-4008			24188314	House mouse		Commensal strain	1	
-NT12389	DE-COMM-4009	0						24188314	House mouse		Commensal strain	1	
+NT12389	DE-COMM-4009	0			Escherichia coli DE-COMM-4009			24188314	House mouse		Commensal strain	1	
 NT12390	DE-COMM-4010	0			Escherichia coli DE-COMM-4010			24188314	House mouse		Commensal strain	1	
-NT12391	DE-COMM-4011	0						24188314	House mouse		Commensal strain	1	
+NT12391	DE-COMM-4011	0			Escherichia coli DE-COMM-4011			24188314	House mouse		Commensal strain	1	
 NT12392	DE-COMM-4014	0			Escherichia coli DE-COMM-4014			24188314	Otter		Commensal strain	1	
-NT12393	DE-COMM-4021	0						24188314	Roe deer		Commensal strain	1	
+NT12393	DE-COMM-4021	0			Escherichia coli DE-COMM-4021			24188314	Roe deer		Commensal strain	1	
 NT12394	DE-COMM-4056	0			Escherichia coli DE-COMM-4056			24188314	Common buzzard		Commensal strain	1	
 NT12395	DE-COMM-4059	0						24188314	Common buzzard		Commensal strain	1	
 NT12396	DE-COMM-4123	0			Escherichia coli DE-COMM-4123			24188314	Brown rat		Commensal strain	1	
 NT12397	DE-COMM-4203	0						24188314	Common buzzard		Commensal strain	1	
-NT12398	DE-COMM-4204	0						24188314	Hare		Commensal strain	1	
+NT12398	DE-COMM-4204	0			Escherichia coli DE-COMM-4204			24188314	Hare		Commensal strain	1	
 NT12399	DE-COMM-4291	0						24188314	Brown rat		Commensal strain	1	
 NT12400	DE-COMM-4353	0			Escherichia coli DE-COMM-4353			24188314	Sparrowhawk		Commensal strain	1	
 NT12401	DE-COMM-4367	0						24188314	Brown rat		Commensal strain	1	
@@ -405,7 +405,7 @@ NT12403	DE-COMM-4433	0			Escherichia sp. DE-COMM-4433			24188314	Sparrowhawk		Co
 NT12404	DE-COMM-4741	0			Escherichia coli DE-COMM-4741			24188314	Hare		Commensal strain	1	
 NT12405	DE-COMM-4743	0						24188314	Raccoon		Commensal strain	1	
 NT12406	DE-COMM-4774	0			Escherichia coli DE-COMM-4774			24188314	Raccoon		Commensal strain	1	
-NT12407	DE-COMM-4794	0						24188314	Sparrowhawk		Commensal strain	1	
+NT12407	DE-COMM-4794	0			Escherichia coli DE-COMM-4794			24188314	Sparrowhawk		Commensal strain	1	
 NT12408	DE-COMM-4951	0			Escherichia sp. DE-COMM-4951			24188314	Raccoon		Commensal strain	1	
 NT12409	DE-COMM-4952	0						24188314	Raccoon		Commensal strain	1	
 NT12410	DE-COMM-4960	0						24188314	Human		Commensal strain	1	
@@ -424,7 +424,7 @@ NT12422	DE-COMM-4975	0			Escherichia coli DE-COMM-4975			24188314	Human		Commens
 NT12423	DE-COMM-4976	0			Escherichia coli DE-COMM-4976			24188314	Human		Commensal strain	1	
 NT12424	DE-COMM-4977	0			Escherichia coli DE-COMM-4977			24188314	Human		Commensal strain	1	
 NT12425	DE-COMM-4979	0			Escherichia coli DE-COMM-4979			24188314	Human		Commensal strain	1	
-NT12426	DE-COMM-4980	0						24188314	Human		Commensal strain	1	
+NT12426	DE-COMM-4980	0			Escherichia sp. DE-COMM-4980			24188314	Human		Commensal strain	1	
 NT12427	DE-COMM-4981	0			Escherichia coli DE-COMM-4981			24188314	Human		Commensal strain	1	
 NT12428	DE-COMM-4994	0						24188314	Owl		Commensal strain	1	
 NT12429	DE-COMM-4995	0			Escherichia coli DE-COMM-4995			24188314	Owl		Commensal strain	1	
@@ -432,9 +432,9 @@ NT12430	DE-COMM-4999	0						24188314	Sparrowhawk		Commensal strain	1
 NT12431	DE-COMM-5006	0						24188314	Owl		Commensal strain	1	
 NT12432	DE-COMM-5012	0			Escherichia coli DE-COMM-5012			24188314	Owl		Commensal strain	1	
 NT12433	DE-COMM-5022	0						24188314	Badger		Commensal strain	1	
-NT12434	DE-COMM-5028	0						24188314	Hare		Commensal strain	1	
+NT12434	DE-COMM-5028	0			Escherichia sp. DE-COMM-5028			24188314	Hare		Commensal strain	1	
 NT12435	DE-COMM-5041	0			Escherichia coli DE-COMM-5041			24188314	Badger		Commensal strain	1	
-NT12436	DE-COMM-5058	0						24188314	Otter		Commensal strain	1	
+NT12436	DE-COMM-5058	0			Escherichia sp. DE-COMM-5058			24188314	Otter		Commensal strain	1	
 NT12437	DE-COMM-5060	0						24188314	Otter		Commensal strain	1	
 NT12438	DE-COMM-5075	0			Escherichia sp. DE-COMM-5075			24188314	Owl		Commensal strain	1	
 NT12439	DE-COMM-5076	0						24188314	Hedgehog		Commensal strain	1	
@@ -611,7 +611,7 @@ NT12609	NILS 76	0			Escherichia coli NILS 76			25266386	Human urine	2013	Pathoge
 NT12610	NILS 77	0			Escherichia coli NILS 77			25266386	Human urine	2013	Pathogenic strain	2	
 NT12611	NILS 78	0			Escherichia coli NILS 78			25266386	Human urine	2013	Pathogenic strain	2	
 NT12612	NILS 79	0			Escherichia coli NILS 79			25266386	Human urine	2013	Pathogenic strain	2	
-NT12613	NILS 80	0			Escherichia coli NILS 80			25266386	Human urine	2013	Pathogenic strain	2	
+NT12613	NILS 80x	0											Was originally NILS 80, removed genome due to inconsistent typing
 NT12614	NILS 81	0			Escherichia coli NILS 81			25266386	Human urine	2013	Pathogenic strain	2	
 NT12615	NILS 82	0			Escherichia coli NILS 82			25266386	Human urine	2013	Pathogenic strain	2	
 NT12616	SCI-07	0			Escherichia coli SCI-07	PRJNA180387		22582380	Hen with swollen head syndrome, Brasil	2012	Pathogenic strain	2	APEC
