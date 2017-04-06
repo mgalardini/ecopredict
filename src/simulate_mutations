@@ -177,7 +177,8 @@ if __name__ == "__main__":
 
     max_sickness = max([0.99, m.values.flatten().max()])
 
-    df = m.copy()
+    df = m.copy(deep=True)
+    morig = m.copy(deep=True)
 
     if options.fdr is not None:
         f = pd.read_table(options.fdr)
@@ -228,8 +229,57 @@ if __name__ == "__main__":
     for gene in genes:
         if gene not in all_genes:
             continue
+        m.loc[gene, strains] = 0.0
+
+        df.loc[set(genes).intersection(all_genes), strains] = [[max_sickness for x in range(len(strains))]
+                                                               for k in set(genes).intersection(all_genes)]
+
+        try:
+            if not options.linear and not options.uncorrected and not options.mean and not options.fdr:
+                p = m.apply(score, genes=genes, pseudo=options.pseudocount)
+                q = df.apply(score, genes=genes, pseudo=options.pseudocount)
+            elif options.fdr is not None:
+                if conditions.get(c, None) is None:
+                    continue
+                c1 = conditions[c]
+                p = m.apply(weighted_score,
+                            genes=genes,
+                            pvals=f[c1].loc[genes],
+                            gsum=g.loc[genes],
+                            gmax=gmax,
+                            pseudo=options.pseudocount)
+                q = df.apply(weighted_score,
+                            genes=genes,
+                            pvals=f[c1].loc[genes],
+                            gsum=g.loc[genes],
+                            gmax=gmax,
+                            pseudo=options.pseudocount)
+            elif options.linear and options.mean:
+                p = m.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
+                q = df.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
+            elif options.linear:
+                p = m.apply(score_linear, genes=genes, pseudo=options.pseudocount)
+                q = df.apply(score_linear, genes=genes, pseudo=options.pseudocount)
+            elif options.uncorrected:
+                p = m.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
+                q = df.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
+            elif options.mean:
+                p = m.apply(score_mean, genes=genes, pseudo=options.pseudocount)
+                q = df.apply(score_mean, genes=genes, pseudo=options.pseudocount)
+            else:
+                p = []
+                q = []
+            p = pd.DataFrame(p).T
+            p.index = [c]
+            q = pd.DataFrame(q).T
+            q.index = [c]
+        except KeyError:
+            # Very rare, means that none of the genes was found
+            m.loc[gene, strains] = morig.loc[gene, strains]
+            continue
+
         for strain in strains:
-            tmp = m.loc[gene, strain]
+            tmp = morig.loc[gene, strain]
             if tmp == 0.0:
                 print('\t'.join((c,
                                  gene,
@@ -237,56 +287,8 @@ if __name__ == "__main__":
                                  '0.0', '0.0', '0.0',
                                  '0.0', '0.0')))
                 continue
-            m.loc[gene, strain] = 0.0
-
-            df.loc[set(genes).intersection(all_genes), strain] = [max_sickness for x in range(len(set(genes).intersection(all_genes)))]
-
             index = [strain] + list(set(strains) - set((strain)))
-
-            try:
-                if not options.linear and not options.uncorrected and not options.mean and not options.fdr:
-                    p = m.apply(score, genes=genes, pseudo=options.pseudocount)
-                    q = df.apply(score, genes=genes, pseudo=options.pseudocount)
-                elif options.fdr is not None:
-                    if conditions.get(c, None) is None:
-                        continue
-                    c1 = conditions[c]
-                    p = m.apply(weighted_score,
-                                genes=genes,
-                                pvals=f[c1].loc[genes],
-                                gsum=g.loc[genes],
-                                gmax=gmax,
-                                pseudo=options.pseudocount)
-                    q = df.apply(weighted_score,
-                                genes=genes,
-                                pvals=f[c1].loc[genes],
-                                gsum=g.loc[genes],
-                                gmax=gmax,
-                                pseudo=options.pseudocount)
-                elif options.linear and options.mean:
-                    p = m.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
-                    q = df.apply(score_mean_linear, genes=genes, pseudo=options.pseudocount)
-                elif options.linear:
-                    p = m.apply(score_linear, genes=genes, pseudo=options.pseudocount)
-                    q = df.apply(score_linear, genes=genes, pseudo=options.pseudocount)
-                elif options.uncorrected:
-                    p = m.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
-                    q = df.apply(score_uncorrected, genes=genes, pseudo=options.pseudocount)
-                elif options.mean:
-                    p = m.apply(score_mean, genes=genes, pseudo=options.pseudocount)
-                    q = df.apply(score_mean, genes=genes, pseudo=options.pseudocount)
-                else:
-                    p = []
-                    q = []
-                p = pd.DataFrame(p).T
-                p.index = [c]
-                q = pd.DataFrame(q).T
-                q.index = [c]
-            except KeyError:
-                # Very rare, means that none of the genes was found
-                m.loc[gene, strain] = tmp
-                continue
-
+            
             dscore = p.loc[c, strain] - s.loc[c, strain]
             pscore = dscore/s.loc[c].max()
             qscore = dscore/q.loc[c, strain]
@@ -305,5 +307,5 @@ if __name__ == "__main__":
                              str(qscore),
                              str(drank),
                              str(prank))))
-            m.loc[gene, strain] = tmp
-            df.loc[set(genes).intersection(all_genes), strain] = m.loc[set(genes).intersection(all_genes), strain]
+        m.loc[gene, strains] = morig.loc[gene, strains]
+        df.loc[set(genes).intersection(all_genes), strains] = m.loc[set(genes).intersection(all_genes), strains]

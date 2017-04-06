@@ -180,9 +180,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.3578561"
-     inkscape:cx="26.699192"
-     inkscape:cy="171.49634"
+     inkscape:zoom="5.4314244"
+     inkscape:cx="-9.5164536"
+     inkscape:cy="122.11074"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -195,9 +195,14 @@
      fit-margin-bottom="0"
      inkscape:window-width="1873"
      inkscape:window-height="1056"
-     inkscape:window-x="1967"
+     inkscape:window-x="47"
      inkscape:window-y="24"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       position="41.977939,116.3599"
+       orientation="1,0"
+       id="guide4237" />
+  </sodipodi:namedview>
   <metadata
      id="metadata5903">
     <rdf:RDF>
@@ -206,7 +211,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -230,15 +235,15 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:25px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="25.285713"
+       x="19.285713"
        y="255.64792"
        id="text7208-2"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan7210-2"
-         x="25.285713"
+         x="19.285713"
          y="255.64792"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:Arial;-inkscape-font-specification:Arial">ECOR-43</tspan></text>
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10px;font-family:Arial;-inkscape-font-specification:Arial">ECOR-42a</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:25px;line-height:125%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"

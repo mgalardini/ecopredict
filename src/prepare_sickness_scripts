@@ -20,8 +20,6 @@ def get_options():
                         help='Locus to uniprot conversion file')
     parser.add_argument('--exclude-genes', action='store',
                         help='Genes to exclude')
-    parser.add_argument('--outgroups', action='store',
-                        help='Strains to exclude')
     parser.add_argument('--coverage', action='store',
                         type=float,
                         default=0.0,
@@ -86,7 +84,7 @@ if __name__ == "__main__":
                 --foldx-model logistic \\
                 --foldx-intercept {7} --foldx-slope {8} > {9}/{10}/$strain;
     done
-    src/merge_tables {9}/{10}/NT* --exclude {11} > {9}/{10}/all.txt
+    src/merge_tables {9}/{10}/NT* > {9}/{10}/all.txt
     '''
 
     if options.exclude is not None:
@@ -123,8 +121,7 @@ if __name__ == "__main__":
             options.foldx_intercept,
             options.foldx_slope,
             options.outdir,
-            name,
-            options.outgroups) + '\n')
+            name) + '\n')
         f.close()
 
     for a, b in itertools.combinations(c1, 2):
@@ -156,8 +153,7 @@ if __name__ == "__main__":
             options.foldx_intercept,
             options.foldx_slope,
             options.outdir,
-            name,
-            options.outgroups) + '\n')
+            name) + '\n')
         f.close()
 
     for a, b, c in itertools.combinations(c1, 3):
@@ -189,8 +185,7 @@ if __name__ == "__main__":
             options.foldx_intercept,
             options.foldx_slope,
             options.outdir,
-            name,
-            options.outgroups) + '\n')
+            name) + '\n')
         f.close()
 
     for a, b, c, d in itertools.combinations(c1, 4):
@@ -222,8 +217,7 @@ if __name__ == "__main__":
             options.foldx_intercept,
             options.foldx_slope,
             options.outdir,
-            name,
-            options.outgroups) + '\n')
+            name) + '\n')
         f.close()
 
     for a, b, c, d, e in itertools.combinations(c1, 5):
@@ -255,8 +249,7 @@ if __name__ == "__main__":
             options.foldx_intercept,
             options.foldx_slope,
             options.outdir,
-            name,
-            options.outgroups) + '\n')
+            name) + '\n')
         f.close()
 
     a, b, c, d, e, f = [x for x in c1]
@@ -286,6 +279,5 @@ if __name__ == "__main__":
         options.foldx_intercept,
         options.foldx_slope,
         options.outdir,
-        name,
-        options.outgroups) + '\n')
+        name) + '\n')
     f.close()

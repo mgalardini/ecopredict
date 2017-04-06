@@ -116,8 +116,9 @@ if __name__ == "__main__":
              'r.',
              label='Evolution experiment')
 
-    #l = stats.linregress(r.phylo,
-    #                     r.pheno)
+    l = stats.linregress(r.phylo,
+                         r.pheno)
+    print(l.rvalue, l.pvalue)
     #fn = l.intercept + l.slope * np.linspace(0, r.phylo.max())
     #plt.plot(np.linspace(0, r.phylo.max()),
     #         fn,
@@ -126,6 +127,7 @@ if __name__ == "__main__":
     #         label='All strains (r=%.2f)' % l.rvalue)
     l = stats.linregress(r.loc[strains - evol].dropna().phylo,
                          r.loc[strains - evol].dropna().pheno)
+    print(l.rvalue, l.pvalue)
     fn = l.intercept + l.slope * np.linspace(0, r.phylo.max())
     plt.plot(np.linspace(0, r.phylo.max()),
              fn,

@@ -116,7 +116,6 @@ TREE = $(INPUT)/tree.nwk
 NONSYNCOUNT = $(INPUT)/strains_nonsyn.txt
 PANGENOMECOUNT = $(INPUT)/strains_pangenome.txt
 EVOLUTION = $(INPUT)/evolution_experiment.txt
-OUTGROUPS = $(INPUT)/outgroups.txt
 
 # Follow-up
 SIMULATIONS = $(SICKNESSDIR)/123456/simulate/.simulations.done
@@ -383,8 +382,8 @@ $(COMMON): $(CLUSTERS)
 $(UNCOMMON): $(CLUSTERS)
 	$(SRCDIR)/uncommon_genes $(VEPDIR) --clusters $(CLUSTERS) --proportion $(UNCOMMONPROP) > $@
 
-$(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON) $(OUTGROUPS)
-	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --outgroups $(OUTGROUPS) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
+$(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON)
+	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
 #######################
@@ -417,60 +416,60 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf; \
-	  for round in $$(seq 1 100); do \
+	  for round in $$(seq 1 10); do \
 	    mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/; \
-	    for sround in $$(seq 1 10); do \
+	    for sround in $$(seq 1 100); do \
 	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/weighted_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf; \
-	  for round in $$(seq 1 100); do \
+	  for round in $$(seq 1 10); do \
 	    mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/; \
 	    mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/; \
-	    for sround in $$(seq 1 10); do \
+	    for sround in $$(seq 1 100); do \
 	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap2_$$gf; \
 	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 100 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
+	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done &&touch $@
 
@@ -648,7 +647,7 @@ $(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
 	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3 --height 1.5 --dpi 90
 
 $(FSIMULATIONPLOT): $(SIMULATIONS) $(ECKFILE) $(GENOME) 
-	src/run_silver_bullets $(SICKNESSDIR)/123456/simulate $(ECKFILE) $(GENOME) $@ --width 3.5 --height 1.5 --dpi 90
+	$(SRCDIR)/run_silver_bullets $(SICKNESSDIR)/123456/simulate $(ECKFILE) $(GENOME) $@ --width 3.5 --height 1.5 --dpi 90
 
 $(FEXAMPLE1): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS) $(ECKFILE) $(GENOME) $(STRAINS)
 	$(SRCDIR)/run_follow_up_barplot $(ECKFILE) $(GENOME) $(FSTRAINS) $(STRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" acrB $@ --width 0.75 --height 2 --dpi 90
@@ -723,6 +722,7 @@ followup: $(SIMULATIONS) $(FOUT)
 plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CONSTRAINTSPLOT) $(ESSENTIALPLOT) \
        $(CORRELATIONPLOT) $(EXAMPLESPLOT) $(ANNOTATIONPLOT) \
+       $(ROCPLOT) \
        $(CORRELATIONPLOT1) $(ROCPLOT1) $(ANNOTATIONPLOT1) \
        $(CORRELATIONPLOT2) $(ROCPLOT2) $(ANNOTATIONPLOT2) \
        $(ROCPLOT3) $(ANNOTATIONPLOT3) \

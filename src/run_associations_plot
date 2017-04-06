@@ -104,8 +104,7 @@ if __name__ == "__main__":
     auc = auc[auc.kind == 'prec'].groupby('condition').max()['stat'].dropna().to_dict()
 
     res = []
-    for c in associations:
-        print(c)
+    for c in sorted(associations):
         m = pd.read_table(os.path.join(options.association, c + '.results.csv'),
                           sep=',')
         ass = {y
@@ -114,6 +113,7 @@ if __name__ == "__main__":
                if x in d
                for y in d.get(x, (x,))
                if y in agenes}
+        print(c, len(ass))
         if len(ass) > 0:
             table = [[len(ass.intersection(genes[c])), len(set(genes[c]).difference(ass))],
                      [len(ass.difference(genes[c])), len(agenes.difference(genes[c]).difference(ass))]]
@@ -134,6 +134,10 @@ if __name__ == "__main__":
                  'associated2',
                  'associated3',
                  'associated4']
+
+    table = [[r[(r.auc >= 0.1) & (r.prob >= 2)].shape[0], r[(r.auc < 0.1) & (r.prob >= 2)].shape[0]],
+             [r[(r.auc >= 0.1) & (r.prob < 2)].shape[0], r[(r.auc < 0.1) & (r.prob < 2)].shape[0]]]
+    print(stats.fisher_exact(table, alternative='greater'))
 
     tmp = plt.plot(r.auc,
              r.prob,

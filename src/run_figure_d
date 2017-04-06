@@ -50,7 +50,7 @@ if __name__ == "__main__":
     fig8 = sg.fromfile(options.treecolorbar)
     fig9 = sg.fromfile(options.purity)
     fig10 = sg.fromfile(options.chemical)
-    fig11 = sg.fromfile(options.arrow)
+    #fig11 = sg.fromfile(options.arrow)
 
     ex2 = sg.fromfile(options.example)
     
@@ -76,9 +76,9 @@ if __name__ == "__main__":
     plot9.moveto(570, 680, scale=1)
     plot10 = fig10.getroot()
     plot10.moveto(570, 840, scale=1)
-    plot11 = fig11.getroot()
-    plot11.moveto(540, 252, scale=0.5)
-    plot11.rotate(-15)
+    #plot11 = fig11.getroot()
+    #plot11.moveto(540, 252, scale=0.5)
+    #plot11.rotate(-15)
 
     txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(560, 25, "B)", size=12, weight="bold")
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 plot8,
                 plot9,
                 plot10,
-                plot11,
+                #plot11,
                ])
     fig.append([txt1,
                 txt2,

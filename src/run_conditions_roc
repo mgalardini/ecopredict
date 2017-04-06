@@ -253,7 +253,7 @@ if __name__ == "__main__":
                     'All predictors\n(>= 3% phenotypes)',
                     'All predictors\n(>= 5% phenotypes)'],
                    rotation=0)
-        plt.legend(loc=(0.75, 0.025), frameon=True)
+        plt.legend(loc=(0.80, 0.025), frameon=True)
         plt.xlim(-.01, 0.66)
         plt.xlabel('PR-AUC')
         sns.despine(left=True)

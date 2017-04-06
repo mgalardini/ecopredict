@@ -267,8 +267,8 @@ if __name__ == "__main__":
         for f in s.features:
             if 'gene_synonym' not in f.qualifiers or f.type != 'CDS':
                 continue
-            loc = filter(lambda x: x.strip().startswith('ECK'),
-                         f.qualifiers['gene_synonym'][0].split(';'))[0].strip()
+            loc = list(filter(lambda x: x.strip().startswith('ECK'),
+                         f.qualifiers['gene_synonym'][0].split(';')))[0].strip()
             loc = conversion.get(loc, loc)
             en[loc] = f.qualifiers.get('gene', [''])[0]
             ep[loc] = f.qualifiers.get('product', [''])[0]
