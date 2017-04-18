@@ -16,7 +16,7 @@
    width="117.5158pt"
    id="svg821"
    sodipodi:docname="legend.svg"
-   inkscape:version="0.92.1 15371">
+   inkscape:version="0.91 r13725">
   <metadata
      id="metadata825">
     <rdf:RDF>
@@ -25,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -48,9 +48,9 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="1.2861683"
-     inkscape:cx="-195.05494"
-     inkscape:cy="177.14121"
+     inkscape:zoom="3.6378333"
+     inkscape:cx="-81.977948"
+     inkscape:cy="139.71393"
      inkscape:window-x="47"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -633,16 +633,11 @@
          style="stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000" />
     </g>
   </g>
-  <g
-     style="stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-     id="patch_26"
-     transform="translate(-273.86144,-20.605413)">
-    <path
-       inkscape:connector-curvature="0"
-       id="path597"
-       style="fill:#f7eeee;stroke:#3b3b3b;stroke-width:0.875;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100000"
-       d="m 282.465,77.30625 h 16 v -5.6 h -16 z" />
-  </g>
+  <path
+     d="m 8.60356,56.700837 16,0 0,-5.6 -16,0 z"
+     style="fill:#ffd9d9;stroke:#3b3b3b;stroke-width:0.875;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100000;fill-opacity:1"
+     id="path597"
+     inkscape:connector-curvature="0" />
   <g
      style="stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
      id="patch_27"

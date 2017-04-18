@@ -13,7 +13,7 @@
    viewBox="0 0 256.84689 94.671362"
    id="svg4376"
    version="1.1"
-   inkscape:version="0.92.1 15371"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="follow_up.svg"
    inkscape:export-filename="/home/mgalactus/Pictures/followup.png"
    inkscape:export-xdpi="150"
@@ -32,7 +32,7 @@
      id="namedview311"
      showgrid="false"
      inkscape:zoom="1.0487633"
-     inkscape:cx="380.10391"
+     inkscape:cx="225.15951"
      inkscape:cy="282.371"
      inkscape:window-x="47"
      inkscape:window-y="24"
@@ -1209,28 +1209,6 @@
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:Arial;-inkscape-font-specification:'Arial Bold';stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
        x="135.96736"
        y="34.700047">+</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.0555563px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-     x="162.44733"
-     y="74.936394"
-     id="text6153-4-4-7"><tspan
-       sodipodi:role="line"
-       id="tspan6151-4-7-4"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.51555538px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       x="162.44733"
-       y="74.936394">Gene 3</tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.0555563px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-     x="161.88287"
-     y="78.887512"
-     id="text6153-4-4-7-1"><tspan
-       sodipodi:role="line"
-       id="tspan6151-4-7-4-8"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.76296306px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       x="161.88287"
-       y="78.887512">(reference copy)</tspan></text>
   <path
      style="fill:none;stroke:#000000;stroke-width:0.56444442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM-0)"
      d="M 148.10851,68.194484 V 57.6439 c 0,0 -0.0987,-1.408438 2.39862,-2.654609 2.49727,-1.246171 3.7485,-1.246448 3.7485,-1.246448"
@@ -1308,24 +1286,26 @@
   </g>
   <text
      id="text4624-8-3-2-8"
-     y="50.415634"
-     x="89.908791"
+     y="50.98008"
+     x="93.859909"
      style="font-style:normal;font-weight:normal;font-size:6.32695198px;line-height:0%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100000;stroke-opacity:1"
-     xml:space="preserve"><tspan
+     xml:space="preserve"
+     sodipodi:linespacing="0%"><tspan
        id="tspan4646-6-5-9"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.38666701px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       y="50.415634"
-       x="89.908791">Deleterious</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       y="50.98008"
+       x="93.859909">Deleterious</tspan></text>
   <text
      id="text4624-8-3-2-9-3"
-     y="50.463051"
-     x="38.829777"
+     y="51.027496"
+     x="35.443104"
      style="font-style:normal;font-weight:normal;font-size:6.32695198px;line-height:0%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100000;stroke-opacity:1"
-     xml:space="preserve"><tspan
+     xml:space="preserve"
+     sodipodi:linespacing="0%"><tspan
        id="tspan4646-6-5-2-68"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.38666677px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       y="50.463051"
-       x="38.829777">Tolerated</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       y="51.027496"
+       x="35.443104">Tolerated</tspan></text>
   <path
      inkscape:connector-curvature="0"
      id="path4969-5-7-1-8-02"
@@ -1343,14 +1323,15 @@
      style="fill:none;fill-rule:evenodd;stroke:#0d0887;stroke-width:1.1209166;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   <text
      id="text4624-8-3-2-9-5-0"
-     y="61.231911"
-     x="69.684586"
+     y="61.796356"
+     x="75.893486"
      style="font-style:normal;font-weight:normal;font-size:6.32695198px;line-height:0%;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100000;stroke-opacity:1"
-     xml:space="preserve"><tspan
+     xml:space="preserve"
+     sodipodi:linespacing="0%"><tspan
        id="tspan4646-6-5-2-6-8"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.38666701px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       y="61.231911"
-       x="69.684586">Missense mutation</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;line-height:100%;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:1.06666672px;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       y="61.796356"
+       x="75.893486">Missense mutation</tspan></text>
   <image
      y="-254.02467"
      x="16.961454"
@@ -1408,24 +1389,24 @@
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.0555563px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
      x="162.44733"
-     y="74.936394"
+     y="74.371956"
      id="text6153-4-4-7-9"><tspan
        sodipodi:role="line"
        id="tspan6151-4-7-4-87"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.51555538px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
        x="162.44733"
-       y="74.936394">Gene 3</tspan></text>
+       y="74.371956">Gene 3</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.0555563px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-     x="161.88287"
-     y="78.887512"
+     x="162.44731"
+     y="79.451958"
      id="text6153-4-4-7-1-2"><tspan
        sodipodi:role="line"
-       id="tspan6151-4-7-4-8-8"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.76296329px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
-       x="161.88287"
-       y="78.887512">(reference copy)</tspan></text>
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.88055563px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       x="162.44731"
+       y="79.451958"
+       id="tspan5180">(reference copy)</tspan></text>
   <path
      style="fill:none;stroke:#000000;stroke-width:0.56444442;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:100;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#TriangleOutM-0-26)"
      d="M 148.10851,68.194484 V 57.6439 c 0,0 -0.0987,-1.408439 2.39862,-2.65461 2.49727,-1.246171 3.7485,-1.246448 3.7485,-1.246448"
@@ -1443,13 +1424,18 @@
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.0555563px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
      x="162.44725"
-     y="32.603046"
+     y="29.216383"
      id="text6153-4-4-7-1-6"><tspan
        sodipodi:role="line"
        id="tspan6151-4-7-4-8-1"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.76296329px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
        x="162.44725"
-       y="32.603046">Empty plasmid</tspan></text>
+       y="29.216383">Empty</tspan><tspan
+       sodipodi:role="line"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:Arial;-inkscape-font-specification:Arial;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
+       x="162.44725"
+       y="36.271938"
+       id="tspan4782">plasmid</tspan></text>
   <text
      xml:space="preserve"
      style="font-style:normal;font-weight:normal;font-size:11.28888893px;line-height:7.05555582px;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.28222221;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000"
