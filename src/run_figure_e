@@ -40,8 +40,8 @@ if __name__ == "__main__":
     fig1 = sg.fromfile(options.scheme)
     fig3 = sg.fromfile(options.conditions)
     fig5 = sg.fromfile(options.associations)
-    fig6 = sg.fromfile(options.example1)
-    fig7 = sg.fromfile(options.example2)
+    fig7 = sg.fromfile(options.example1)
+    fig6 = sg.fromfile(options.example2)
     fig10 = sg.fromfile(options.example)
 
     # get the plot objects

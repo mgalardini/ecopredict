@@ -162,7 +162,7 @@ def plot_condition_sim(cond, num, title):
     for j in range(i, i+len(set(o[(o.condition == cond) &
                                   (o.gene == gene) &
                                   (o.srank <= -0.01)].strain))):
-        barplot.patches[j].set_color((0.97430555555555542, 0.92812500000000009, 0.92569444444444449, 1.0))
+        barplot.patches[j].set_color((1.0, 0.85, 0.85, 1.0))
         barplot.patches[len(set(r.strain))+j].set_color(sns.xkcd_rgb['pale red'])
     try:
         i = j + 1
@@ -240,10 +240,18 @@ if __name__ == "__main__":
     plt.rc('font', serif='Arial') 
     plt.rc('text', usetex='false')
     
+    try:
+        plt.style.use('custom.mplstyle')
+    except IOError:
+        plt.rc('font', size=10)
+        plt.rc('xtick', labelsize=10)
+        plt.rc('ytick', labelsize=10)
+        plt.rc('axes', labelsize=12, titlesize=12)
+        plt.rc('legend', fontsize=8)
     plt.rc('font', size=8)
     plt.rc('xtick', labelsize=8)
     plt.rc('ytick', labelsize=8)
-    plt.rc('axes', labelsize=10, titlesize=10)
+    plt.rc('axes', labelsize=10, titlesize=12)
     plt.rc('legend', fontsize=8)
 
     conversion = {x.split('\t')[0]:x.rstrip().split()[1]

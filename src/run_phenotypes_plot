@@ -129,11 +129,14 @@ if __name__ == "__main__":
     plt.rc('font', serif='Arial') 
     plt.rc('text', usetex='false')
     
-    plt.rc('font', size=8)
-    plt.rc('xtick', labelsize=8)
-    plt.rc('ytick', labelsize=8)
-    plt.rc('axes', labelsize=10, titlesize=10)
-    plt.rc('legend', fontsize=8)
+    try:
+        plt.style.use('custom.mplstyle')
+    except IOError:
+        plt.rc('font', size=10)
+        plt.rc('xtick', labelsize=10)
+        plt.rc('ytick', labelsize=10)
+        plt.rc('axes', labelsize=12, titlesize=12)
+        plt.rc('legend', fontsize=8)
 
     # Replicates
 
@@ -179,8 +182,8 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('Replicate 1')
-    plt.ylabel('Replicate 2')
+    plt.xlabel('S-score\n(Replicate 1)')
+    plt.ylabel('S-score\n(Replicate 2)')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
@@ -216,8 +219,8 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('Replicate 2')
-    plt.ylabel('Replicate 3')
+    plt.xlabel('S-score\n(Replicate 2)')
+    plt.ylabel('S-score\n(Replicate 3)')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
@@ -253,8 +256,8 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('Replicate 1')
-    plt.ylabel('Replicate 3')
+    plt.xlabel('S-score\n(Replicate 1)')
+    plt.ylabel('S-score\n(Replicate 3)')
 
     plt.xlim(-20, 15)
     plt.ylim(-20, 15)
@@ -303,8 +306,8 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('First plate')
-    plt.ylabel('Second plate')
+    plt.xlabel('S-score\n(First plate)')
+    plt.ylabel('S-score\n(Second plate)')
 
     plt.xlim(-15, 10)
     plt.ylim(-15, 10)
@@ -369,8 +372,8 @@ if __name__ == "__main__":
                 linestyle='dashed',
                 zorder=0)
 
-    plt.xlabel('First replicate')
-    plt.ylabel('Second replicate')
+    plt.xlabel('S-score\n(First replicate)')
+    plt.ylabel('S-score\n(Second replicate)')
     plt.text(-19, 8, 'Pearson\'s r: %.3f\n(N=%d)'%(stats.pearsonr(
             [x[0] for x in values],
             [x[1] for x in values])[0],
@@ -730,8 +733,8 @@ if __name__ == "__main__":
 
     plt.xlabel('Pearson\'s r\n(chemical genomics)')
     plt.yticks(range(2),
-               ['Clustered conditions',
-                'Random conditions'])
+               ['Clustered conditions\n(N=%d)' % rc[rc['set'] == 'real'].shape[0],
+                'Random conditions\n(N=%d)' % rc[rc['set'] == 'random'].shape[0]])
     plt.ylabel('')
 
     plt.axvline(0,
