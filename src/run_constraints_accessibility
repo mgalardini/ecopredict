@@ -91,18 +91,31 @@ if __name__ == "__main__":
         except ZeroDivisionError:
             continue
 
+    m2 = m2.set_index('uniprot')
     for i in range(options.bootstraps):
-        rand = []
-        for k in set(m2.uniprot):
-            accessibility = m1[m1.uniprot == k][['pos', 'score']].set_index('pos').to_dict()['score']
-            positions = list(accessibility.keys())
-            random.shuffle(positions)
-            for z,p in zip(m2[m2.uniprot == k].groupby(('uniprot', 'pos')).count().reset_index().values,
-                           positions):
-                for j in range(z[2]):
-                    rand.append((k, p, accessibility[p]))
-        rand = pd.DataFrame(rand)
-        rand.columns = ['uniprot', 'pos', 'score']
+        r = m1.copy(deep=True)
+        r['score'] = r.groupby('uniprot').apply(pd.DataFrame.sample, frac=1)['score'].values
+        r.set_index([r.columns[0], r.columns[1]], inplace=True)
+        rand = set()
+        j = 0
+        # perform the shuffling on 33% of the proteome
+        proteins = list(m2.index)
+        random.shuffle(proteins)
+        proteins = proteins[:int(len(proteins)*0.33)]
+        for k in proteins:
+            r1 = r.loc[k]
+            df = m2.loc[k]
+            if len(df.shape) == 1:
+                df = pd.DataFrame(df).T
+            for z in df.groupby('pos').count().reset_index().values:
+                v = r1.loc[z[0]]['score']
+                if len(v.shape) != 0:
+                    v = float(v.values[0])
+                for j in range(int(z[1])):
+                    rand.add((j, k, z[0], v))
+                    j += 1
+        rand = pd.DataFrame(sorted(rand))
+        rand.columns = ['x', 'uniprot', 'pos', 'score']
         for t1, t2, size in thresholds:
             try:
                 nonsyn_density = rand[(rand.score > t1) &

@@ -161,9 +161,6 @@ ACCESSIBILITYDATA = $(PLOTDATA)/accessibility.tsv
 FOLDXACCESSIBILITYDATA = $(PLOTDATA)/foldx_accessibility.tsv
 PURITYDATA1 = $(PLOTDATA)/purity1.txt
 PURITYDATA2 = $(PLOTDATA)/purity2.txt
-BOOTSTRAP1 = $(PLOTDATA)/bootstrap1.txt
-BOOTSTRAP2 = $(PLOTDATA)/bootstrap2.txt
-BOOTSTRAP3 = $(PLOTDATA)/bootstrap3.txt
 
 # Plots
 TREEPLOT = $(PLOTDIR)/tree.svg
@@ -412,36 +409,6 @@ $(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
 	done && touch $@
 	
 $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION) $(DELETIONFDR) $(SHARED)
-	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
-	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
-	  mkdir -p $$(dirname $$g)/bootstrap1_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/bootstrap1_$$gf/$$round"; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/bootstrap2_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/bootstrap2_$$gf/$$round"; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/bootstrap3_$$gf; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf; \
-	  mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf; \
-	  for round in $$(seq 1 10); do \
-	    mkdir -p $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/; \
-	    mkdir -p $$(dirname $$g)/bootstrap3_$$gf/$$round/; \
-	    mkdir -p $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/; \
-	    for sround in $$(seq 1 100); do \
-	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/overall_bootstrap3_$$gf/$$round/$$sround"; \
-	    done; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap1_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/overall_bootstrap1_$$gf/$$round"; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/overall_bootstrap2_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/overall_bootstrap2_$$gf/$$round"; \
-	  done; \
-	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  mkdir -p $$(dirname $$g)/weighted_bootstrap1_$$gf; \
@@ -453,44 +420,21 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	    $(SUBMIT) "$(SRCDIR)/score_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_bootstrap2_$$gf/$$round"; \
 	  done; \
 	  mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf; \
-	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf; \
 	  mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf; \
 	  for round in $$(seq 1 10); do \
 	    mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/; \
-	    mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/; \
-	    mkdir -p $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/; \
 	    for sround in $$(seq 1 100); do \
-	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/overall_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/$$round/$$sround"; \
+	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap1_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_strains $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/$$round"; \
-	  done; \
-	  mkdir -p $$(dirname $$g)/weighted_overall_bootstrap2_$$gf; \
-	  for round in $$(seq 1 100); do \
-	    $(SUBMIT) "$(SRCDIR)/overall_bootstrap_shuffle_sets $$g $(SCREENING) $(SCREENINGFDR) --bootstraps 10 > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/$$round"; \
 	  done; \
 	done &&touch $@
 
 $(COLLECTBOOTSTRAPS): $(BOOTSTRAPSDATA)
-	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
-	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap1_$$gf/ > $$(dirname $$g)/bootstrap1_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/bootstrap2_$$gf/ > $$(dirname $$g)/bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/bootstrap3_$$gf/ > $$(dirname $$g)/bootstrap3_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap1_$$gf/ > $$(dirname $$g)/overall_bootstrap1_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/overall_bootstrap2_$$gf/ > $$(dirname $$g)/overall_bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/overall_bootstrap3_$$gf/ > $$(dirname $$g)/overall_bootstrap3_$$gf.txt"; \
-	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap1_$$gf/ > $$(dirname $$g)/weighted_bootstrap1_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_bootstraps $$(dirname $$g)/weighted_bootstrap2_$$gf/ > $$(dirname $$g)/weighted_bootstrap2_$$gf.txt"; \
 	  $(SUBMIT) "$(SRCDIR)/collect_random_bootstraps $$(dirname $$g)/weighted_bootstrap3_$$gf/ > $$(dirname $$g)/weighted_bootstrap3_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap1_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap1_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_bootstraps $$(dirname $$g)/weighted_overall_bootstrap2_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap2_$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/collect_overall_random_bootstraps $$(dirname $$g)/weighted_overall_bootstrap3_$$gf/ > $$(dirname $$g)/weighted_overall_bootstrap3_$$gf.txt"; \
 	done &&touch $@
 
 ##################
@@ -548,13 +492,6 @@ $(PROFILEDATA): $(SICKNESS) $(PANGENOME) $(CONSERVATION) $(ESSENTIAL) $(CONVERSI
 
 $(PURITYDATA1): $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA)
 	$(SRCDIR)/run_conditions_purity $(SCREENING) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(PURITYDATA1) $(PURITYDATA2)
-
-$(BOOTSTRAP1): $(BOOTSTRAPSDATA)
-	$(SRCDIR)/collect_overall_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap1_2/ --curve > $@
-$(BOOTSTRAP2): $(BOOTSTRAPSDATA)
-	$(SRCDIR)/collect_overall_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap2_2/ --curve > $@
-$(BOOTSTRAP3): $(BOOTSTRAPSDATA)
-	$(SRCDIR)/collect_overall_random_bootstraps $(SICKNESSDIR)/123456/overall_bootstrap3_2/ --curve > $@
 
 ######################
 ## Plots generation ##
