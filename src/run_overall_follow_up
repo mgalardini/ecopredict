@@ -138,6 +138,9 @@ if __name__ == "__main__":
                 for v in df.loc[d, (cond, '1')]:
                     res.append((cond, tag, 'gene', v))
             for d in all_strains:
+                # Skip mutants that are not assigned to a strains
+                if d not in strains:
+                    continue
                 if gene == 'acrAB' and dgene[d] in {'acrA', 'acrB', 'soxSR'}:
                     continue
                 elif gene == 'acrA' and dgene[d] in {'acrAB', 'acrB', 'soxSR'}:
@@ -163,6 +166,9 @@ if __name__ == "__main__":
                 for v in df.loc[d, (cond, '1')]:
                     res.append((cond, strains[d], 'empty', v))
             for d in all_targets:
+                # Skip mutants that are not assigned to a strains
+                if d not in strains:
+                    continue
                 if gene == 'acrAB' and dgene[d] in {'acrA', 'acrB', 'soxSR'}:
                     continue
                 elif gene == 'acrA' and dgene[d] in {'acrAB', 'acrB', 'soxSR'}:
@@ -206,9 +212,9 @@ if __name__ == "__main__":
     
     res = []
     for v in o[(o.srank <= -0.01)]['erank'].values:
-        res.append(('', 'Predicted', v))
+        res.append(('', 'Predictedi (N=%d)' % o[(o.srank <= -0.01)]['erank'].shape[0], v))
     for v in o[(o.srank > -0.01)]['erank'].values:
-        res.append(('', 'Not predicted', v))
+        res.append(('', 'Not predicted (N=%d)' % o[(o.srank > -0.01)]['erank'].shape[0], v))
     r1 = pd.DataFrame(res)
     r1.columns = ['x', 'set', 'value']
 

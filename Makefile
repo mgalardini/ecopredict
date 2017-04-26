@@ -400,12 +400,10 @@ $(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_score.$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_score.$$gf.txt"; \
 	done && \
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_weighted_score.$$gf.txt"; \
-	  $(SUBMIT) "$(SRCDIR)/overall_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/overall_auc_weighted_score.$$gf.txt"; \
 	done && touch $@
 	
 $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION) $(DELETIONFDR) $(SHARED)
@@ -423,6 +421,7 @@ $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION
 	  mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf; \
 	  for round in $$(seq 1 10); do \
 	    mkdir -p $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/; \
+	    mkdir -p $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/; \
 	    for sround in $$(seq 1 100); do \
 	      $(SUBMIT) "$(SRCDIR)/generate_random_sets $$(dirname $$g)/all.txt $(CHEMICAL)/deletion.all.genes.$$gf.txt $(DELETION) $(SCREENING) --fdr $(DELETIONFDR) --conditions $(SHARED) --conversion $(ECKFILE) --lconversion $(CONVERSION) --uncommon $(UNCOMMON) --pseudocount 0.0 > $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround && $(SRCDIR)/score_auc $$(dirname $$g)/weighted_matrices_bootstrap3_$$gf/$$round/$$sround $(SCREENING) $(SCREENINGFDR) --comparison-matrix $$g > $$(dirname $$g)/weighted_bootstrap3_$$gf/$$round/$$sround"; \
 	    done; \
@@ -581,7 +580,7 @@ $(EXAMPLEROCPLOT): $(AUCDATA)
 	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
 $(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
-	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3 --height 1.5 --dpi 90
+	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3.5 --height 1.5 --dpi 90
 
 $(FSIMULATIONPLOT): $(SIMULATIONS) $(ECKFILE) $(GENOME) 
 	$(SRCDIR)/run_silver_bullets $(SICKNESSDIR)/123456/simulate $(ECKFILE) $(GENOME) $@ --width 3.5 --height 1.5 --dpi 90
@@ -638,7 +637,7 @@ $(SFIGUREB): $(TREE) $(SICKNESS) $(ROCPLOT1) $(ROCPLOT2) $(ROCPLOT3)
 	
 SNOTEBOOKC = $(NOTEBOOKDIR)/sfig3.ipynb
 $(SFIGUREC): $(PREPLICATES) $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR) $(STRAINS) $(DELETION) $(SHARED)
-	jupyter nbconvert --to notebook --execute $(SNOTEBOOKC) --output $(SNOTEBOOKC)
+	python $(NOTEBOOKDIR)/sfig3.py && jupyter nbconvert --ExecutePreprocessor.timeout=6000 --to notebook --execute $(SNOTEBOOKC) --output $(SNOTEBOOKC)
 	
 SNOTEBOOKD = $(NOTEBOOKDIR)/sfig4.ipynb
 $(SFIGURED): $(SCREENING) $(SCREENINGFDR) $(SCORE) $(AUCDATA) $(TREE) $(ACONDITIONSPLOT)

@@ -278,9 +278,16 @@ if __name__ == "__main__":
     
     dexp = {}
     for g, targets, targetsp in exp[['gene', 'targets', 'tagetsp']].values:
+        # Skip mutants not mapped to a strain
         for d in targets.split(','):
+            if d not in strains:
+                print(d)
+                continue
             dexp[d] = g
         for d in targetsp.split(','):
+            if d not in strains:
+                print(d)
+                continue
             dexp[d] = g
 
     df = pd.read_table(options.data,
@@ -296,9 +303,15 @@ if __name__ == "__main__":
     dgene = {}
     for gene, targets in exp[['gene', 'targets']].values:
         for t in targets.split(','):
+            if t not in strains:
+                print(t)
+                continue
             dgene[t] = gene
     for gene, targets in exp[['gene', 'tagetsp']].values:
         for t in targets.split(','):
+            if t not in strains:
+                print(t)
+                continue
             dgene[t] = gene
 
     out = []
@@ -351,6 +364,9 @@ if __name__ == "__main__":
                 for v in df.loc[d, (cond, '1')]:
                     res.append((cond, tag, 'gene', v))
             for d in all_strains:
+                if d not in strains:
+                    print(d)
+                    continue
                 if gene == 'acrAB' and dgene[d] in {'acrA', 'acrB', 'soxSR'}:
                     continue
                 elif gene == 'acrA' and dgene[d] in {'acrAB', 'acrB', 'soxSR'}:
@@ -376,6 +392,9 @@ if __name__ == "__main__":
                 for v in df.loc[d, (cond, '1')]:
                     res.append((cond, strains[d], 'empty', v))
             for d in all_targets:
+                if d not in strains:
+                    print(d)
+                    continue
                 if gene == 'acrAB' and dgene[d] in {'acrA', 'acrB', 'soxSR'}:
                     continue
                 elif gene == 'acrA' and dgene[d] in {'acrAB', 'acrB', 'soxSR'}:

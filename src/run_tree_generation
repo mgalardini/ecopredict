@@ -188,7 +188,7 @@ if __name__ == "__main__":
 
     circular_style = TreeStyle()
     circular_style.mode = "c"
-    circular_style.scale = 1350
+    circular_style.scale = 1300
     circular_style.show_leaf_name = False
     tree.render(options.outfile, h=options.height,
                 units="in",

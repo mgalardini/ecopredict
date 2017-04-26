@@ -50,7 +50,7 @@ if __name__ == "__main__":
     plot3 = fig3.getroot()
     plot3.moveto(0, 220, scale=1)
     plot4 = fig4.getroot()
-    plot4.moveto(270, 220, scale=1)
+    plot4.moveto(250, 220, scale=1)
     plot5 = fig5.getroot()
     plot5.moveto(0, 380, scale=1)
     plot6 = fig6.getroot()
@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     txt1 = sg.TextElement(0,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(0, 220, "B)", size=12, weight="bold")
-    txt3 = sg.TextElement(270, 220, "C)", size=12, weight="bold")
+    txt3 = sg.TextElement(245, 220, "C)", size=12, weight="bold")
     txt4 = sg.TextElement(0, 380, "D)", size=12, weight="bold")
     txt5 = sg.TextElement(490, 380, "E)", size=12, weight="bold")
     txt6 = sg.TextElement(0, 550, "F)", size=12, weight="bold")

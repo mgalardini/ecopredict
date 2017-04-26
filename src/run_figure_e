@@ -46,27 +46,27 @@ if __name__ == "__main__":
 
     # get the plot objects
     plot1 = fig1.getroot()
-    plot1.moveto(45, 25, scale=2.2)
+    plot1.moveto(170, 0, scale=1.95)
     plot3 = fig3.getroot()
     plot3.moveto(75, 275, scale=1)
     plot5 = fig5.getroot()
     plot5.moveto(435, 315, scale=1)
 
     plot6 = fig6.getroot()
-    plot6.moveto(500, 545, scale=1)
+    plot6.moveto(520, 545, scale=1)
     plot7 = fig7.getroot()
-    plot7.moveto(70, 545, scale=1)
+    plot7.moveto(90, 545, scale=1)
 
     plot10 = fig10.getroot()
     plot10.moveto(690, 260, scale=1)
 
     # add text labels
-    txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
+    txt1 = sg.TextElement(160,  25, "A)", size=12, weight="bold")
     txt2 = sg.TextElement(30, 270, "B)", size=12, weight="bold")
     txt3 = sg.TextElement(425, 270, "C)", size=12, weight="bold")
     txt4 = sg.TextElement(670, 270, "D)", size=12, weight="bold")
-    txt5 = sg.TextElement(75, 545, "E)", size=12, weight="bold")
-    txt6 = sg.TextElement(505, 545, "F)", size=12, weight="bold")
+    txt5 = sg.TextElement(95, 545, "E)", size=12, weight="bold")
+    txt6 = sg.TextElement(525, 545, "F)", size=12, weight="bold")
 
     # append plots and labels to figure
     fig.append([plot3,

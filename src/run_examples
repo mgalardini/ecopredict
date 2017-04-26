@@ -281,6 +281,9 @@ if __name__ == "__main__":
             en[loc] = f.qualifiers.get('gene', [''])[0]
             ep[loc] = f.qualifiers.get('product', [''])[0]
 
+    en['P63224'] = 'lpcA'
+    en['P76658'] = 'rfaE'
+
     genes = {x.split('\t')[0]: {conversion.get(y.split('-')[0],
                                                y.split('-')[0])
                                 for y in x.rstrip().split('\t')[1].split()

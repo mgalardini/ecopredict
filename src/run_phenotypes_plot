@@ -524,7 +524,7 @@ if __name__ == "__main__":
     plt.xticks(range(0, mphen, int(mphen/6)),
                [str(x) for x in range(0, mphen, int(mphen/6))])
     plt.yticks([])
-    plt.title('Sick strains')
+    plt.title('Growth defect strains')
     
     plt.savefig('%s/p_correlation_colorbar.svg' % options.outdir)
     plt.clf()
