@@ -22,9 +22,6 @@ def get_options():
     parser.add_argument('treelegend', action='store')
     parser.add_argument('treecolorbar', action='store')
     parser.add_argument('purity', action='store')
-    parser.add_argument('chemical', action='store')
-    parser.add_argument('arrow', action='store')
-    parser.add_argument('example', action='store')
     parser.add_argument('outfile', action='store',
                         help='output (including extension)')
 
@@ -37,7 +34,7 @@ if __name__ == "__main__":
     options = get_options()
     import svgutils.transform as sg
 
-    fig = sg.SVGFigure("10.75in", "11in")
+    fig = sg.SVGFigure("10.75in", "8.9in")
 
     fig1 = sg.fromfile(options.scheme)
     fig2 = sg.fromfile(options.replicates)
@@ -49,72 +46,53 @@ if __name__ == "__main__":
     fig7 = sg.fromfile(options.treelegend)
     fig8 = sg.fromfile(options.treecolorbar)
     fig9 = sg.fromfile(options.purity)
-    fig10 = sg.fromfile(options.chemical)
-    #fig11 = sg.fromfile(options.arrow)
-
-    ex2 = sg.fromfile(options.example)
     
     plot1 = fig1.getroot()
-    plot1.moveto(25, 25, scale=0.39)
+    plot1.moveto(15, 45, scale=0.39)
     plot2 = fig2.getroot()
-    plot2.moveto(25, 230, scale=1)
+    plot2.moveto(500, 10, scale=1)
     plot2a = fig2a.getroot()
-    plot2a.moveto(285, 250, scale=1)
+    plot2a.moveto(750, 20, scale=1)
     plot3 = fig3.getroot()
-    plot3.moveto(25, 450, scale=1)
+    plot3.moveto(-5, 255, scale=1)
     plot4 = fig4.getroot()
-    plot4.moveto(150, 960, scale=1)
+    plot4.moveto(150, 720, scale=1)
     plot5 = fig5.getroot()
-    plot5.moveto(140, 920, scale=1)
+    plot5.moveto(190, 765, scale=1)
     plot6 = fig6.getroot()
-    plot6.moveto(565, 25, scale=0.6)
+    plot6.moveto(570, 400, scale=0.6)
     plot7 = fig7.getroot()
-    plot7.moveto(800, 365, scale=1)
+    plot7.moveto(724, 535, scale=1)
     plot8 = fig8.getroot()
-    plot8.moveto(535, 420, scale=1)
+    plot8.moveto(540, 765, scale=1)
     plot9 = fig9.getroot()
-    plot9.moveto(570, 680, scale=1)
-    plot10 = fig10.getroot()
-    plot10.moveto(570, 840, scale=1)
-    #plot11 = fig11.getroot()
-    #plot11.moveto(540, 252, scale=0.5)
-    #plot11.rotate(-15)
+    plot9.moveto(570, 240, scale=1)
 
-    txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
-    txt2 = sg.TextElement(560, 25, "B)", size=12, weight="bold")
-    txt3 = sg.TextElement(25, 260, "C)", size=12, weight="bold")
-    txt3_1 = sg.TextElement(275, 260, "D)", size=12, weight="bold")
-    txt4 = sg.TextElement(25, 470, "E)", size=12, weight="bold")
-    txt5 = sg.TextElement(560, 680, "G)", size=12, weight="bold")
-    txt6 = sg.TextElement(560, 840, "H)", size=12, weight="bold")
+    txt1 = sg.TextElement(15,  35, "A)", size=12, weight="bold")
+    txt2 = sg.TextElement(500, 35, "B)", size=12, weight="bold")
+    txt3 = sg.TextElement(15, 280, "C)", size=12, weight="bold")
+    txt3_1 = sg.TextElement(555, 245, "D)", size=12, weight="bold")
+    txt4 = sg.TextElement(745, 35, "E)", size=12, weight="bold")
+    txt5 = sg.TextElement(555, 400, "F)", size=12, weight="bold")
 
-    txt_ex = sg.TextElement(560, 480, "F)", size=12, weight="bold")
-
-    plot_ex = ex2.getroot()
-    plot_ex.moveto(680, 460, scale=1)
-
-    fig.append([plot7,
+    fig.append([
+                plot7,
                 plot3,
                 plot2,
                 plot2a,
-                plot1,
                 plot4,
                 plot5,
                 plot6,
-                plot_ex,
                 plot8,
+                plot1,
                 plot9,
-                plot10,
-                #plot11,
                ])
     fig.append([txt1,
                 txt2,
                 txt3,
                 txt3_1,
-                txt_ex,
                 txt4,
                 txt5,
-                txt6,
                ])
 
     fig.save(options.outfile)

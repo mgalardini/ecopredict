@@ -1,0 +1,64 @@
+#!/usr/bin/env python
+
+__author__ = "Marco Galardini"
+__version__ = '0.1.0'
+
+
+def get_options():
+    import argparse
+
+    # create the top-level parser
+    description = "Create figure 4"
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='run_figure_4')
+    parser.add_argument('example1')
+    parser.add_argument('example2')
+    parser.add_argument('example')
+    parser.add_argument('outfile',
+                        help='output (including extension)')
+
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s '+__version__)
+
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    options = get_options()
+    import svgutils.transform as sg
+
+    #create new SVG figure
+    fig = sg.SVGFigure("11.7in", "4.8in")
+
+    # load matpotlib-generated figures
+    fig7 = sg.fromfile(options.example1)
+    fig6 = sg.fromfile(options.example2)
+    fig10 = sg.fromfile(options.example)
+
+    # get the plot objects
+    plot6 = fig6.getroot()
+    plot6.moveto(650, 25, scale=1)
+    plot7 = fig7.getroot()
+    plot7.moveto(260, 25, scale=1)
+
+    plot10 = fig10.getroot()
+    plot10.moveto(15, 90, scale=1)
+
+    # add text labels
+    txt4 = sg.TextElement(10, 85, "A)", size=12, weight="bold")
+    txt5 = sg.TextElement(265, 25, "B)", size=12, weight="bold")
+    txt6 = sg.TextElement(660, 25, "C)", size=12, weight="bold")
+
+    # append plots and labels to figure
+    fig.append([
+                plot6,
+                plot7,
+                plot10,
+               ])
+    fig.append([
+                txt4,
+                txt5,
+                txt6,
+               ])
+
+    fig.save(options.outfile)

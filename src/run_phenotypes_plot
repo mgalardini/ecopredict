@@ -510,7 +510,10 @@ if __name__ == "__main__":
     
     plt.title('Pearson\'s r')
 
-    plt.savefig('%s/p_correlation.svg' % options.outdir)
+    mclust.ax_heatmap.set_rasterized(True)
+
+    plt.savefig('%s/p_correlation.svg' % options.outdir,
+                dpi=300)
     plt.clf()
     
     # Colorbar for correlation plot
