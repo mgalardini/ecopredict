@@ -212,7 +212,7 @@ if __name__ == "__main__":
     
     res = []
     for v in o[(o.srank <= -0.01)]['erank'].values:
-        res.append(('', 'Predictedi (N=%d)' % o[(o.srank <= -0.01)]['erank'].shape[0], v))
+        res.append(('', 'Predicted (N=%d)' % o[(o.srank <= -0.01)]['erank'].shape[0], v))
     for v in o[(o.srank > -0.01)]['erank'].values:
         res.append(('', 'Not predicted (N=%d)' % o[(o.srank > -0.01)]['erank'].shape[0], v))
     r1 = pd.DataFrame(res)
