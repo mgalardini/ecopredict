@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Compute the conditional genes weights'
+    parser = argparse.ArgumentParser(description=description,
+                                     prog='get_weights')
+
+    parser.add_argument('essential', action='store',
+                        help='Conditionally essential genes')
+    parser.add_argument('scores', action='store',
+                        help='Chemical genomics scores')
+    parser.add_argument('fdr', action='store',
+                        help='Chemical genomics q-values')
+    parser.add_argument('eck', action='store',
+                        help='ECK to uniprot file')
+    parser.add_argument('locus', action='store',
+                        help='locus_tag to uniprot file')
+    parser.add_argument('uncommon', action='store',
+                        help='Uncommon genes to be ignored')
+    parser.add_argument('shared', action='store',
+                        help='Shared conditions file')
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import sys
+    import numpy as np
+    import pandas as pd
+
+    eck = {x.split()[0]: x.rstrip().split()[1]
+           for x in open(options.eck)}
+    locus = {x.split()[0]: x.rstrip().split()[1]
+             for x in open(options.locus)}
+    uncommon = {locus.get(x.rstrip(), x.rstrip())
+                for x in open(options.uncommon)}
+
+    d = pd.read_table(options.scores,
+                      index_col=0)
+    d.index = [eck.get(x.split('-')[0], '') for x in d.index]
+    f = pd.read_table(options.fdr,
+                      index_col=0)
+    f.index = [eck.get(x.split('-')[0], '') for x in f.index]
+    dups = {x for x in d.index if list(d.index).count(x) > 1}
+    d.drop(dups, inplace=True)
+    f.drop(dups, inplace=True)
+
+    v = d[d < 0][f < 0.05]
+    v[np.invert(np.isnan(v))] = 1
+    v[np.isnan(v)] = 0
+    v[np.isnan(d)] = np.nan
+
+    del_conds = {x for x in d.columns
+                 if 'UNSPECIFIED' not in x}
+    conds = {x.lstrip().split()[1]
+             for x in open(options.shared)}
+    dconds = {x.lstrip().split()[1]: x.lstrip().split()[0]
+              for x in open(options.shared)}
+    rconds = {x.lstrip().split()[0]: x.lstrip().split()[1]
+              for x in open(options.shared)}
+    conds = del_conds.intersection(conds)
+    
+    cgenes = {}
+    for l in open(options.essential):
+        cond, genes = l.rstrip().split('\t')
+        if cond not in conds:
+            continue
+        cgenes[cond] = set()
+        for gene in genes.split():
+            gene = eck.get(gene.split('-')[0], '')
+            if gene == '' or gene in uncommon:
+                continue
+            cgenes[cond].add(gene)
+
+    res = []
+    phenogenes = (v.T.sum() / v.T.count()).to_dict()
+    for c in cgenes:
+        for g in cgenes[c]:
+            if g not in set(f.index):
+                res.append((c, g, np.nan))
+                continue
+            pg = -np.log10(f.loc[g, rconds[c]])
+            res.append((c, g, pg*phenogenes.get(g, np.nan)))
+    r = pd.DataFrame(res)
+    r.columns = ['condition', 'gene', 'weight']
+    r = r.dropna()
+
+    r.to_csv(sys.stdout,
+             sep='\t',
+             index=False)

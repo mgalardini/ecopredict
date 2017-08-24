@@ -150,6 +150,7 @@ PROFILEDATA = $(SICKNESSDIR)/sickness_profile.done
 AUCDATA = $(SICKNESSDIR)/auc.done
 BOOTSTRAPSDATA = $(SICKNESSDIR)/bootstraps.done
 COLLECTBOOTSTRAPS = $(SICKNESSDIR)/collected.done
+WEIGHTS = $(SICKNESSDIR)/weights.tsv
 
 # Associations
 ASSOCIATIONDATA = $(ASSOCIATIONDIR)/.associations.done
@@ -383,6 +384,9 @@ $(UNCOMMON): $(CLUSTERS)
 $(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON)
 	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
+
+$(WEIGHTS): $(CHEMICAL)/deletion.all.genes.2.txt $(DELETION) $(DELETIONFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(SHARED)
+	$(SRCDIR)/get_weights $(CHEMICAL)/deletion.all.genes.2.txt $(DELETION) $(DELETIONFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(SHARED) > $@
 
 #######################
 ## Conditional score ##
@@ -649,7 +653,7 @@ $(SFIGURED): $(SCREENING) $(SCREENINGFDR) $(SCORE) $(AUCDATA) $(TREE) $(ACONDITI
 ########################
 
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
-sickness: $(SICKNESS)
+sickness: $(WEIGHTS) $(SICKNESS)
 score: $(SCORE)
 auc: $(AUCDATA)
 bootstraps: $(BOOTSTRAPSDATA)
