@@ -83,9 +83,17 @@ if __name__ == "__main__":
                 res.append((c, g, np.nan))
                 continue
             pg = -np.log10(f.loc[g, rconds[c]])
-            res.append((c, g, pg*phenogenes.get(g, np.nan)))
+            res.append((c, g, pg, phenogenes.get(g, np.nan)))
     r = pd.DataFrame(res)
-    r.columns = ['condition', 'gene', 'weight']
+    r.columns = ['condition', 'gene', 'weight1', 'weight2']
+    r['weight1'] = r['weight1'].replace([np.inf, -np.inf],
+                                        r['weight1'].replace([np.inf,
+                                                              -np.inf],
+                                                              np.nan).sort_values().max())
+    r['weight'] = r['weight1'] * r['weight2']
+    r = r.drop(['weight1',
+                'weight2'],
+               axis=1)
     r = r.dropna()
 
     r.to_csv(sys.stdout,
