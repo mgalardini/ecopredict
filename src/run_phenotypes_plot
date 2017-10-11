@@ -463,6 +463,8 @@ if __name__ == "__main__":
                             figsize=(7*options.size, 7*options.size),
                             col_colors=[phenotypes_colors,
                                         conditions_colors],)
+    mclust.ax_heatmap.set_xlabel('Conditions')
+    mclust.ax_heatmap.set_ylabel('Conditions')
     mclust.ax_col_colors.yaxis.tick_right()
     mclust.ax_col_colors.set_yticks([0.5, 1.5])
     mclust.ax_col_colors.set_yticklabels(['Categories',
