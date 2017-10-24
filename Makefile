@@ -148,6 +148,7 @@ SICKNESS = $(SICKNESSDIR)/123456/all.txt
 SCORE = $(SICKNESSDIR)/scores.done
 PROFILEDATA = $(SICKNESSDIR)/sickness_profile.done
 AUCDATA = $(SICKNESSDIR)/auc.done
+AUCPHYLO = $(SICKNESSDIR)/phylogenetics.tsv
 BOOTSTRAPSDATA = $(SICKNESSDIR)/bootstraps.done
 COLLECTBOOTSTRAPS = $(SICKNESSDIR)/collected.done
 WEIGHTS = $(SICKNESSDIR)/weights.tsv
@@ -410,7 +411,10 @@ $(AUCDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR)
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
 	  $(SUBMIT) "$(SRCDIR)/score_auc $$g $(SCREENING) $(SCREENINGFDR) > $$(dirname $$g)/auc_weighted_score.$$gf.txt"; \
 	done && touch $@
-	
+
+$(AUCPHYLO): $(TREE) $(SCREENING) $(SCREENINGFDR)
+	$(SRCDIR)/get_score_phylo $(TREE) $(SCREENING) $(SCREENINGFDR) > $@
+
 $(BOOTSTRAPSDATA): $(SCORE) $(SCREENING) $(SCREENINGFDR) $(ECKFILE) $(CONVERSION) $(UNCOMMON) $(DELETION) $(DELETIONFDR) $(SHARED)
 	for g in $$(find $(SICKNESSDIR) -maxdepth 2 -type f -name 'weighted_score.*.txt'); do \
 	  gf=$$(echo $$g | awk -F'.' '{print $$(NF-1)}'); \
@@ -655,7 +659,7 @@ $(SFIGURED): $(SCREENING) $(SCREENINGFDR) $(SCORE) $(AUCDATA) $(TREE) $(ACONDITI
 constraints: $(FEATURESDATA) $(SIFTFEATURESDATA) $(ACCESSIBILITYDATA) $(FOLDXACCESSIBILITYDATA)
 sickness: $(WEIGHTS) $(SICKNESS)
 score: $(SCORE)
-auc: $(AUCDATA)
+auc: $(AUCDATA) $(AUCPHYLO)
 bootstraps: $(BOOTSTRAPSDATA)
 collect: $(COLLECTBOOTSTRAPS)
 associations: $(ASSOCIATIONDATA)

@@ -1,0 +1,114 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Trivial phenotype predictor based on phylogenetic distance'
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('tree',
+                        help='Strains\' newick tree')
+    parser.add_argument('sscores',
+                        help='S-scores file')
+    parser.add_argument('qvalues',
+                        help='Q-values file')
+
+    return parser.parse_args()
+
+
+def get_phenotypes(data, a, z):
+    if data.name not in a.columns:
+        return np.nan, np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    return z.loc[strains, data.name].dropna().shape[0], a.loc[strains, data.name].dropna().shape[0]
+
+
+def evaluate(data, a, z, pred=None):
+    if data.name not in a.columns:
+        return np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    if pred is not None and data.name not in pred.columns:
+        return np.nan
+    strains = set(data.dropna().index).intersection(a[data.name].dropna().index)
+    y_true = z[data.name].loc[strains]
+    y_true[np.invert(np.isnan(y_true))] = 1
+    y_true[np.isnan(y_true)] = 0
+    if y_true.shape[0] == 0:
+        return np.nan
+    minmax = preprocessing.MinMaxScaler()
+    if pred is None:
+        y_pred = minmax.fit_transform(data.loc[strains].copy(deep=True).reshape(-1, 1)).reshape(-1, 1)
+    else:
+        minmax.fit(pred.loc[strains,
+                            data.name].reshape(-1, 1))
+        y_pred = minmax.transform(data.loc[strains].copy(deep=True).reshape(-1, 1)).reshape(-1, 1)
+    fpr, tpr, rt = roc_curve(y_true, y_pred)
+    prec, rec, pt = precision_recall_curve(y_true, y_pred)
+    tv = y_true.copy(deep=True)
+    tv[tv == 0] = -1
+    tv[tv == 1] = 1
+    x_mcc = []
+    y_mcc = []
+    f1s = []
+    for t in np.arange(0, 1, 0.005):
+        s1 = np.array(y_pred)
+        s1[s1 >= t] = 1
+        s1[s1 < t] = -1
+        x_mcc.append(t)
+        y_mcc.append(matthews_corrcoef(tv, s1))
+        s2 = np.array(y_pred)
+        s2[s2 >= t] = 1
+        s2[s2 < t] = 0
+        f1s.append(f1_score(y_true, s2))
+    return (auc(fpr, tpr), fpr, tpr, rt), (auc(rec, prec), rec, prec, pt), (f1s, x_mcc, y_mcc)
+
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import numpy as np
+    import pandas as pd
+    from Bio import Phylo
+    from sklearn.metrics import roc_curve, auc, precision_recall_curve
+    from sklearn.metrics import f1_score, matthews_corrcoef
+    from sklearn import preprocessing
+
+    conds = pd.read_table(options.sscores,
+                          index_col=0).columns
+
+    a = pd.read_table(options.sscores,
+                      index_col=0)
+    f = pd.read_table(options.qvalues,
+                      index_col=0)
+    v = a[f < 0.05]
+    v = v[v < 0]
+
+    t = Phylo.read(options.tree, 'newick')
+    ref = None
+    for c in t.get_terminals():
+        if 'genome' in c.name:
+            ref = c
+            c.name = 'NT12001'
+        c.name = c.name.split('_')[0].split('.')[0]
+    res = []
+    for c in t.get_terminals():
+        res.append(t.distance(ref, c))
+    r = pd.DataFrame([res for x in conds],
+                     columns=[c.name for c in t.get_terminals()],
+                     index=conds).T
+
+    phenotypes = r.apply(get_phenotypes, a=a, z=v).dropna()
+
+    res = r.apply(evaluate, a=a, z=v)
+
+    conditions = set(phenotypes.index).intersection(res.index)
+    for c in conditions:
+        (roc_auc, fpr, tpr, rt), (prec_auc, rec, prec, pt), (f1s, x_mcc, y_mcc) = res[c]
+        nsick, nall = phenotypes[c]
+
+        for x, y, z in zip(fpr, tpr, rt):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\troc' % (c, nsick, nall, roc_auc, z, x, y))
+        for x, y, z in zip(x_mcc, y_mcc, f1s):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tmcc' % (c, nsick, nall, z, x, x, y))
+        for x, y, z in zip(rec, prec, pt):
+            print('%s\t%d\t%d\t%.5f\t%.5f\t%.5f\t%.5f\tprec' % (c, nsick, nall, prec_auc, z, x, y))
