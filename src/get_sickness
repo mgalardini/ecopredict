@@ -59,9 +59,9 @@ def get_options():
                         help='Minimum protein coverage cutoff [Default: 0.7]')
     
     parser.add_argument('--sift-model', action='store',
-                        choices=['linear', 'logistic'],
+                        choices=['linear', 'logistic', 'straight'],
                         default='logistic',
-                        help='Sift model fit [Default: linear]')
+                        help='Sift model fit [Default: logistic]')
     parser.add_argument('--sift-slope', action='store',
                         type=float,
                         default=-0.761,
@@ -76,7 +76,7 @@ def get_options():
                         help='Sift score offset [Default: 1.59802721091e-05]')
     
     parser.add_argument('--foldx-model', action='store',
-                        choices=['linear', 'logistic'],
+                        choices=['linear', 'logistic', 'straight'],
                         default='logistic',
                         help='Foldx model fit [Default: logistic]')
     parser.add_argument('--foldx-slope', action='store',
@@ -171,15 +171,18 @@ if __name__ == "__main__":
                 continue
             pneutral[prot] = pneutral.get(prot, {})
 
-            score1 = -np.log(float(score) + options.sift_offset)
-            if options.sift_model == 'linear':
-                p = linear(score1,
-                           options.sift_slope,
-                           options.sift_intercept)
+            if options.sift_model == 'straight':
+                p = float(score)
             else:
-                p = logistic(score1,
-                           options.sift_slope,
-                           options.sift_intercept)
+                score1 = -np.log(float(score) + options.sift_offset)
+                if options.sift_model == 'linear':
+                    p = linear(score1,
+                               options.sift_slope,
+                               options.sift_intercept)
+                else:
+                    p = logistic(score1,
+                               options.sift_slope,
+                               options.sift_intercept)
             if p < 0:
                 p = 0
             pneutral[prot][mut] = pneutral[prot].get(mut, [])
@@ -199,14 +202,17 @@ if __name__ == "__main__":
             pneutral[prot] = pneutral.get(prot, {})
 
             score = float(score)
-            if options.foldx_model == 'linear':
-                p = linear(score,
-                           options.foldx_slope,
-                           options.foldx_intercept)
+            if options.foldx_model == 'straight':
+                p = score
             else:
-                p = logistic(score,
-                           options.foldx_slope,
-                           options.foldx_intercept)
+                if options.foldx_model == 'linear':
+                    p = linear(score,
+                               options.foldx_slope,
+                               options.foldx_intercept)
+                else:
+                    p = logistic(score,
+                               options.foldx_slope,
+                               options.foldx_intercept)
             if p < 0:
                 p = 0
             pneutral[prot][mut] = pneutral[prot].get(mut, [])
