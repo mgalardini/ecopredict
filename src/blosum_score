@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Score aminoacid changes using a BLOSUM matrix'
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('nonsyn',
+                        help='Nonsynonymous file (format: A1Z PROT1)')
+    
+    parser.add_argument('--matrix',
+                        default='blosum62',
+                        help='Specific BLOSUM matrix to fit (all lowercase) [Default: blosum62]')
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import numpy as np
+    import pandas as pd
+    from scipy import stats
+    from Bio.SubsMat import MatrixInfo
+
+    d = {}
+    for (a1, a2), v in getattr(MatrixInfo, options.matrix).items():
+        d[a1] = d.get(a1, {})
+        d[a1][a2] = v
+        d[a2] = d.get(a2, {})
+        d[a2][a1] = v
+    m = pd.DataFrame(d)
+
+    m = m.mask(np.triu(np.ones(m.shape), 1).astype(bool)).stack()
+
+    d = {}
+    z = stats.gamma.sf(m,
+                       *stats.gamma.fit(m))
+    for ((a1, a2), v1), v2 in zip(m.iteritems(), 1-z):
+        d[a1] = d.get(a1, {})
+        d[a1][a2] = v2
+        d[a2] = d.get(a2, {})
+        d[a2][a1] = v2
+
+    for l in open(options.nonsyn):
+        mut, prot = l.rstrip().split()
+        a1, a2 = mut[0], mut[-1]
+        print('%s\t%s\t%.7E' % (prot, mut, d[a1][a2]))
