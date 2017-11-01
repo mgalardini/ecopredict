@@ -14,6 +14,7 @@ def get_options():
     parser.add_argument('scheme', action='store',
                         help='scheme')
     parser.add_argument('conditions')
+    parser.add_argument('example')
     parser.add_argument('associations')
     parser.add_argument('outfile',
                         help='output (including extension)')
@@ -24,41 +25,45 @@ def get_options():
     return parser.parse_args()
 
 
-
-
 if __name__ == "__main__":
     options = get_options()
     import svgutils.transform as sg
 
     #create new SVG figure
-    fig = sg.SVGFigure("7.7in", "6in")
+    fig = sg.SVGFigure("8in", "6.3in")
 
     # load matpotlib-generated figures
     fig1 = sg.fromfile(options.scheme)
     fig3 = sg.fromfile(options.conditions)
+    fig4 = sg.fromfile(options.example)
     fig5 = sg.fromfile(options.associations)
 
     # get the plot objects
     plot1 = fig1.getroot()
-    plot1.moveto(25, 0, scale=1.95)
+    plot1.moveto(50, 0, scale=1.95)
     plot3 = fig3.getroot()
-    plot3.moveto(75, 275, scale=1)
+    plot3.moveto(75, 285, scale=1)
+    plot4 = fig4.getroot()
+    plot4.moveto(435, 275, scale=1)
     plot5 = fig5.getroot()
-    plot5.moveto(435, 315, scale=1)
+    plot5.moveto(465, 410, scale=1)
 
     # add text labels
     txt1 = sg.TextElement(25,  25, "A)", size=12, weight="bold")
-    txt2 = sg.TextElement(30, 270, "B)", size=12, weight="bold")
+    txt2 = sg.TextElement(30, 285, "B)", size=12, weight="bold")
     txt3 = sg.TextElement(425, 270, "C)", size=12, weight="bold")
+    txt4 = sg.TextElement(425, 410, "D)", size=12, weight="bold")
 
     # append plots and labels to figure
     fig.append([plot3,
+                plot4,
                 plot5,
                 plot1,
                ])
     fig.append([txt1,
                 txt2,
                 txt3,
+                txt4
                ])
 
     fig.save(options.outfile)
