@@ -281,3 +281,24 @@ if __name__ == "__main__":
         options.outdir,
         name) + '\n')
     f.close()
+    
+    name = 'aa'
+    f = open('%s/%s.sh' % (options.outdir, name), 'w')
+    f.write(start.format(options.outdir, name, options.vepdir) + '\n')
+    f.write('--sift %s/$strain.aa.tsv \\' % options.vepdir + '\n')
+    f.write('--stop %s/$strain.stop.tsv \\' % options.vepdir + '\n')
+    f.write('--accessory \\' + '\n')
+    f.write('--missing \\' + '\n')
+    f.write(finish.replace('logistic',
+                           'straight').format(options.conversion,
+        options.vepdir,
+        options.exclude_genes,
+        options.coverage,
+        options.sift_intercept,
+        options.sift_slope,
+        options.sift_offset,
+        options.foldx_intercept,
+        options.foldx_slope,
+        options.outdir,
+        name) + '\n')
+    f.close()

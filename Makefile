@@ -383,6 +383,7 @@ $(UNCOMMON): $(CLUSTERS)
 	$(SRCDIR)/uncommon_genes $(VEPDIR) --clusters $(CLUSTERS) --proportion $(UNCOMMONPROP) > $@
 
 $(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON)
+	for i in $$(find $(VEPDIR)/* -type d); do $(SRCDIR)/aa_category $$i/nonsynmuts.tsv > $$i.aa.tsv;done
 	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
