@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Prepare data for the PIC analysis'
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('tree',
+                        help='Newick phylogenetic tree')
+    parser.add_argument('phenotypes',
+                        help='Strains\' phenotypic matrix')
+    parser.add_argument('otree',
+                        help='Output file for the pruned tree')
+    parser.add_argument('ophenotypes',
+                        help='Output file for the pruned phenotypes')
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import pandas as pd
+    import numpy as np
+    from Bio import Phylo
+    from sklearn import preprocessing
+
+    t = Phylo.read(options.tree, 'newick')
+    for x in t.get_terminals():
+        if 'genome' in x.name:
+            x.name = 'NT12001'
+        else:
+            x.name = x.name.split('_')[0]
+    nodes = {x.name for x in t.get_terminals()}
+
+    m = pd.read_table(options.phenotypes,
+                      index_col=0).sort_index()
+    a = m.loc[nodes]
+    a1 = a.dropna(thresh=a.shape[1]*0.90)
+    a2 = a1.T.dropna(thresh=a1.shape[0]*0.95).T
+    a2 = pd.DataFrame(preprocessing.Imputer(strategy='mean', axis=1).transform(a2),
+                      index=a2.index,
+                      columns=a2.columns)
+    m = a2.stack()
+
+    for x in nodes - {x[0] for x in m.index}:
+        t.prune(x)
+
+    Phylo.write(t, options.otree, 'newick')
+
+    m.unstack().to_csv(options.ophenotypes, sep='\t')
