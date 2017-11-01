@@ -49,15 +49,6 @@ def get_boots(tag):
                                'sick', 'strains',
                                'stat', 'threshold',
                                'x', 'y', 'kind']
-    d['strains'] = pd.read_table('%s/bootstrap1_2.txt' % tag,
-                                              header=None)
-    d['strains'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
-    d['sets'] = pd.read_table('%s/bootstrap2_2.txt' % tag,
-                                              header=None)
-    d['sets'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
-    d['random'] = pd.read_table('%s/bootstrap3_2.txt' % tag,
-                                              header=None)
-    d['random'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
     return d
 
 def get_w_boots(tag):
@@ -68,15 +59,6 @@ def get_w_boots(tag):
                                'sick', 'strains',
                                'stat', 'threshold',
                                'x', 'y', 'kind']
-    d['strains'] = pd.read_table('%s/weighted_bootstrap1_2.txt' % tag,
-                                              header=None)
-    d['strains'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
-    d['sets'] = pd.read_table('%s/weighted_bootstrap2_2.txt' % tag,
-                                              header=None)
-    d['sets'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
-    d['random'] = pd.read_table('%s/weighted_bootstrap3_2.txt' % tag,
-                                              header=None)
-    d['random'].columns = ['kind', 'condition', 'x', 'y', 'mad', 'threshold']
     return d
 
 def compute_auc(group):
@@ -127,48 +109,21 @@ if __name__ == "__main__":
 
     k = 'snps'
     m1 = w[k]['normal']
-    b1_1 = w[k]['strains']
-    b2_1 = w[k]['sets']
-    b3_1 = w[k]['random']
 
     k = 'accessory'
     m2 = w[k]['normal']
-    b1_2 = w[k]['strains']
-    b2_2 = w[k]['sets']
-    b3_2 = w[k]['random']
 
     k = 'all'
     m3 = w[k]['normal']
-    b1_3 = w[k]['strains']
-    b2_3 = w[k]['sets']
-    b3_3 = w[k]['random']
 
     m4 = w[k]['normal']
     m4 = m4[m4.sick / m4.strains >= 0.01]
-    b1_4 = w[k]['strains']
-    b1_4 = b1_4.set_index('condition').loc[set(m4.condition)].reset_index()
-    b2_4 = w[k]['sets']
-    b2_4 = b2_4.set_index('condition').loc[set(m4.condition)].reset_index()
-    b3_4 = w[k]['random']
-    b3_4 = b3_4.set_index('condition').loc[set(m4.condition)].reset_index()
 
     m5 = w[k]['normal']
     m5 = m5[m5.sick / m5.strains >= 0.03]
-    b1_5 = w[k]['strains']
-    b1_5 = b1_5.set_index('condition').loc[set(m5.condition)].reset_index()
-    b2_5 = w[k]['sets']
-    b2_5 = b2_5.set_index('condition').loc[set(m5.condition)].reset_index()
-    b3_5 = w[k]['random']
-    b3_5 = b3_5.set_index('condition').loc[set(m5.condition)].reset_index()
 
     m6 = w[k]['normal']
     m6 = m6[m6.sick / m6.strains >= 0.05]
-    b1_6 = w[k]['strains']
-    b1_6 = b1_6.set_index('condition').loc[set(m6.condition)].reset_index()
-    b2_6 = w[k]['sets']
-    b2_6 = b2_6.set_index('condition').loc[set(m6.condition)].reset_index()
-    b3_6 = w[k]['random']
-    b3_6 = b3_6.set_index('condition').loc[set(m6.condition)].reset_index()
 
     if not options.only_all:
         data = [m1[m1.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
@@ -177,49 +132,6 @@ if __name__ == "__main__":
                 m4[m4.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
                 m5[m5.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
                 m6[m6.kind == 'prec'].groupby('condition').max()['stat'].dropna(),]
-
-        data1 = [b1_1[b1_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_2[b1_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_3[b1_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_4[b1_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_5[b1_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_6[b1_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
-        data2 = [b2_1[b2_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_2[b2_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_3[b2_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_4[b2_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_5[b2_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_6[b2_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
-        data3 = [b3_1[b3_1.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_2[b3_2.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_3[b3_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_4[b3_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_5[b3_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_6[b3_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
-        plt.errorbar([x.median() for x in data1],
-                     [x+0.2 for x in range(6)],
-                     xerr=[x.mad() for x in data1],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[0],
-                     markersize=10,
-                     label='Shuffled strains')
-        plt.errorbar([x.median() for x in data2],
-                     [x for x in range(6)],
-                     xerr=[x.mad() for x in data2],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[1],
-                     markersize=10,
-                     label='Shuffled sets')
-        plt.errorbar([x.median() for x in data3],
-                     [x-0.2 for x in range(6)],
-                     xerr=[x.mad() for x in data3],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[2],
-                     markersize=10,
-                     label='Random sets')
 
         sns.boxplot(data=data,
                     orient='h',
@@ -269,21 +181,6 @@ if __name__ == "__main__":
                 m5[m5.kind == 'prec'].groupby('condition').max()['stat'].dropna(),
                 m6[m6.kind == 'prec'].groupby('condition').max()['stat'].dropna(),]
 
-        data1 = [b1_3[b1_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_4[b1_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_5[b1_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b1_6[b1_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
-        data2 = [b2_3[b2_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_4[b2_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_5[b2_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b2_6[b2_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
-        data3 = [b3_3[b3_3.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_4[b3_4.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_5[b3_5.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),
-                 b3_6[b3_6.kind == 'prec'].groupby('condition').apply(compute_auc).dropna(),]
-
         sns.boxplot(data=data,
                     orient='h',
                     color=sns.xkcd_rgb['pale grey'],
@@ -310,28 +207,6 @@ if __name__ == "__main__":
                  markersize=10,
                  label='Mean',
                  zorder=10)
-
-        line3 = plt.errorbar([x.median() for x in data1],
-                     [x+0.2 for x in range(4)],
-                     xerr=[x.mad() for x in data1],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[0],
-                     markersize=10,
-                     label='Shuffled strains')
-        line4 = plt.errorbar([x.median() for x in data2],
-                     [x for x in range(4)],
-                     xerr=[x.mad() for x in data2],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[1],
-                     markersize=10,
-                     label='Shuffled sets')
-        line5 = plt.errorbar([x.median() for x in data3],
-                     [x-0.2 for x in range(4)],
-                     xerr=[x.mad() for x in data3],
-                     fmt='o',
-                     color=sns.color_palette('Greys', 3)[2],
-                     markersize=10,
-                     label='Random sets')
 
         plt.yticks(range(4),
                    ['All conditions\n(N={0})'.format(data[0].shape[0]),

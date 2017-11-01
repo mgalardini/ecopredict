@@ -589,7 +589,7 @@ $(EXAMPLE2PLOT): $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREEN
 	$(SRCDIR)/run_examples $(STRAINS) $(ECKFILE) $(CONVERSION) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(UNCOMMON) $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 5.5 --width 3.5 --dpi 300 --max-strains 25 --max-genes 10
 
 $(EXAMPLEROCPLOT): $(AUCDATA)
-	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(SICKNESSDIR)/123456/weighted_bootstrap3_2/ $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
 $(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
 	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3.5 --height 1.5 --dpi 90
