@@ -205,6 +205,7 @@ EXAMPLE1APLOT = $(PLOTDIR)/example_1a.svg
 EXAMPLE2APLOT = $(PLOTDIR)/example_2a.svg
 EXAMPLE3APLOT = $(PLOTDIR)/example_3a.svg
 EXAMPLEROCPLOT = $(PLOTDIR)/example_roc.svg
+EXAMPLEROCPLOT2 = $(PLOTDIR)/example_roc_2.svg
 FOVERALLPLOT = $(PLOTDIR)/overall_followup.svg
 FSIMULATIONPLOT = $(PLOTDIR)/simulation.svg
 FEXAMPLE1 = $(PLOTDIR)/fexample_1.svg
@@ -241,6 +242,7 @@ SFIGUREA = $(SFIGUREDIR)/sfig1.svg
 SFIGUREB = $(SFIGUREDIR)/sfig2.svg
 SFIGUREC = $(SFIGUREDIR)/sfig3.svg
 SFIGURED = $(SFIGUREDIR)/sfig4.svg
+SFIGUREF = $(SFIGUREDIR)/sfig6.svg
 
 ##############################
 ## Non-synonymous mutations ##
@@ -598,6 +600,9 @@ $(EXAMPLE2PLOT): $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREEN
 $(EXAMPLEROCPLOT): $(AUCDATA)
 	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(SICKNESSDIR)/123456/weighted_bootstrap3_2/ $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
+$(EXAMPLEROCPLOT2): $(AUCDATA)
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(SICKNESSDIR)/123456/weighted_bootstrap3_2/ $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90 --roc-curve
+
 $(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
 	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3.5 --height 1.5 --dpi 90
 
@@ -662,6 +667,13 @@ SNOTEBOOKD = $(NOTEBOOKDIR)/sfig4.ipynb
 $(SFIGURED): $(SCREENING) $(SCREENINGFDR) $(SCORE) $(AUCDATA) $(TREE) $(ACONDITIONSPLOT)
 	jupyter nbconvert --to notebook --execute $(SNOTEBOOKD) --output $(SNOTEBOOKD)
 
+SNOTEBOOKF = $(NOTEBOOKDIR)/sfig6.ipynb
+$(SFIGUREF): $(AUCDATA) $(TREE) $(COLLECTBOOTSTRAP)
+	grep prec $(SICKNESSDIR)/123456/weighted_bootstrap1_2/* | awk '{if ($$3/$$4 >= 0.05) print $$0}' | sed 's/:/\t/g' | awk '{print $$1"\t"$$2"\t"$$3"\t"$$6}' | uniq > $(MUTATION)/b1_5_prec.txt
+	grep prec $(SICKNESSDIR)/123456/weighted_bootstrap2_2/* | awk '{if ($$3/$$4 >= 0.05) print $$0}' | sed 's/:/\t/g' | awk '{print $$1"\t"$$2"\t"$$3"\t"$$6}' | uniq > $(MUTATION)/b2_5_prec.txt
+	grep prec $(SICKNESSDIR)/123456/weighted_bootstrap3_2/*/* | awk '{if ($$2/$$3 >= 0.05) print $$0}' | sed 's/:/\t/g' | awk '{print $$1"\t"$$2"\t"$$5}' | uniq > $(MUTATION)/b3_5_prec.txt
+	jupyter nbconvert --to notebook --execute $(SNOTEBOOKF) --output $(SNOTEBOOKF)
+
 ########################
 ## Targets definition ##
 ########################
@@ -687,10 +699,11 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(EXAMPLE1PLOT) \
        $(EXAMPLE2PLOT) \
        $(EXAMPLEROCPLOT) \
+       $(EXAMPLEROCPLOT2) \
        $(FOVERALLPLOT) $(FSIMULATIONPLOT) \
        $(FEXAMPLE1) $(FEXAMPLE2) $(FEXAMPLE3) \
        $(FSUPBAR)
 figures: $(FIGUREB) $(FIGURED) $(FIGUREE1) $(FIGUREE2) $(FIGUREF) \
-         $(SFIGUREA) $(SFIGUREB) $(SFIGUREC) $(SFIGURED)
+         $(SFIGUREA) $(SFIGUREB) $(SFIGUREC) $(SFIGURED) $(SFIGUREF)
 
 .PHONY: constraints sickness score auc bootstraps collect associations followup plots figures

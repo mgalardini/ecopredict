@@ -93,11 +93,10 @@ if __name__ == "__main__":
     plt.figure(figsize=(4*options.size,
                         2*options.size))
 
-    plt.plot(m[m['kind'] == 'prec'].loc[c].mean()['stat'],
-             5,
-             'ro',
-             markersize=10,
-             label='Predictor')
+    plt.axvline(m[m['kind'] == 'prec'].loc[c].mean()['stat'],
+                linestyle='dashed',
+                color='r',
+                label='Predictor')
 
     sns.kdeplot(m1.loc[c],
                 shade=True,
@@ -113,12 +112,13 @@ if __name__ == "__main__":
                 color=sns.xkcd_rgb['dark grey'])
 
     plt.legend(bbox_to_anchor=(1, 1),
+               loc='upper right',
                frameon=True)
 
     plt.xlabel('PR-AUC')
 
     plt.yticks([])
-    plt.xlim(0, 0.5)
+    plt.xlim(0, 0.55)
 
     sns.despine(left=True)
     plt.tight_layout()

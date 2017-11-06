@@ -22,6 +22,9 @@ def get_options():
     parser.add_argument('--cname', action='store',
                         nargs='*',
                         help='Condition names')
+    parser.add_argument('--roc-curve', action='store_true',
+                        default=False,
+                        help='Plot ROC curve [Default: precision-recall curve]')
     parser.add_argument('--size', action='store',
                         type=float,
                         default=1,
@@ -79,8 +82,10 @@ if __name__ == "__main__":
     auc = pd.read_table(options.roc,
                         header=None)
     auc.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
-    auc = auc[auc.kind == 'prec']
-
+    if not options.roc_curve:
+        auc = auc[auc.kind == 'prec']
+    else:
+        auc = auc[auc.kind == 'roc']
 
     for c, cname, color in zip(options.condition,
                                options.cname,
@@ -102,7 +107,10 @@ if __name__ == "__main__":
                 v = pd.read_table(os.path.join(directory, d, f), header=None)
                 v.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
                 v.set_index('condition', inplace=True)
-                v = v[v['kind'] == 'prec']
+                if not options.roc_curve:
+                    v = v[v['kind'] == 'prec']
+                else:
+                    v = v[v['kind'] == 'roc']
                 m3.append(interpolate(v.loc[c]).to_frame().T)
         m3 = pd.concat(m3)
         plt.errorbar(m3.columns,
@@ -114,9 +122,20 @@ if __name__ == "__main__":
                      zorder=0,
                      alpha=0.5)
 
-    plt.legend(loc='upper right', frameon=True)
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
+    if not options.roc_curve:
+        plt.legend(loc='upper right', frameon=True)
+        plt.xlabel('Recall')
+        plt.ylabel('Precision')
+    else:
+        plt.plot([0, 1],
+                 [0, 1],
+                 '--',
+                 color='grey',
+                 zorder=0,
+                 label='Random predictor')
+        plt.legend(loc='lower right', frameon=True)
+        plt.xlabel('False positive rate')
+        plt.ylabel('True positive rate')
 
     plt.xlim(0, 1)
     plt.ylim(0, 1)
