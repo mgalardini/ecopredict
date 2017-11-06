@@ -1,0 +1,127 @@
+#!/usr/bin/env python
+
+def get_options():
+    import argparse
+
+    description = 'Plot one condition along its bootstraps'
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('auc',
+                        help='Auc file')
+    parser.add_argument('bootstrap1',
+                        help='Bootstraps directory 1')
+    parser.add_argument('bootstrap2',
+                        help='Bootstraps directory 2')
+    parser.add_argument('bootstrap3',
+                        help='Bootstraps directory 3')
+    parser.add_argument('condition',
+                        help='Condition to plot')
+    parser.add_argument('outfile', action='store',
+                        help='Output file')
+
+    parser.add_argument('--size', action='store',
+                        type=int,
+                        default=1,
+                        help='Figure size multiplier [Default: 1 inches]')
+    parser.add_argument('--dpi', action='store',
+                        type=int,
+                        default=300,
+                        help='DPI [Default: 300]')
+
+    return parser.parse_args()
+
+if __name__ == "__main__":
+    options = get_options()
+
+    import os
+    import numpy as np
+    import pandas as pd
+
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    import matplotlib as mpl
+    import matplotlib.cm as cm
+    import matplotlib.patches as patches
+
+    sns.set_style('white')
+
+    plt.rc('font', family='sans-serif') 
+    plt.rc('font', serif='Arial') 
+    plt.rc('text', usetex='false')
+    
+    try:
+        plt.style.use('custom.mplstyle')
+    except IOError:
+        plt.rc('font', size=10)
+        plt.rc('xtick', labelsize=10)
+        plt.rc('ytick', labelsize=10)
+        plt.rc('axes', labelsize=12, titlesize=12)
+        plt.rc('legend', fontsize=8)
+
+    m = pd.read_table(options.auc, header=None)
+    m.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    m.set_index('condition', inplace=True)
+    pr = m[m['kind'] == 'prec'].groupby('condition').mean()['stat'].dropna()
+
+    p = (m['sick'] / m['strains']).groupby('condition').mean().to_dict()
+
+    v = pd.read_table(options.bootstrap1, header=None)
+    v.columns = ['fname', 'round', 'condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    v.set_index('condition', inplace=True)
+    v = v[v['kind'] == 'prec']
+    v['round'] = ['%s_%d' % (f, x) for f,x in v[['fname', 'round']].values]
+    v = v.groupby(['condition', 'round']).mean()['stat']
+    m1 = v
+    
+    v = pd.read_table(options.bootstrap2, header=None)
+    v.columns = ['fname', 'round', 'condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    v.set_index('condition', inplace=True)
+    v = v[v['kind'] == 'prec']
+    v['round'] = ['%s_%d' % (f, x) for f,x in v[['fname', 'round']].values]
+    v = v.groupby(['condition', 'round']).mean()['stat']
+    m2 = v
+    
+    v = pd.read_table(options.bootstrap3, header=None)
+    v.columns = ['round', 'condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+    v.set_index('condition', inplace=True)
+    v = v[v['kind'] == 'prec']
+    v = v.groupby(['condition', 'round']).mean()['stat']
+    m3 = v
+
+    c = options.condition
+
+    plt.figure(figsize=(4*options.size,
+                        2*options.size))
+
+    plt.plot(m[m['kind'] == 'prec'].loc[c].mean()['stat'],
+             5,
+             'ro',
+             markersize=10,
+             label='Predictor')
+
+    sns.kdeplot(m1.loc[c],
+                shade=True,
+                label='Shuffled strains',
+                color=sns.xkcd_rgb['light grey'])
+    sns.kdeplot(m2.loc[c],
+                shade=True,
+                label='Shuffled sets',
+                color=sns.xkcd_rgb['grey'])
+    sns.kdeplot(m3.loc[c],
+                shade=True,
+                label='Random sets',
+                color=sns.xkcd_rgb['dark grey'])
+
+    plt.legend(bbox_to_anchor=(1, 1),
+               frameon=True)
+
+    plt.xlabel('PR-AUC')
+
+    plt.yticks([])
+    plt.xlim(0, 0.5)
+
+    sns.despine(left=True)
+    plt.tight_layout()
+
+    plt.savefig(options.outfile,
+                dpi=options.dpi)

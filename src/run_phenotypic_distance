@@ -11,14 +11,10 @@ def get_options():
     description = "Run phenotypes plots"
     parser = argparse.ArgumentParser(description=description,
                                      prog='run_phenotypes_plot')
-    parser.add_argument('matrix', action='store',
-                        help='matrix file')
-    parser.add_argument('fdr', action='store',
-                        help='fdr file')
-    parser.add_argument('tree', action='store',
-                        help='tree file')
-    parser.add_argument('evolution', action='store',
-                        help='Evolution experiment file')
+    parser.add_argument('pic', action='store',
+                        help='PIC file')
+    parser.add_argument('nodes', action='store',
+                        help='Nodes distances file')
     parser.add_argument('outfile', action='store',
                         help='Output file')
 
@@ -40,7 +36,6 @@ if __name__ == "__main__":
     import numpy as np
     import pandas as pd
     from scipy import stats
-    from Bio import Phylo
     from nadist.pure.spatial import euclidean_pdist
     from scipy.spatial.distance import pdist, squareform
 
@@ -67,74 +62,56 @@ if __name__ == "__main__":
         plt.rc('axes', labelsize=12, titlesize=12)
         plt.rc('legend', fontsize=8)
 
-    evol = {x.rstrip()
-            for x in open(options.evolution)}
+    m = pd.read_table(options.pic, sep=',', index_col=0)
+    n = pd.read_table(options.nodes, sep=',', index_col=0)
 
-    t = Phylo.read(options.tree, 'newick')
-    ref = None
-    for x in t.get_terminals():
-        x.name = x.name.split('_')[0]
-        if 'genome' in x.name:
-            x.name = 'NT12001'
-            ref = x
-    strains = {x.name for x in t.get_terminals()}
+    p = pd.DataFrame(squareform(euclidean_pdist(m.values)),
+                     index=[str(x) for x in m.index],
+                     columns=[str(x) for x in m.index])
+    c = m.T.corr()
 
-    a = pd.read_table(options.matrix)
-    a.set_index(a.columns[0],
-                inplace=True)
-    f = pd.read_table(options.fdr)
-    f.set_index(f.columns[0],
-                inplace=True)
-    a = a.loc[strains]
-    f = f.loc[strains]
-    v = a[a < 0][f < 0.05]
-    v[np.invert(np.isnan(v))] = 1
-    v[np.isnan(v)] = 0
-    v[np.isnan(a)] = np.nan
+    n = n.mask(np.triu(np.ones(n.shape)).astype(bool)).stack()
 
-    p = squareform(euclidean_pdist(a.values))
-    p = pd.DataFrame(p,
-                     index=a.index,
-                     columns=a.index)
+    p = p.stack().loc[[(str(x[0]), str(x[1])) for x in n.index]]
+    c = c.stack().loc[[(int(x[0]), int(x[1])) for x in p.index]]
 
-    res = []
-    for s in strains:
-        if s == 'NT12001':
-            continue
-        res.append((s, t.distance(ref.name, s), p.loc['NT12001', s]))
-    r = pd.DataFrame(res)
-    r.columns = ['strain', 'phylo', 'pheno']
-    r.set_index('strain', inplace=True)
-    r.dropna(inplace=True)    
+    n.name = 'n'
+    p.name = 'p'
+
+    n = n.reset_index()
+    n['level_0'] = [int(x) for x in n['level_0']]
+    n['level_1'] = [int(x) for x in n['level_1']]
+    n = n.set_index(['level_0',
+                     'level_1'])['n']
+    p = p.reset_index()
+    p['level_0'] = [int(x) for x in p['level_0']]
+    p['level_1'] = [int(x) for x in p['level_1']]
+    p = p.set_index(['level_0',
+                     'level_1'])['p']
+
+    p[np.isinf(p)] = np.nan
+
+    r = n.to_frame().join(p.to_frame()).dropna()
+
+    n = r['n']
+    p = r['p']
 
     plt.figure(figsize=(3*options.size,
                         3*options.size))
 
-    plt.plot(r.loc[strains - evol].phylo,
-             r.loc[strains - evol].pheno,
+    plt.plot(n,
+             p,
              'k.',
+             alpha=0.1,
              label='_')
-    plt.plot(r.loc[evol].phylo,
-             r.loc[evol].pheno,
-             'r.',
-             label='Evolution experiment')
 
-    l = stats.linregress(r.phylo,
-                         r.pheno)
+    l = stats.linregress(n,
+                         p)
     print(l.rvalue, l.pvalue)
-    #fn = l.intercept + l.slope * np.linspace(0, r.phylo.max())
-    #plt.plot(np.linspace(0, r.phylo.max()),
-    #         fn,
-    #         '--',
-    #         color='grey',
-    #         label='All strains (r=%.2f)' % l.rvalue)
-    l = stats.linregress(r.loc[strains - evol].dropna().phylo,
-                         r.loc[strains - evol].dropna().pheno)
-    print(l.rvalue, l.pvalue)
-    fn = l.intercept + l.slope * np.linspace(0, r.phylo.max())
-    plt.plot(np.linspace(0, r.phylo.max()),
+    fn = l.intercept + l.slope * np.linspace(0, n.max())
+    plt.plot(np.linspace(0, n.max()),
              fn,
-             'k--',
+             'r--',
              label='Pearson\'s r: %.2f' % l.rvalue)
 
     plt.legend(loc='upper right',

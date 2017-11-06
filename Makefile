@@ -193,6 +193,7 @@ PREPLICATES = $(PLOTDIR)/p_replicates.svg
 PREPLICATESA = $(PLOTDIR)/p_replicates_all.svg
 PTREEPLOT = $(PLOTDIR)/ptree.svg
 PTREEBARS = $(PLOTDIR)/ptree_colorbars.svg
+BOOTSTRAPPLOT = $(PLOTDIR)/example_bootstrap.svg
 CONDITIONSPLOT = $(PLOTDIR)/conditions_auc.svg
 ACONDITIONSPLOT = $(PLOTDIR)/conditions_all_auc.svg
 CATEGORIESPLOT = $(PLOTDIR)/categories_auc.svg
@@ -383,6 +384,7 @@ $(UNCOMMON): $(CLUSTERS)
 	$(SRCDIR)/uncommon_genes $(VEPDIR) --clusters $(CLUSTERS) --proportion $(UNCOMMONPROP) > $@
 
 $(SICKNESS): $(CONVERSION) $(COMMON) $(UNCOMMON)
+	for i in $$(find $(VEPDIR)/* -type d); do $(SRCDIR)/aa_category $$i/nonsynmuts.tsv > $$i.aa.tsv;done
 	$(SRCDIR)/prepare_sickness_scripts --outdir $(SICKNESSDIR) --vepdir $(VEPDIR) --conversion $(CONVERSION) --exclude $(COMMON) --exclude-genes $(UNCOMMON) --coverage 0.0 --sift-slope -0.625 --sift-intercept 1.971 --sift-offset 1.527487632E-04 --foldx-slope -1.465 --foldx-intercept 1.201
 	for script in $$(find $(SICKNESSDIR) -maxdepth 1 -type f -name '*.sh'); do $(SUBMIT) bash $$script; done
 
@@ -562,8 +564,10 @@ $(PTREEPLOT): $(TREE) $(EVOLUTION) $(SCREENING) $(SCREENINGFDR)
 $(PTREEBARS): $(TREE) $(SCREENING) $(SCREENINGFDR)
 	$(SRCDIR)/run_ptree_colorbar $(TREE) $(SCREENING) $(SCREENINGFDR) $@ --height 0.3 --width 5.7 --dpi 90
 
-$(PDISTANCE): $(SCREENING) $(SCREENINGFDR) $(TREE) $(EVOLUTION)
-	$(SRCDIR)/run_phenotypic_distance $(SCREENING) $(SCREENINGFDR) $(TREE) $(EVOLUTION) $@ --dpi 150
+$(PDISTANCE): $(SCREENING) $(TREE)
+	$(SRCDIR)/prepare_pic $(TREE) $(SCREENING) $(MUTATION)/pruned.nwk $(MUTATION)/pruned_phenotypes.tsv
+	Rscript $(SRCDIR)/run_pic.R $(MUTATION)/pruned.nwk $(MUTATION)/pruned_phenotypes.tsv $(MUTATION)/nodes.tsv $(MUTATION)/pic.tsv
+	$(SRCDIR)/run_phenotypic_distance $(MUTATION)/pic.tsv $(MUTATION)/nodes.tsv $@ --dpi 150
 
 $(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION)
 	$(SRCDIR)/run_phenotypes_plot $(PLOTDIR) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION) $(PURITYDATA1) $(PURITYDATA2) --dpi 300
@@ -573,6 +577,12 @@ $(CONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
 	
 $(ACONDITIONSPLOT): $(COLLECTBOOTSTRAPS)
 	$(SRCDIR)/run_conditions_roc $(SICKNESSDIR)/1236 $(SICKNESSDIR)/5 $(SICKNESSDIR)/123456 $@ --height 3.5 --width 5.25 --dpi 90
+
+$(BOOTSTRAPPLOT): $(COLLECTBOOTSTRAPS)
+	grep CLINDAMYCIN.3 $(SICKNESSDIR)/123456/weighted_bootstrap1_2/* | grep prec | sed 's/:/\t/g' > $(MUTATION)/b1.txt
+	grep CLINDAMYCIN.3 $(SICKNESSDIR)/123456/weighted_bootstrap2_2/* | grep prec | sed 's/:/\t/g' > $(MUTATION)/b2.txt
+	grep CLINDAMYCIN.3 $(SICKNESSDIR)/123456/weighted_bootstrap3_2/*/* | grep prec | sed 's/:/\t/g' > $(MUTATION)/b3.txt
+	$(SRCDIR)/run_bootstraps_condition $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(MUTATION)/b1.txt $(MUTATION)/b2.txt $(MUTATION)/b3.txt CLINDAMYCIN.3 $@ --size 1 --dpi 150
 
 $(CATEGORIESPLOT): $(AUCDATA) $(CONDITIONSDETAILS)
 	$(SRCDIR)/run_categories_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(CONDITIONSDETAILS) $@ --height 2 --width 3 --dpi 90
@@ -586,7 +596,7 @@ $(EXAMPLE2PLOT): $(ECKFILE) $(CONVERSION) $(GENOME) $(UNCOMMON) $(TREE) $(SCREEN
 	$(SRCDIR)/run_examples $(STRAINS) $(ECKFILE) $(CONVERSION) $(GENOME) $(CHEMICAL)/deletion.all.genes.2.txt $(UNCOMMON) $(SICKNESSDIR)/123456/all.txt $(SICKNESSDIR)/123456/weighted_score.2.txt $(SCREENING) $(SCREENINGFDR) $(DELETIONFDR) $(SHARED) PSEUDOMONICACID.2 "Pseudomonic acid 2 ug/ml" $@ --height 5.5 --width 3.5 --dpi 300 --max-strains 25 --max-genes 10
 
 $(EXAMPLEROCPLOT): $(AUCDATA)
-	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
+	$(SRCDIR)/run_specific_conditions_roc $(SICKNESSDIR)/123456/auc_weighted_score.2.txt $(SICKNESSDIR)/123456/weighted_bootstrap3_2/ $@ --condition PSEUDOMONICACID.2 MOPS.AAFB --cname "Pseudomonic acid 2 ug/ml" "Minimal media (AAFB)" --size 3.7 --dpi 90
 
 $(FOVERALLPLOT): $(FOUT) $(FSTRAINS) $(FEXPERIMENT) $(SIMULATIONS)
 	$(SRCDIR)/run_overall_follow_up $(FSTRAINS) $(FEXPERIMENT) $< $(SICKNESSDIR)/123456/simulate $@ --width 3.5 --height 1.5 --dpi 90
@@ -621,8 +631,8 @@ $(FIGUREB): $(SCHEMESICKNESS) $(ESSENTIALPLOT) $(CORRELATIONPLOT) $(EXAMPLESPLOT
 $(FIGURED): $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PDISTANCE)
 	$(SRCDIR)/run_figure_d $(SCHEMEPHENOTYPES) $(PREPLICATES) $(PDISTANCE) $(PCORRELATION) $(PCORRELATIONL) $(PCORRELATIONC) $(PTREEPLOT) $(TREELEGEND) $(PTREEBARS) $(PPURITY) $@
 
-$(FIGUREE1): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(ASSOCIATIONPLOT)
-	$(SRCDIR)/run_figure_e1 $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(ASSOCIATIONPLOT) $@
+$(FIGUREE1): $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(BOOTSTRAPPLOT) $(ASSOCIATIONPLOT)
+	$(SRCDIR)/run_figure_e1 $(SCHEMEPREDICTIONS) $(CONDITIONSPLOT) $(BOOTSTRAPPLOT) $(ASSOCIATIONPLOT) $@
 
 $(FIGUREE2): $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT)
 	$(SRCDIR)/run_figure_e2 $(EXAMPLE1PLOT) $(EXAMPLE2PLOT) $(EXAMPLEROCPLOT) $@
@@ -672,7 +682,7 @@ plots: $(TREEPLOT) $(TREEBARS) $(TREELEGEND) \
        $(CORRELATIONPLOT2) $(ROCPLOT2) $(ANNOTATIONPLOT2) \
        $(ROCPLOT3) $(ANNOTATIONPLOT3) \
        $(PREPLICATES) $(PTREEPLOT) $(PTREEBARS) \
-       $(CONDITIONSPLOT) $(ACONDITIONSPLOT) $(PDISTANCE) \
+       $(CONDITIONSPLOT) $(ACONDITIONSPLOT) $(PDISTANCE) $(BOOTSTRAPPLOT) \
        $(CATEGORIESPLOT) $(ASSOCIATIONPLOT) \
        $(EXAMPLE1PLOT) \
        $(EXAMPLE2PLOT) \

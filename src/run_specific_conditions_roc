@@ -13,6 +13,7 @@ def get_options():
                                      prog='run_specific_conditions_roc')
 
     parser.add_argument('roc')
+    parser.add_argument('bootstrap')
     parser.add_argument('outfile')
 
     parser.add_argument('--condition', action='store',
@@ -36,7 +37,17 @@ def get_options():
     return parser.parse_args()
 
 
+def interpolate(values):
+    values = values.sort_values('x')
+    return pd.Series(np.interp(np.linspace(0, 1, 10),
+                     values['x'],
+                     values['y']),
+                    index=np.linspace(0, 1, 10))
+
+
 if __name__ == "__main__":
+    import os
+    import numpy as np
     import pandas as pd
     from sklearn.metrics import auc as fauc
 
@@ -70,6 +81,7 @@ if __name__ == "__main__":
     auc.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
     auc = auc[auc.kind == 'prec']
 
+
     for c, cname, color in zip(options.condition,
                                options.cname,
                                sns.color_palette('Set2', len(options.condition)+1)):
@@ -80,13 +92,34 @@ if __name__ == "__main__":
                  '-',
                  color=color,
                  linewidth=2.5,
-                 #label='%s (%.2f)' % (cname, df.stat.values[0]),
                  label='%s' % (cname),
                  zorder=10)
+        m3 = []
+        directory = options.bootstrap
+        for i, d in enumerate(os.listdir(directory)):
+            for f in os.listdir(os.path.join(directory, d)):
+                print(i, f)
+                v = pd.read_table(os.path.join(directory, d, f), header=None)
+                v.columns = ['condition', 'sick', 'strains', 'stat', 'threshold', 'x', 'y', 'kind']
+                v.set_index('condition', inplace=True)
+                v = v[v['kind'] == 'prec']
+                m3.append(interpolate(v.loc[c]).to_frame().T)
+        m3 = pd.concat(m3)
+        plt.errorbar(m3.columns,
+                     m3.mean(),
+                     yerr=m3.mad()/2.,
+                     color=color,
+                     fmt='--',
+                     label='_',
+                     zorder=0,
+                     alpha=0.5)
 
     plt.legend(loc='upper right', frameon=True)
     plt.xlabel('Recall')
-    plt.ylabel('Precision');
+    plt.ylabel('Precision')
+
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
 
     plt.savefig(options.outfile,
                 dpi=options.dpi)
