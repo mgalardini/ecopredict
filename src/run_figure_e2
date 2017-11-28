@@ -14,6 +14,7 @@ def get_options():
     parser.add_argument('example1')
     parser.add_argument('example2')
     parser.add_argument('example')
+    parser.add_argument('exampleroc')
     parser.add_argument('outfile',
                         help='output (including extension)')
 
@@ -28,35 +29,41 @@ if __name__ == "__main__":
     import svgutils.transform as sg
 
     #create new SVG figure
-    fig = sg.SVGFigure("11.7in", "4.8in")
+    fig = sg.SVGFigure("11.7in", "5.3in")
 
     # load matpotlib-generated figures
     fig7 = sg.fromfile(options.example1)
     fig6 = sg.fromfile(options.example2)
     fig10 = sg.fromfile(options.example)
+    fig11 = sg.fromfile(options.exampleroc)
 
     # get the plot objects
     plot6 = fig6.getroot()
-    plot6.moveto(650, 25, scale=1)
+    plot6.moveto(660, 50, scale=1)
     plot7 = fig7.getroot()
-    plot7.moveto(260, 25, scale=1)
+    plot7.moveto(270, 50, scale=1)
 
     plot10 = fig10.getroot()
-    plot10.moveto(15, 90, scale=1)
+    plot10.moveto(15, -10, scale=1)
+    plot11 = fig11.getroot()
+    plot11.moveto(15, 240, scale=1)
 
     # add text labels
-    txt4 = sg.TextElement(10, 85, "A)", size=12, weight="bold")
-    txt5 = sg.TextElement(265, 25, "B)", size=12, weight="bold")
-    txt6 = sg.TextElement(660, 25, "C)", size=12, weight="bold")
+    txt4 = sg.TextElement(10, 15, "A)", size=12, weight="bold")
+    txt4a = sg.TextElement(10, 265, "B)", size=12, weight="bold")
+    txt5 = sg.TextElement(275, 50, "C)", size=12, weight="bold")
+    txt6 = sg.TextElement(670, 50, "D)", size=12, weight="bold")
 
     # append plots and labels to figure
     fig.append([
                 plot6,
                 plot7,
+                plot11,
                 plot10,
                ])
     fig.append([
                 txt4,
+                txt4a,
                 txt5,
                 txt6,
                ])
