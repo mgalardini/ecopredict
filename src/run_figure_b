@@ -48,7 +48,7 @@ if __name__ == "__main__":
     plot3 = fig3.getroot()
     plot3.moveto(25, 175, scale=1)
     plot4 = fig5.getroot()
-    plot4.moveto(315, 200, scale=1)
+    plot4.moveto(335, 200, scale=1)
     plot5 = fig4.getroot()
     plot5.moveto(540, 140, scale=1)
 

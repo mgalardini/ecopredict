@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='ASCII' standalone='yes'?>
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" width="9in" viewbox="0 0 9in 5in" height="5in">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" width="9in" viewBox="0 0 9in 5in" height="5in">
   <g>
-    <g transform="translate(315, 200) scale(1) "><defs>
+    <g transform="translate(335, 200) scale(1) "><defs>
   <style type="text/css">
 *{stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:100000;}
   </style>
@@ -3339,10 +3339,10 @@
 </g>
   </g>
   <g>
-    <text font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="25" y="25">A)</text>
-    <text font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="500" y="25">B)</text>
-    <text font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="25" y="185">C)</text>
-    <text font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="300" y="185">D)</text>
-    <text font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="560" y="185">E)</text>
+    <text fill="black" font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="25" y="25">A)</text>
+    <text fill="black" font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="500" y="25">B)</text>
+    <text fill="black" font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="25" y="185">C)</text>
+    <text fill="black" font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="300" y="185">D)</text>
+    <text fill="black" font-family="Verdana" font-size="12" font-weight="bold" letter-spacing="0" text-anchor="start" x="560" y="185">E)</text>
   </g>
 </svg>

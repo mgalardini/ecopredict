@@ -501,7 +501,7 @@ if __name__ == "__main__":
         mclust.ax_heatmap.add_patch(
             patches.Rectangle(
                 (min(index),
-                 acorr.shape[0] - max(index) - 1),
+                 min(index)),
                     len(index),
                     len(index),
                     facecolor='none',
@@ -529,7 +529,7 @@ if __name__ == "__main__":
     plt.xticks(range(0, mphen, int(mphen/6)),
                [str(x) for x in range(0, mphen, int(mphen/6))])
     plt.yticks([])
-    plt.title('Growth defect strains')
+    plt.title('Strains with growth defects')
     
     plt.savefig('%s/p_correlation_colorbar.svg' % options.outdir)
     plt.clf()
@@ -540,7 +540,7 @@ if __name__ == "__main__":
     for k, v in sorted(cond_colors.items(), key=lambda x: x[0]):
         handles.append(patches.Patch(color=v, label=k))
 
-    plt.legend(handles=handles, ncol=len(handles)/2,
+    plt.legend(handles=handles, ncol=int(len(handles)/2),
                loc='center')
     plt.yticks([])
     plt.xticks([])
