@@ -99,11 +99,13 @@ if __name__ == "__main__":
     plt.figure(figsize=(3*options.size,
                         3*options.size))
 
-    plt.plot(n,
-             p,
-             'k.',
-             alpha=0.1,
-             label='_')
+    tmp = plt.plot(n,
+                   p,
+                   'k.',
+                   alpha=0.1,
+                   label='_')
+    for t in tmp:
+        t.set_rasterized(True)
 
     l = stats.linregress(n,
                          p)

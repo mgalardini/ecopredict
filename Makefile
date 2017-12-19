@@ -569,7 +569,7 @@ $(PTREEBARS): $(TREE) $(SCREENING) $(SCREENINGFDR)
 $(PDISTANCE): $(SCREENING) $(TREE)
 	$(SRCDIR)/prepare_pic $(TREE) $(SCREENING) $(MUTATION)/pruned.nwk $(MUTATION)/pruned_phenotypes.tsv
 	Rscript $(SRCDIR)/run_pic.R $(MUTATION)/pruned.nwk $(MUTATION)/pruned_phenotypes.tsv $(MUTATION)/nodes.tsv $(MUTATION)/pic.tsv
-	$(SRCDIR)/run_phenotypic_distance $(MUTATION)/pic.tsv $(MUTATION)/nodes.tsv $@ --dpi 150
+	$(SRCDIR)/run_phenotypic_distance $(MUTATION)/pic.tsv $(MUTATION)/nodes.tsv $@ --dpi 300
 
 $(PREPLICATES): $(PURITYDATA1) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION)
 	$(SRCDIR)/run_phenotypes_plot $(PLOTDIR) $(REPLICATES1) $(REPLICATES2) $(REPLICATES3) $(ASCREENING) $(SCREENING) $(SCREENINGFDR) $(CONDITIONSDETAILS) $(CONDITIONSMOA) $(SHARED) $(DELETION) $(PURITYDATA1) $(PURITYDATA2) --dpi 300
